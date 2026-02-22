@@ -1,0 +1,4 @@
+[submodule "portadom"]
+	path = portadom
+	url = https://github.com/JuroOravec/portadom.git
+	branch = main
