@@ -136,4 +136,4 @@ After any add, remove, or switch operation, tell the user:
 
 - Cloning the root repo with submodules — see `docs/project-setup.md`.
 - Updating submodules to latest (`git submodule update --remote`) — that is a routine maintenance task, not configuration.
-- Creating or modifying skills, agents, or rules — see `meta-skill-write`, `project-polish`, etc.
+- Creating or modifying skills, agents, or rules — see `meta-skill-create`, `project-polish`, etc.

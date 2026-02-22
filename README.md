@@ -1,4 +1,4 @@
-# One AI Config to Rule Them All
+# One AI config to rule all repos
 
 **How I stopped duplicating agents, skills, and rules across every repo - and why you might want to do the same.**
 

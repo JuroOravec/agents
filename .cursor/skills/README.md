@@ -133,7 +133,7 @@ Reserved for managing the root repo. Do not use for skills that operate on impor
 | Skill                | Purpose                                                                                             |
 | -------------------- | --------------------------------------------------------------------------------------------------- |
 | `meta-discovery`     | Evaluate whether the current task reveals a pattern worth capturing as a new skill                  |
-| `meta-skill-write`   | Conventions for creating and organizing skills                                                      |
+| `meta-skill-create`   | Conventions for creating and organizing skills                                                      |
 
 ## How skills connect
 
@@ -160,7 +160,7 @@ flowchart TD
     dev -->|"Phase 7"| changelog
     dev -->|"Phase 8b"| reviewer
     dev -->|"Phase 10"| pr
-    dev -->|"Phase 11"| discovery
+    reviewer -.->|"includes"| discovery
 
     %% ── Specializations of act-dev ───────────────────────────────
     scraper["act-dev--scraper-write"]
@@ -200,8 +200,8 @@ flowchart TD
     docs -.->|"tone guide from"| polishdocs
 
     %% ── Meta ─────────────────────────────────────────────────────
-    skillwrite["meta-skill-write<br/><i>Skill conventions</i>"]
-    discovery -.->|"creates via"| skillwrite
+    skillcreate["meta-skill-create<br/><i>Skill conventions</i>"]
+    discovery -.->|"creates via"| skillcreate
 
     %% ── Root repo management ─────────────────────────────────────
     rootsetup["root-gitmodule-setup<br/><i>Submodule config</i>"]
@@ -227,7 +227,7 @@ flowchart TD
     class design,coverage,bench,validate,docs,changelog,reviewer,pr phase
     class scraper,scraperdisc,scraperintegrity,depup,pkgcreate,pkgmigrate specialization
     class setup,polish,polishbench,polishdocs project
-    class discovery,skillwrite meta
+    class discovery,skillcreate meta
     class issue,release,secvuln standalone
 ```
 
@@ -274,9 +274,10 @@ flowchart TD
   It asks for repo URL and branch when adding; offers progress storage before
   removing; and reminds about window reload after submodule changes.
 
-- **`meta-discovery`** runs after every substantive interaction. If it
-  identifies a new pattern, it hands off to `meta-skill-write` for skill
-  creation (with user approval).
+- **`meta-discovery`** runs as part of the `act-dev-reviewer` subagent (Phase 8b).
+  When the reviewer runs, it evaluates for skill discovery. If it identifies a new
+  pattern, the parent hands off to `meta-skill-create` for skill creation (with
+  user approval).
 
 - **`act-repo-release`** uses `act-dev-changelog` to ensure the changelog
   is up to date before publishing.

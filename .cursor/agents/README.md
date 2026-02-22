@@ -4,7 +4,7 @@ Custom agent definitions for Cursor. These can power slash commands (e.g. `/revi
 
 ## reviewer
 
-Adversarial reviewer that checks completed work for incomplete output, non-holistic approach, and glaring issues.
+Adversarial reviewer that checks completed work for incomplete output, non-holistic approach, glaring issues, and skill discovery (meta-discovery).
 
 **Invocation:**
 - **Automatic:** Runs as Phase 8b in the `act-dev` workflow, and via the always-apply rule for substantive work from other skills.
