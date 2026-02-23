@@ -2,3 +2,7 @@
 	path = portadom
 	url = https://github.com/JuroOravec/portadom.git
 	branch = main
+[submodule "cbc-website"]
+	path = cbc-website
+	url = https://github.com/codebridgecollege/cbc-website.git
+	branch = dev
