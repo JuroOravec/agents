@@ -82,6 +82,10 @@ Trigger this skill when:
 
 ## Workflow
 
+### Phase 0: Research (when skill addresses a specific topic)
+
+Before executing, instruct the agent to research best practices and state-of-the-art for the given topic. Include this phase when the skill solves a domain-specific problem (e.g. data validation, scraper design, security disclosure). Skip or fold into Phase 1 for generic/meta skills.
+
 ### Phase 1: {Phase name}
 
 {Instructions, templates, code blocks.}
@@ -107,6 +111,8 @@ Trigger this skill when:
 - **Cross-references** to other skills use backtick-quoted names: ``see the `project-polish` skill``.
 - **Verification** section uses a markdown checklist (`- [ ]`).
 - **Out of scope** section lists related concerns handled by other skills, with cross-references.
+- **Confirm before high-impact actions** — The skill should instruct the agent to confirm with the user before: carrying out substantial work, creating remote resources (e.g. GitHub issues, PRs), or deleting things. The skill can override this (e.g. "create issue without asking") when its design explicitly says so.
+- **Research phase for topic-specific skills** — When the skill addresses a specific domain or topic, include a Phase 0 or early step instructing the agent to research best practices and state-of-the-art for that topic before executing the main workflow.
 
 ## Prefix reference
 
@@ -121,15 +127,16 @@ Trigger this skill when:
 
 When creating a new skill:
 
-1. Decide the prefix: root-repo management (`root-`), one-time setup (`project-`), reactive (`act-`), or self-referential (`meta-`)?
-2. Decide whether an area grouping is needed (see naming conventions above).
-3. Pick the specific name using object-action pattern. Omit the verb if unambiguous.
-4. Check if this skill specializes an existing `act-{area}` skill. If yes, use `act-{area}--{object-action}`.
-5. If the skill is experimental (value or shape still being validated), append `--exp` to the name. This signals it may be removed, reworked, or graduated into a stable skill later.
-6. Create the directory and `SKILL.md`.
-7. Register the skill in Cursor's skill config.
-8. If the skill should always be active, add it to `.cursor/rules/always-apply-skills.md`.
-9. Update `.cursor/skills/README.md` -- add the skill to the catalog table and to the diagram if it has connections to other skills.
+1. **If the skill is for a specific topic** — Research best practices and state-of-the-art for that domain before designing the workflow. Use web search or docs to avoid reinventing the wheel.
+2. Decide the prefix: root-repo management (`root-`), one-time setup (`project-`), reactive (`act-`), or self-referential (`meta-`).
+3. Decide whether an area grouping is needed (see naming conventions above).
+4. Pick the specific name using object-action pattern. Omit the verb if unambiguous.
+5. Check if this skill specializes an existing `act-{area}` skill. If yes, use `act-{area}--{object-action}`.
+6. If the skill is experimental (value or shape still being validated), append `--exp` to the name. This signals it may be removed, reworked, or graduated into a stable skill later.
+7. Create the directory and `SKILL.md`.
+8. Register the skill in Cursor's skill config.
+9. If the skill should always be active, add it to `.cursor/rules/always-apply-skills.md`.
+10. Update `.cursor/skills/README.md` -- add the skill to the catalog table; add to the diagram if it has connections to other skills; **add to the Common commands table** (see "Common commands" section) if the skill has user-triggerable phrases.
 
 ## Verifying skills with tangible outputs
 

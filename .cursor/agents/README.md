@@ -1,6 +1,15 @@
 # Agent Definitions
 
-Custom agent definitions for Cursor. These can power slash commands (e.g. `/reviewer`) when Cursor supports local agent files.
+Custom agent definitions for Cursor. These can power slash commands (e.g. `/reviewer`, `/pm`) when Cursor supports local agent files.
+
+## pm
+
+Project manager for capture, triage, and prioritization. Helps with idea overload: capture to INBOX, triage when ready, promote to GitHub only when asked.
+
+**Invocation:**
+- **Manual:** "capture this", "triage my backlog", "what's next?", "wrap up", "I'm lost"
+- **Content:** See `pm.md` for agent persona; see `.cursor/skills/act-pm/SKILL.md` for full workflow
+- **Artifact:** `INBOX.md` at workspace root (local-first, then GitHub)
 
 ## reviewer
 

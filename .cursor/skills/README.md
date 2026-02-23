@@ -10,6 +10,46 @@ During development, projects are brought into the scope as git submodules.
 
 Skill, agents, and rules are managed as separate repo - a single source of truth.
 
+**Language focus:** These skills are currently tuned for Node.js/TypeScript projects (npm, pnpm, Vitest, etc.). Support for Python and Rust may be added in the future.
+
+## Common commands
+
+Natural phrases that trigger skills. Say these in chat to invoke workflows.
+
+| You might say… | Skill(s) |
+| --- | --- |
+| **"capture this"**, "add to backlog", "I have an idea" | `act-pm` — Capture ideas to INBOX |
+| **"triage my backlog"**, "process inbox", "sort my TODOs" | `act-pm` — Triage captured items |
+| **"what's next?"**, "prioritize", "I'm lost" | `act-pm` — Suggest focus options |
+| **"what was I doing?"**, "where did I leave off?", "context restore" | `act-pm` — Restore session context |
+| **"wrap up"**, "end of session" | `act-pm` — Session wrap-up |
+| **"implement"**, **"develop"**, "build", "add", "fix" | `act-dev` — End-to-end dev workflow |
+| **"plan"**, "design", "figure out how to implement" | `act-dev-design` — Implementation plan |
+| **"scrape"**, "create a scraper", "new Apify actor" | `act-dev--scraper-write` |
+| "explore this site", "design the scraping" | `act-dev--scraper-discovery` |
+| "add dependency", "bump version", "how do I add a dep?" | `act-dev--dependency-manage` |
+| "migrate dependency", "Dependabot PR", "check compatibility" | `act-dev--dependency-migrate` |
+| "create package", "add package", "scaffold package" | `act-dev--package-create` |
+| "migrate package in", "absorb", "bring in package" | `act-dev--package-migrate-in` |
+| "coverage", "test gaps", "improve tests" | `act-dev-coverage` |
+| "benchmark", "performance tracking" | `act-dev-bench` |
+| "update docs", "docs up to date" | `act-dev-docs` |
+| "changelog", "document changes" | `act-dev-changelog` |
+| **"create PR"**, "open pull request", "push and create PR" | `act-repo-pr-create` |
+| "file an issue", "create issue" | `act-repo-issue-create` |
+| **"release"**, "publish", "cut a release" | `act-repo-release` |
+| "set up project", "scaffold", "bootstrap" | `project-setup` |
+| "add Cursor hooks", "create hook", "beforeSubmitPrompt" | `meta-hook-create` |
+| "project polish", "community health", "make it professional" | `project-polish` |
+| "write docs", "improve README", "restructure docs" | `project-polish-docs` |
+| "benchmark infrastructure", "performance CI" | `project-polish-bench` |
+| "add project", "remove project", **"switch projects"** | `root-gitmodule-setup` |
+| "create agent", "new role" | `meta-agent-create` |
+| "create skill", "skill conventions", "update skill" | `meta-skill-create` |
+| "create skills from project", "capture project patterns", "onboard agent" | `meta-create-skills-from-project` |
+
+*Bold* = common shorthand. Skills auto-trigger when intent matches; explicit phrases help.
+
 ## Naming conventions
 
 Skill names have three layers: **prefix**, **area**, and **specific**.
@@ -53,6 +93,7 @@ Current areas under `act-`:
 | `dev`      | Writing code: features, bugs, refactors, tests, benchmarks | `act-dev--scraper-write` |
 | `repo`     | Git and GitHub operations: PRs, issues, releases           | `act-repo-pr-create`     |
 | `security` | Security concerns: vulnerability handling, audits          | `act-security-vuln`      |
+| `pm`       | Project management: capture, triage, prioritization         | `act-pm`                 |
 
 Areas are more likely to evolve than prefixes -- new areas emerge when
 recurring work doesn't fit an existing one. For example, there's no `ops`
@@ -127,13 +168,17 @@ Reserved for managing the root repo. Do not use for skills that operate on impor
 | `act-repo-issue-create`       | Create a GitHub issue                                                                         |
 | `act-repo-release`            | Prepare and publish a release                                                                 |
 | `act-security-vuln`           | Handle a security vulnerability report                                                        |
+| `act-pm`                     | Project manager: capture ideas, triage backlog, "what's next?", context restore. First local, then GitHub. |
 
 #### `meta-` -- Skills about skills
 
-| Skill                | Purpose                                                                                             |
-| -------------------- | --------------------------------------------------------------------------------------------------- |
-| `meta-discovery`     | Evaluate whether the current task reveals a pattern worth capturing as a new skill                  |
-| `meta-skill-create`   | Conventions for creating and organizing skills                                                      |
+| Skill                         | Purpose                                                                                             |
+| ----------------------------- | --------------------------------------------------------------------------------------------------- |
+| `meta-discovery`              | Evaluate whether the current task reveals a pattern worth capturing as a new skill                  |
+| `meta-skill-create`          | Conventions for creating and organizing skills                                                      |
+| `meta-create-skills-from-project` | Create skills from an existing project's patterns (onboarding, capturing conventions)          |
+| `meta-agent-create`         | Create new agents/roles: discovery prompt, trigger docs, codebase updates                          |
+| `meta-hook-create`          | Create Cursor lifecycle hooks (beforeSubmitPrompt, etc.); capture-prompts as example              |
 
 ## How skills connect
 
@@ -201,7 +246,11 @@ flowchart TD
 
     %% ── Meta ─────────────────────────────────────────────────────
     skillcreate["meta-skill-create<br/><i>Skill conventions</i>"]
+    createskills["meta-create-skills-from-project<br/><i>Create skills from project</i>"]
+    agentcreate["meta-agent-create<br/><i>Create agents</i>"]
     discovery -.->|"creates via"| skillcreate
+    createskills -.->|"uses"| skillcreate
+    agentcreate -.->|"produces"| pm
 
     %% ── Root repo management ─────────────────────────────────────
     rootsetup["root-gitmodule-setup<br/><i>Submodule config</i>"]
@@ -210,8 +259,10 @@ flowchart TD
     issue["act-repo-issue-create"]
     release["act-repo-release"]
     secvuln["act-security-vuln"]
+    pm["act-pm<br/><i>Capture, triage, prioritize</i>"]
 
     release -->|"uses"| changelog
+    pm -.->|"promote via"| issue
 
     %% ── Styling ──────────────────────────────────────────────────
     classDef orchestrator fill:#4a90d9,color:#fff,stroke:#2a6cb8
@@ -228,7 +279,7 @@ flowchart TD
     class scraper,scraperdisc,scraperintegrity,depup,pkgcreate,pkgmigrate specialization
     class setup,polish,polishbench,polishdocs project
     class discovery,skillcreate meta
-    class issue,release,secvuln standalone
+    class issue,release,secvuln,pm standalone
 ```
 
 ### Reading the diagram

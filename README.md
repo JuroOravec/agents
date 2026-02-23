@@ -79,6 +79,8 @@ See [docs/project-setup.md](docs/project-setup.md) for the full guide.
 
 This repo contains AI agents, skills, and rules I used in other projects - development, scraping, packaging, releases, and more. They live in [`.cursor/skills/`](.cursor/skills/README.md). You can keep them, replace them, or fork the whole thing and make it yours.
 
+The skills are tuned for **JavaScript/TypeScript projects using a pnpm monorepo**.
+
 The root `package.json` (with `@types/node`) is here so Node built-in imports like `node:path` resolve correctly in TypeScript when editing files across submodules. No root `tsconfig` needed.
 
 ## Try it
