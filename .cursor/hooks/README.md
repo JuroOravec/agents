@@ -9,10 +9,11 @@ Injects `session_id` (Cursor's `conversation_id`) into the agent's context at se
 
 ## capture-prompts (beforeSubmitPrompt)
 
-Logs each user message to `.cursor/logs/prompts-YYYY-MM-DD.jsonl` (one file per day) with:
+Logs each user message to `.cursor/logs/prompts/prompts-YYYY-MM-DD.jsonl` (one file per day) with:
 
-1. **Last agent summary + context** — 1–2 sentence summary of the agent’s previous response (from `.cursor/logs/last-agent-summary.txt`, written by the agent per always-apply-skills rule), plus attachments and workspace.
-2. **User message** — Word-for-word.
+1. **Last turn preview** — Last 5 lines of the agent transcript (`~/.cursor/projects/{project-id}/agent-transcripts/{conversation_id}.txt`) for prior-turn context, or `(none)` if unavailable.
+2. **Context** — Attachments and workspace roots.
+3. **User message** — Word-for-word.
 
 ### Requirements
 
@@ -29,7 +30,7 @@ Each line is a JSON object:
   "conversation_id": "uuid",
   "generation_id": "uuid",
   "hook": "beforeSubmitPrompt",
-  "last_agent_summary": "[timestamp] Summary of prior agent response.",
+  "last_turn_preview": "Last 5 lines of transcript...",
   "context": "workspace: [...] attachments: [...]",
   "user_message": "The user's message word-for-word"
 }
@@ -37,7 +38,7 @@ Each line is a JSON object:
 
 ### Log rotation
 
-Logs rotate by date: one file per day (`prompts-2025-02-23.jsonl`). Older files are kept; prune manually if desired.
+Logs rotate by date: one file per day (`prompts-2025-02-23.jsonl`). Older files are kept; prune manually if desired. View in the dashboard at `/prompts`.
 
 ### After making changes
 

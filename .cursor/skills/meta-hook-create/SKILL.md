@@ -17,7 +17,7 @@ Trigger this skill when:
 
 ## Reference: capture-prompts example
 
-This project has a working example: the **capture-prompts** hook logs each user message with last agent summary and context. Use it as a template.
+This project has a working example: the **capture-prompts** hook logs each user message with last turn preview (from transcript) and context. Use it as a template.
 
 | File | Purpose |
 | --- | --- |

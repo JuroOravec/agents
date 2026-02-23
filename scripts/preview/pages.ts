@@ -20,9 +20,9 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
-/** Shared nav: Skills, Agents, Tools. */
+/** Shared nav: Skills, Agents, Tools, Prompts. */
 function navLinks(): string {
-  return `<a href="/skills">Skills</a> <span>|</span> <a href="/agents">Agents</a> <span>|</span> <a href="/tools">Tools</a>`;
+  return `<a href="/skills">Skills</a> <span>|</span> <a href="/agents">Agents</a> <span>|</span> <a href="/tools">Tools</a> <span>|</span> <a href="/prompts">Prompts</a>`;
 }
 
 const layoutStart = (title: string) => `
@@ -298,6 +298,17 @@ const AGENT_COLUMNS = [
   "duration",
 ];
 
+/** Prompt schema columns. */
+const PROMPT_COLUMNS = [
+  "ts",
+  "conversation_id",
+  "generation_id",
+  "hook",
+  "last_turn_preview",
+  "context",
+  "user_message",
+];
+
 /** Tool schema columns (union of success + failure). */
 const TOOL_COLUMNS = [
   "finished_at",
@@ -450,6 +461,31 @@ export function pageAgents(
     filterError,
     "<p>No agent logs found. Subagent runs are logged when subagentStop hook fires.</p>",
     "obj.subagent_type === 'architect'  // JS expression, obj = log entry"
+  );
+}
+
+export function pagePrompts(
+  entries: LogEntry[],
+  totalCount: number,
+  page: number,
+  pageSize: number,
+  sortSpec: SortSpec[],
+  filterValue: string,
+  filterError: string | null
+): string {
+  return pageLogTable(
+    "Prompts",
+    "/prompts",
+    PROMPT_COLUMNS,
+    entries,
+    totalCount,
+    page,
+    pageSize,
+    sortSpec,
+    filterValue,
+    filterError,
+    "<p>No prompt logs found. Prompts are logged when beforeSubmitPrompt hook fires (capture-prompts.sh).</p>",
+    "obj.conversation_id === 'uuid'  // JS expression, obj = log entry"
   );
 }
 

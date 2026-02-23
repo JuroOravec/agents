@@ -62,7 +62,7 @@ Some Cursor versions let `beforeSubmitPrompt` **modify the prompt** (output the 
 
 ### Option B: Rule/skill instruction to read from capture-prompts
 
-The existing `capture-prompts` hook logs each prompt with `conversation_id` to `.cursor/logs/prompts-YYYY-MM-DD.jsonl`. A rule could instruct the agent: "Before using skill-eval, run `jq -r '.[-1].conversation_id' .cursor/logs/prompts-*.jsonl` to get session_id."
+The existing `capture-prompts` hook logs each prompt with `conversation_id` to `.cursor/logs/prompts/prompts-YYYY-MM-DD.jsonl`. A rule could instruct the agent: "Before using skill-eval, run `jq -r '.[-1].conversation_id' .cursor/logs/prompts/prompts-*.jsonl` to get session_id."
 
 **Limitations:** Brittle (depends on log format, file presence). Does not work well with parallel sessions (log interleaving). **Not recommended**—use only as last resort.
 

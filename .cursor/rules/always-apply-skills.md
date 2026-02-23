@@ -17,13 +17,3 @@ Before presenting completed work to the user, run the reviewer subagent to catch
 **Skip:** Trivial edits (typos, single-line tweaks), pure Q&A, or when the user explicitly asked to skip review.
 
 Note: If you followed `act-dev`, Phase 8b already includes this step.
-
-## Prompt Capture (end of each response)
-
-At the end of each substantive response, write a 1–2 sentence summary of what you said (and key context) to `.cursor/logs/last-agent-summary.txt`. Overwrite the file; use one line. Format: `[ISO timestamp] Summary text.` Example: `[2025-02-23T14:30:00Z] Explained the beforeSubmitPrompt hook and set up capture-prompts.sh; user wanted prompt logging.`
-
-This handoff is read by the `beforeSubmitPrompt` hook when the user sends the next message, so the log can pair "last agent summary + context" with "user message word-for-word".
-
-**Reminder:** If you skip this step, the next prompt log will show `(none)` for last_agent_summary; the user's message is still captured.
-
-**Skip:** Trivial replies (acknowledgments, single-word answers), or when the response was empty.

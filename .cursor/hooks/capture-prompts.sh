@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
-# Capture prompt hook: logs (1) last agent summary + context, (2) user message word-for-word.
-# Runs on beforeSubmitPrompt. Writes to .cursor/logs/prompts-YYYY-MM-DD.jsonl (rotated by date)
+# Capture prompt hook: logs (1) last 5 lines of transcript (prior turn), (2) user message word-for-word.
+# Runs on beforeSubmitPrompt. Writes to .cursor/logs/prompts/prompts-YYYY-MM-DD.jsonl (rotated by date)
+#
+# Transcript: ~/.cursor/projects/{project-id}/agent-transcripts/{conversation_id}.txt
+# project-id = workspace root with / replaced by - (e.g. /Users/me/repos/x -> Users-me-repos-x)
 #
 # After changing this script or hooks.json: Reload Window (Cmd+Shift+P → "Reload Window") for Cursor to pick up changes.
 set -e
 
 HOOK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_CURSOR="$HOOK_DIR/.."
-LOG_DIR="$PROJECT_CURSOR/logs"
+LOG_DIR="$PROJECT_CURSOR/logs/prompts"
 DATE_STR=$(date -u +"%Y-%m-%d")
 LOG_FILE="$LOG_DIR/prompts-$DATE_STR.jsonl"
-SUMMARY_FILE="$LOG_DIR/last-agent-summary.txt"
 
 mkdir -p "$LOG_DIR"
 
@@ -20,7 +22,7 @@ echo "capture-prompts: logging to $LOG_FILE" >&2
 # Read JSON payload from stdin
 payload=$(cat)
 
-# Parse with jq (or fallback: log raw if jq missing)
+# Parse with jq
 prompt=$(echo "$payload" | jq -r '.prompt // ""')
 conversation_id=$(echo "$payload" | jq -r '.conversation_id // ""')
 generation_id=$(echo "$payload" | jq -r '.generation_id // ""')
@@ -28,12 +30,26 @@ hook_event=$(echo "$payload" | jq -r '.hook_event_name // ""')
 workspace_roots=$(echo "$payload" | jq -c '.workspace_roots // []')
 attachments=$(echo "$payload" | jq -c '.attachments // []')
 
-# 1) Last agent summary + context
-last_agent_summary="(none)"
-if [[ -f "$SUMMARY_FILE" ]]; then
-  last_agent_summary=$(cat "$SUMMARY_FILE")
-  # Clear for next turn so we don't reuse old summary
-  : > "$SUMMARY_FILE"
+# Last 5 lines of transcript (prior turn context) — or "(none)" if unavailable
+# Cursor stores transcripts in ~/.cursor/projects/{project-id}/agent-transcripts/{conversation_id}.txt
+# With multi-root workspaces, project-id may not match the first workspace root (e.g. *-code-workspace), so we search all projects.
+last_turn_preview="(none)"
+if [[ -n "$conversation_id" ]]; then
+  projects_dir="${HOME}/.cursor/projects"
+  transcript_file=""
+  if [[ -d "$projects_dir" ]]; then
+    for proj in "$projects_dir"/*/; do
+      candidate="${proj}agent-transcripts/${conversation_id}.txt"
+      if [[ -f "$candidate" ]]; then
+        transcript_file="$candidate"
+        break
+      fi
+    done
+  fi
+  if [[ -n "$transcript_file" && -f "$transcript_file" ]]; then
+    last_turn_preview=$(tail -5 "$transcript_file" 2>/dev/null | tr '\n' ' ' | sed 's/ *$//') || last_turn_preview="(none)"
+    [[ -z "$last_turn_preview" ]] && last_turn_preview="(none)"
+  fi
 fi
 
 # Build context string from attachments
@@ -46,8 +62,6 @@ if [[ "$attachments" != "[]" && "$attachments" != "null" ]]; then
 fi
 context="${context_parts[*]:-(none)}"
 
-# 2) User message word-for-word (already in $prompt)
-
 # Log as single JSONL line (compact, one object per line)
 timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 jq -n -c \
@@ -55,7 +69,7 @@ jq -n -c \
   --arg cid "$conversation_id" \
   --arg gid "$generation_id" \
   --arg event "$hook_event" \
-  --arg summary "$last_agent_summary" \
+  --arg preview "$last_turn_preview" \
   --arg ctx "$context" \
   --arg msg "$prompt" \
-  '{ts: $ts, conversation_id: $cid, generation_id: $gid, hook: $event, last_agent_summary: $summary, context: $ctx, user_message: $msg}' >> "$LOG_FILE"
+  '{ts: $ts, conversation_id: $cid, generation_id: $gid, hook: $event, last_turn_preview: $preview, context: $ctx, user_message: $msg}' >> "$LOG_FILE"

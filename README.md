@@ -90,9 +90,9 @@ See [docs/skill-usage-tracking/](docs/skill-usage-tracking/).
 
 ![Skill health metrics dashboard](./docs/skill-usage-tracking/skill-eval-dashboard.png)
 
-### Agent and tool tracking
+### Agent, tool, and prompt tracking
 
-Hooks log subagent runs and tool invocations to `.cursor/logs/agents/` and `.cursor/logs/tools/`. A preview server (`scripts/preview/`) exposes `/agents` and `/tools` for inspecting runs, durations, and failures. See [docs/design-decisions/agent-tool-tracking/](docs/design-decisions/agent-tool-tracking/).
+Hooks log subagent runs to `.cursor/logs/agents/`, tool invocations to `.cursor/logs/tools/`, and user prompts to `.cursor/logs/prompts/`. A preview server (`scripts/preview/`) exposes `/agents`, `/tools`, and `/prompts` for inspecting runs, durations, failures, and prompt history. See [docs/design-decisions/agent-tool-tracking/](docs/design-decisions/agent-tool-tracking/).
 
 ## Try it
 

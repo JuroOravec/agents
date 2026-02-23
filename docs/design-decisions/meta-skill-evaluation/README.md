@@ -89,13 +89,11 @@ Per [issue #2](https://github.com/JuroOravec/agents/issues/2):
 | Approach | Status |
 | -------- | ------ |
 | **3. Skill-adherence checks** | **first** — skill-eval CLI makes this straightforward |
-| 1. Log-based review | later — `last_agent_summary` extension doesn't work; need to fix capture-prompts / last message capture first |
+| 1. Log-based review | later — capture-prompts now uses `last_turn_preview` from transcript; may revisit |
 | 2. Synthetic regression tests | later |
 | 4. Human-in-the-loop rating | later |
 | 5. Proxy metrics | later |
 | 6. A/B or cohort comparison | out of scope |
-
-**Deferred:** Extending `last_agent_summary` for richer context. The current hook runs at `beforeSubmitPrompt` and does not have access to the last agent message. We need a different mechanism to capture "last message before user prompt" before we can extend it. Out of scope for this iteration.
 
 ---
 
@@ -281,7 +279,7 @@ Once this works, expand to act-dev, project-setup, act-architect, etc.
 
 ## Out of scope (this iteration)
 
-- Extending `last_agent_summary` / fixing capture-prompts to get "last message before user prompt" — blocked; needs separate investigation.
+- Extending `last_turn_preview` (e.g. more lines, different format) — capture-prompts now uses transcript; can extend as needed.
 - Transcript parsing and inference-based adherence — replaced by agent-written JSON.
 - Post-tool-use hooks for tool logging — optional future enhancement.
 - Full skill rollout (act-dev, project-setup, etc.) — start with act-repo-issue-create only.

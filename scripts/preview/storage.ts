@@ -142,6 +142,51 @@ export async function loadAgentLogs(logDir: string): Promise<LogEntry[]> {
 }
 
 /**
+ * Load prompt logs from .cursor/logs/prompts/*.jsonl.
+ * Merges all prompts-YYYY-MM-DD.jsonl files, one JSON object per line.
+ * Returns entries sorted by ts descending (most recent first).
+ */
+export async function loadPromptLogs(logDir: string): Promise<LogEntry[]> {
+  const fullPath = path.resolve(logDir);
+  let files: string[];
+  try {
+    files = await fsp.readdir(fullPath);
+  } catch {
+    return [];
+  }
+
+  const jsonlFiles = files
+    .filter((f) => f.startsWith("prompts-") && f.endsWith(".jsonl"))
+    .sort();
+
+  const entries: LogEntry[] = [];
+  for (const file of jsonlFiles) {
+    const filePath = path.join(fullPath, file);
+    try {
+      const content = await fsp.readFile(filePath, "utf-8");
+      const lines = content.split("\n").filter((l) => l.trim());
+      for (let i = 0; i < lines.length; i++) {
+        try {
+          const data = JSON.parse(lines[i]!) as object;
+          entries.push({ id: `${path.basename(file, ".jsonl")}-${i}`, data });
+        } catch {
+          // Skip malformed lines
+        }
+      }
+    } catch {
+      // Skip unreadable files
+    }
+  }
+
+  entries.sort((a, b) => {
+    const fa = (a.data as Record<string, unknown>).ts as string | undefined;
+    const fb = (b.data as Record<string, unknown>).ts as string | undefined;
+    return (fb ?? "").localeCompare(fa ?? "");
+  });
+  return entries;
+}
+
+/**
  * Load tool logs from .cursor/logs/tools/*.jsonl.
  * Merges all tools-YYYY-MM-DD.jsonl files, one JSON object per line.
  * Returns entries sorted by finished_at descending (most recent first).
