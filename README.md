@@ -81,12 +81,19 @@ This repo contains AI agents, skills, and rules I used in other projects - devel
 
 The skills are tuned for **JavaScript/TypeScript projects using a pnpm monorepo**.
 
-The root `package.json` (with `@types/node`) is here so Node built-in imports like `node:path` resolve correctly in TypeScript when editing files across submodules. No root `tsconfig` needed.
+### Skill health metrics
+
+Skills in this project emit health metrics when used.
+
+You can open up a dashboard to see the health metrics.
+See [docs/skill-usage-tracking/](docs/skill-usage-tracking/).
+
+![Skill health metrics dashboard](./docs/skill-usage-tracking/skill-eval-dashboard.png)
+
+### Agent and tool tracking
+
+Hooks log subagent runs and tool invocations to `.cursor/logs/agents/` and `.cursor/logs/tools/`. A preview server (`scripts/preview/`) exposes `/agents` and `/tools` for inspecting runs, durations, and failures. See [docs/design-decisions/agent-tool-tracking/](docs/design-decisions/agent-tool-tracking/).
 
 ## Try it
 
 Clone, add your first project, and open it in Cursor. One config. Many projects. No more copy-paste.
-
----
-
-*Fork this repo and adapt it to your workflow. The pattern works for Cursor, Claude, Codeium, and others - swap in the config your tool expects.*

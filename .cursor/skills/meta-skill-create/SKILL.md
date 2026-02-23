@@ -82,6 +82,12 @@ Trigger this skill when:
 
 ## Workflow
 
+**Format:** All skills MUST use `### Phase N: Title` for each workflow step. Enforced by validation script in CI.
+
+**Skill-eval (meta-evaluation):** From the project root, run `./scripts/skill-eval.sh start {session_id} {skill-name}` at workflow start (session_id is injected at session start—look for "Session ID (for skill-eval)" in context). Replace `{skill-name}` with the skill's directory name (e.g. `act-dev-coverage`). Capture the printed `skill_id` from the terminal output. Preserve both `session_id` and `skill_id` for the duration—if context gets summarized, ensure these IDs are retained. After each phase (or when skipping a phase), run `./scripts/skill-eval.sh complete {skill_id} {phase_no}` or `./scripts/skill-eval.sh complete {skill_id} {phase_no} --skipped` from the project root.
+
+Create todo tasks for each phase before proceeding.
+
 ### Phase 0: Research (when skill addresses a specific topic)
 
 Before executing, instruct the agent to research best practices and state-of-the-art for the given topic. Include this phase when the skill solves a domain-specific problem (e.g. data validation, scraper design, security disclosure). Skip or fold into Phase 1 for generic/meta skills.
@@ -107,7 +113,7 @@ Before executing, instruct the agent to research best practices and state-of-the
 
 - **Frontmatter `name`** must match the directory name.
 - **Frontmatter `description`** must match the description registered in Cursor's skill config (the `description` field in the skill's `available_skills` entry).
-- **Phases** are numbered sequentially. Each phase is a discrete unit of work.
+- **Phases** are numbered sequentially. Each phase is a discrete unit of work. Workflow MUST use `### Phase N: Title` for every step (e.g. `### Phase 1: Design`, `### Phase 2a: Soft switch`). Do not use `### 1. Step` or other formats. Enforced by CI.
 - **Cross-references** to other skills use backtick-quoted names: ``see the `project-polish` skill``.
 - **Verification** section uses a markdown checklist (`- [ ]`).
 - **Out of scope** section lists related concerns handled by other skills, with cross-references.

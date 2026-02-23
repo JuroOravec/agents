@@ -24,6 +24,7 @@ Natural phrases that trigger skills. Say these in chat to invoke workflows.
 | **"what was I doing?"**, "where did I leave off?", "context restore" | `act-pm` — Restore session context |
 | **"wrap up"**, "end of session" | `act-pm` — Session wrap-up |
 | **"implement"**, **"develop"**, "build", "add", "fix" | `act-dev` — End-to-end dev workflow |
+| **"worker"**, "implement from pool", "take issues #5 #6" | `act-worker` — Pool-based execution; implement issues, close when done |
 | **"plan"**, "design", "figure out how to implement" | `act-dev-design` — Implementation plan |
 | **"scrape"**, "create a scraper", "new Apify actor" | `act-dev--scraper-write` |
 | "explore this site", "design the scraping" | `act-dev--scraper-discovery` |
@@ -38,6 +39,8 @@ Natural phrases that trigger skills. Say these in chat to invoke workflows.
 | **"create PR"**, "open pull request", "push and create PR" | `act-repo-pr-create` |
 | "file an issue", "create issue" | `act-repo-issue-create` |
 | **"release"**, "publish", "cut a release" | `act-repo-release` |
+| **"architect"**, "design and break down", "how would we implement", "break into issues" | `act-architect` — Design large work, create issues, hand off to PM |
+| "hand to architect", "narrow these solutions", "deep dive into these" | `act-arch-solution-create` — Multi-solution flow: narrow, deep-dive, iterate, create issues |
 | "set up project", "scaffold", "bootstrap" | `project-setup` |
 | "add Cursor hooks", "create hook", "beforeSubmitPrompt" | `meta-hook-create` |
 | "project polish", "community health", "make it professional" | `project-polish` |
@@ -88,12 +91,15 @@ unnecessary indirection.
 
 Current areas under `act-`:
 
-| Area       | Scope                                                      | Example                  |
-| ---------- | ---------------------------------------------------------- | ------------------------ |
-| `dev`      | Writing code: features, bugs, refactors, tests, benchmarks | `act-dev--scraper-write` |
-| `repo`     | Git and GitHub operations: PRs, issues, releases           | `act-repo-pr-create`     |
-| `security` | Security concerns: vulnerability handling, audits          | `act-security-vuln`      |
-| `pm`       | Project management: capture, triage, prioritization         | `act-pm`                 |
+| Area       | Scope                                                      | Example                     |
+| ---------- | ---------------------------------------------------------- | --------------------------- |
+| `dev`      | Writing code: features, bugs, refactors, tests, benchmarks | `act-dev--scraper-write`    |
+| `arch`     | Architecture and composition (1–2 layers above dev): new data kinds, processes, system boundaries; not implementation | `act-arch-solution-create` |
+| `repo`     | Git and GitHub operations: PRs, issues, releases           | `act-repo-pr-create`        |
+| `security` | Security concerns: vulnerability handling, audits         | `act-security-vuln`         |
+| `pm`       | Project management: capture, triage, prioritization       | `act-pm`                    |
+
+**Dev vs arch:** `dev` is code-level (e.g. "add a table to the DB"). `arch` is composition-level (e.g. "we need a new kind of data and independent processes"; "sales need a platform to aggregate intel on leads").
 
 Areas are more likely to evolve than prefixes -- new areas emerge when
 recurring work doesn't fit an existing one. For example, there's no `ops`
@@ -169,6 +175,9 @@ Reserved for managing the root repo. Do not use for skills that operate on impor
 | `act-repo-release`            | Prepare and publish a release                                                                 |
 | `act-security-vuln`           | Handle a security vulnerability report                                                        |
 | `act-pm`                     | Project manager: capture ideas, triage backlog, "what's next?", context restore. First local, then GitHub. |
+| `act-architect`             | Architect: design and break down large work into issues; hand off to PM for prioritization. Start with most straightforward chunk. |
+| `act-arch-solution-create`  | Architect-led: when expert produced multiple solutions — narrow with user, deep-dive, iterate, prioritize, create umbrella + work-package issues. |
+| `act-worker`               | Worker: execute from pool of GitHub issues; take one, implement via act-dev, close when done. Used for parallel execution after architect/PM handoff. |
 
 #### `meta-` -- Skills about skills
 
@@ -260,9 +269,18 @@ flowchart TD
     release["act-repo-release"]
     secvuln["act-security-vuln"]
     pm["act-pm<br/><i>Capture, triage, prioritize</i>"]
+    architect["act-architect<br/><i>Design, break down, create issues</i>"]
+    worker["act-worker<br/><i>Pool execution, close when done</i>"]
 
     release -->|"uses"| changelog
     pm -.->|"promote via"| issue
+    architect -.->|"creates via"| issue
+    architect -.->|"handoff"| pm
+    architect -.->|"pool for"| worker
+    pm -.->|"distribute to"| worker
+    worker -.->|"implements via"| dev
+    archsolution -.->|"specializes"| architect
+    archsolution -.->|"creates via"| issue
 
     %% ── Styling ──────────────────────────────────────────────────
     classDef orchestrator fill:#4a90d9,color:#fff,stroke:#2a6cb8
@@ -279,7 +297,7 @@ flowchart TD
     class scraper,scraperdisc,scraperintegrity,depup,pkgcreate,pkgmigrate specialization
     class setup,polish,polishbench,polishdocs project
     class discovery,skillcreate meta
-    class issue,release,secvuln,pm standalone
+    class issue,release,secvuln,pm,architect,worker,archsolution standalone
 ```
 
 ### Reading the diagram
@@ -332,3 +350,7 @@ flowchart TD
 
 - **`act-repo-release`** uses `act-dev-changelog` to ensure the changelog
   is up to date before publishing.
+
+- **`act-worker`** takes from a pool of GitHub issues (from architect or PM), implements
+  each via `act-dev`, and closes the issue when done. Enables parallel execution when
+  multiple workers take different issues from the same pool.

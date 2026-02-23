@@ -1,0 +1,191 @@
+/**
+ * Validates that all `.cursor/skills/../SKILL.md` use `### Phase N: Title` format
+ * for workflow steps. Catches:
+ * - Non-Phase step headings (e.g. ### 1. Step, ### Some step)
+ * - Duplicate phase numbers within a skill
+ *
+ * Regex for valid phase: ^### Phase (\d+)([ab])?: (.+)$
+ */
+
+import fs from 'node:fs/promises';
+import { join } from 'node:path';
+
+const SKILLS_DIR = '.cursor/skills';
+
+// matches `## Workflow` section heading
+const WORKFLOW_SECTION_REGEX = /^##\s+Workflow\s*$/;
+// Valid: ### Phase 1: Design, ### Phase 2a: Soft switch
+const PHASE_REGEX = /^### Phase (\d+)([ab])?: (.+)$/;
+
+export interface PhaseInfo {
+  key: string;
+  num: number;
+  suffix: string;
+  title: string;
+}
+
+/**
+ * Extracts the content from the start of the `## Workflow` section until the next `##` heading.
+ * Returns the section content as a string, or null if none. Stops scanning once the section ends.
+ */
+function extractWorkflowSection(content: string): string | null {
+  const lines = content.split('\n');
+  let current = '';
+  let inWorkflow = false;
+
+  for (const line of lines) {
+    if (!inWorkflow && WORKFLOW_SECTION_REGEX.test(line)) {
+      inWorkflow = true;
+      continue;
+    }
+    if (inWorkflow) {
+      // End of Workflow: next ## heading (### is still inside)
+      if (/^##\s+/.test(line) && !/^###/.test(line)) {
+        return current.trim() || null;
+      }
+      current += line + '\n';
+    }
+  }
+  return current.trim() || null;
+}
+
+/**
+ * Validates a single Workflow section's content for phase format.
+ * Returns a list of violation messages (empty if valid).
+ */
+function validateWorkflowContent(
+  workflowContent: string,
+  skillName: string
+): string[] {
+  const violations: string[] = [];
+  const seenPhases = new Set<string>();
+  const lines = workflowContent.split('\n');
+
+  for (const line of lines) {
+    // Only check ###-level headings
+    if (!line.startsWith('### ')) continue;
+
+    // Valid Phase format: extract number and optional a/b suffix
+    const phaseMatch = line.match(PHASE_REGEX);
+    if (phaseMatch) {
+      const [, num, suffix = ''] = phaseMatch;
+      const phaseKey = `${num}${suffix}`;
+      if (seenPhases.has(phaseKey)) {
+        violations.push(`  - Duplicate phase: Phase ${phaseKey}`);
+      } else {
+        seenPhases.add(phaseKey);
+      }
+      continue;
+    }
+    else {
+      violations.push(
+        `  - Non-Phase format: '${line.trim()}' (use ### Phase N: Title)`
+      );
+      continue;
+    }
+  }
+
+  return violations;
+}
+
+/**
+ * Extracts the list of phases from a Workflow section's content.
+ * Returns phases in the order they appear in the Workflow section.
+ */
+function extractPhasesFromWorkflow(workflowContent: string): PhaseInfo[] {
+  const phases: PhaseInfo[] = [];
+  const lines = workflowContent.split('\n');
+
+  // Extract phases from the Workflow section
+  for (const line of lines) {
+    if (!line.startsWith('### ')) continue;
+
+    // If we got here, we've got a `### Phase N: Title` line
+    const phaseMatch = line.match(PHASE_REGEX);
+    if (phaseMatch) {
+      const [, numStr, suffix = ''] = phaseMatch;
+      phases.push({
+        key: `${numStr}${suffix}`,
+        num: parseInt(numStr!, 10),
+        suffix,
+        title: phaseMatch[3]!.trim(),
+      });
+    }
+  }
+
+  return phases;
+}
+
+/**
+ * Loads the ordered phase list for each skill that has a Workflow section.
+ * Returns Map<skillName, PhaseInfo[]>.
+ */
+export async function getSkillPhasesMap(
+  skillsDir: string = SKILLS_DIR
+): Promise<Map<string, PhaseInfo[]>> {
+  const entries = await fs.readdir(skillsDir, { withFileTypes: true });
+  const skillDirs = entries.filter((e) => e.isDirectory()).map((e) => e.name);
+  const result = new Map<string, PhaseInfo[]>();
+
+  for (const skillName of skillDirs.sort()) {
+    const skillPath = join(skillsDir, skillName, 'SKILL.md');
+    let content: string;
+    try {
+      content = await fs.readFile(skillPath, 'utf-8');
+    } catch {
+      continue;
+    }
+
+    const workflowSection = extractWorkflowSection(content);
+    if (workflowSection === null) continue;
+
+    const phases = extractPhasesFromWorkflow(workflowSection);
+    if (phases.length > 0) {
+      result.set(skillName, phases);
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Main entry: discover all skills, extract Workflow sections, validate each.
+ * Throws on any violation so the runner exits with code 1.
+ */
+export default async function validateSkillPhases(): Promise<void> {
+  const entries = await fs.readdir(SKILLS_DIR, { withFileTypes: true });
+  const skillDirs = entries.filter((e) => e.isDirectory()).map((e) => e.name);
+
+  const failures: { skillName: string; violations: string[] }[] = [];
+
+  for (const skillName of skillDirs.sort()) {
+    const skillPath = join(SKILLS_DIR, skillName, 'SKILL.md');
+    let content: string;
+    try {
+      content = await fs.readFile(skillPath, 'utf-8');
+    } catch {
+      continue; // No SKILL.md or unreadable — skip
+    }
+
+    const workflowSection = extractWorkflowSection(content);
+    if (workflowSection === null) continue; // No Workflow section — skip (e.g. meta-skill-create has placeholders)
+
+    const violations = validateWorkflowContent(workflowSection, skillName);
+
+    if (violations.length > 0) {
+      failures.push({ skillName, violations });
+    }
+  }
+
+  if (failures.length > 0) {
+    for (const { skillName, violations } of failures) {
+      console.error(`FAIL: ${skillName}`);
+      console.error(violations.join('\n'));
+    }
+    throw new Error(
+      'Validation failed. Fix the violations above.\nFormat required: ### Phase N: Title or ### Phase Na: Title'
+    );
+  }
+
+  console.log('All skills pass phase format validation.');
+}

@@ -46,6 +46,12 @@ Trigger this skill when:
 
 ## Workflow
 
+**Format:** All skills MUST use `### Phase N: Title` for each workflow step. Enforced by validation script in CI.
+
+**Skill-eval (meta-evaluation):** From the project root, run `./scripts/skill-eval.sh start {session_id} root-gitmodule-setup` at workflow start (session_id is injected at session start—look for "Session ID (for skill-eval)" in context). Capture the printed `skill_id` from the terminal output. Preserve both `session_id` and `skill_id` for the duration—if context gets summarized, ensure these IDs are retained. After each phase (or when skipping a phase), run `./scripts/skill-eval.sh complete {skill_id} {phase_no}` or `./scripts/skill-eval.sh complete {skill_id} {phase_no} --skipped` from the project root.
+
+Create todo tasks for each phase before proceeding.
+
 ### Phase 1: Determine intent
 
 Ask the user which operation they want:

@@ -1,10 +1,14 @@
 {
   "version": 1,
   "hooks": {
+    "sessionStart": [
+      { "command": ".cursor/hooks/session-init.sh" }
+    ],
     "beforeSubmitPrompt": [
-      {
-        "command": ".cursor/hooks/capture-prompts.sh"
-      }
-    ]
+      { "command": ".cursor/hooks/capture-prompts.sh" }
+    ],
+    "subagentStop": [{ "command": ".cursor/hooks/log-agents.sh" }],
+    "postToolUse": [{ "command": ".cursor/hooks/log-tools.sh" }],
+    "postToolUseFailure": [{ "command": ".cursor/hooks/log-tools.sh" }]
   }
 }

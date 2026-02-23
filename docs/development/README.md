@@ -36,12 +36,49 @@ agents/                    ← root repo
 
 ## Root commands
 
-The root `package.json` is minimal. No build, test, or lint at root. All development commands live inside submodules. Run them from the relevant submodule directory:
+The root `package.json` is minimal. One validation script runs at root; all other development commands live inside submodules.
 
 ```bash
+pnpm run validate   # Validate skill phase format (see below)
+pnpm run preview    # Skill-eval dashboard (heatmap + line chart) at http://localhost:3040
 cd crawlee-one && pnpm build
 cd crawlee-one && pnpm test
 ```
+
+### Skill-eval dashboard
+
+`pnpm run preview` starts a local web server at http://localhost:3040. The **Skills** page shows:
+
+- **Heatmap** — skill × phase; each cell is 0–100% success rate (green = 100%, red = 0%)
+- **Line chart** — each skill over time; Y = 0–100% (completed phases / expected phases)
+
+Data is read from `.cursor/logs/skills-eval/`. Use `-p 3000` to change the port.
+
+**Full setup guide:** [docs/skill-usage-tracking/](../skill-usage-tracking/README.md)
+
+![skill-eval dashboard](../skill-usage-tracking/skill-eval-dashboard.png)
+
+### Skill phase validation
+
+`pnpm run validate` runs `scripts/validate/index.ts`, which discovers and runs all validation scripts. The main one is **skill-phases** (see `scripts/validate/skill-phases.ts`).
+
+**What it checks:** Every `###` heading under `## Workflow` in `.cursor/skills/*/SKILL.md` must use the format:
+
+```
+### Phase N: Title
+### Phase Na: Title   (optional a/b suffix for sub-phases like 2a, 8b)
+```
+
+**Regex:** `^### Phase (\d+)([ab])?: (.+)$`
+
+**Violations:**
+
+- **Non-Phase format** — e.g. `### 1. Step`, `### Adding a new dependency` (use `### Phase 1: Step`, `### Phase 1: Adding a new dependency` instead)
+- **Duplicate phases** — Two `### Phase 2: ...` in the same skill
+
+**Exempt:** Subheadings like `### Reference:`, `### Output:`, `### Format:` are metadata, not workflow steps, and are not flagged.
+
+**Design:** [docs/design-decisions/meta-skill-evaluation/](../design-decisions/meta-evaluation/) (phase format enforcement is a prerequisite for skill-eval tracking).
 
 ## Adding and removing projects
 
@@ -55,11 +92,17 @@ For AI-assisted setup, use the [`root-gitmodule-setup`](../../.cursor/skills/roo
 
 ## Editing agents, skills, rules
 
-- **Agents** — `.cursor/agents/*.md` — Role definitions and discovery prompts.
+- **Agents** — `.cursor/agents/*.md` — Role definitions and discovery prompts. See [agents vs skills](../agents-and-skills.md) for how they differ from skills.
 - **Rules** — `.cursor/rules/*.md` — Always-applied guidance (coding standards, conventions).
 - **Skills** — `.cursor/skills/*/SKILL.md` — Reusable workflows. See [.cursor/skills/README.md](../../.cursor/skills/README.md).
 
 Changes apply to all submodules immediately. No build step.
+
+## CI
+
+`.github/workflows/tests.yml` runs on every push and PR to `main`:
+
+- **validate** — Runs `pnpm run validate` (skill phase format, any future validators)
 
 ## Branch protection
 
@@ -71,7 +114,7 @@ gh api repos/JuroOravec/agents/branches/main/protection --method PUT \
 {
   "required_status_checks": {
     "strict": true,
-    "checks": []
+    "checks": [{"context": "validate"}]
   },
   "enforce_admins": false,
   "required_pull_request_reviews": {
@@ -82,10 +125,11 @@ gh api repos/JuroOravec/agents/branches/main/protection --method PUT \
 EOF
 ```
 
-There is no CI at root, so `checks` is empty. Add CI job names when/if CI is added.
+CI job name for branch protection: `validate`.
 
 ## Further reading
 
+- [docs/agents-and-skills.md](../agents-and-skills.md) — Agent vs skill: persona vs procedure
 - [docs/project-setup.md](../project-setup.md) — Submodule workflows, soft vs hard switching
 - [root-gitmodule-setup skill](../../.cursor/skills/root-gitmodule-setup/SKILL.md) — AI-assisted add/remove/switch
 - [Skills README](../../.cursor/skills/README.md) — Overview of available skills

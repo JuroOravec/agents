@@ -1,6 +1,15 @@
 {
   "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
   "devDependencies": {
-    "@types/node": "^22"
+    "@types/express": "^4",
+    "@types/node": "^22",
+    "express": "^4",
+    "tsx": "^4"
+  },
+  "scripts": {
+    "preview": "tsx scripts/preview/index.ts",
+    "validate": "tsx scripts/validate/index.ts"
   }
 }
