@@ -107,6 +107,7 @@ Update these places so the agent is discoverable and wired in:
 
 ## Verification
 
+- [ ] Best practices were researched before proposing capabilities.
 - [ ] Discovery prompt was used; user validated proposed capabilities.
 - [ ] Triggers ("When to use") are documented in both agent and skill.
 - [ ] Agent has persona + behaviors; skill has workflow phases.

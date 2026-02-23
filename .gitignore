@@ -1,3 +1,21 @@
 node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Cursor
 .cursor/debug.log
 .cursor/logs/
+
+# Environment
+.env
+.env.*
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
