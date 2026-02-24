@@ -141,7 +141,7 @@ Track subagent runs and tool invocations in the agents repo, similar to skill us
 
 ### 3.4 hooks.json registration
 
-Add entries for `subagentStop`, `postToolUse`, `postToolUseFailure`. See [meta-hook-create](/.cursor/skills/meta-hook-create/SKILL.md) for Cursor hook registration format.
+Add entries for `subagentStop`, `postToolUse`, `postToolUseFailure`. See [meta-hook-create](/.cursor/skills/meta/hook-create/SKILL.md) for Cursor hook registration format.
 
 ---
 

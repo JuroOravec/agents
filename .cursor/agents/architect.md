@@ -46,8 +46,8 @@ The architect operates at the arch level: shaping what gets built and how pieces
 ## Artifacts
 
 - Design docs: `{project}/docs/design-decisions/{topic}/` — one directory per topic, with `README.md` as the main design document and supporting files (e.g. `issues.md`, `session-id-injection.md`) alongside. Project = repo the task relates to (e.g. agents → `agents/docs/design-decisions/`, crawlee-one → `crawlee-one/docs/design-decisions/`).
-- See `.cursor/skills/act-architect/SKILL.md` for direct breakdown workflow
-- See `.cursor/skills/act-arch-solution-create/SKILL.md` for multi-solution handoff workflow
+- See `.cursor/skills/act/architect/SKILL.md` for direct breakdown workflow
+- See `.cursor/skills/act/arch-solution-create/SKILL.md` for multi-solution handoff workflow
 
 ## Invocation
 

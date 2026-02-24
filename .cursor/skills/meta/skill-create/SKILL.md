@@ -35,19 +35,27 @@ The key points for creating a new skill:
 
 ## Directory structure
 
-Each skill lives in its own directory under `.cursor/skills/`:
+Skills are grouped by prefix into folders. Each skill lives in its own directory:
 
 ```
 .cursor/skills/
-  meta-skill-create/             # This skill (conventions)
-    SKILL.md
-  project-setup/               # project- prefix: set-and-forget
-    SKILL.md
-    package-json.md            # Supporting resource files
-    typescript-build.md
+  act/                         # act- prefix: reactive
+    dev/
+    dev--scraper-write/
+    repo-pr-create/
     ...
-  act-security-vuln/           # act- prefix: reactive
-    SKILL.md
+  project/                     # project- prefix: set-and-forget
+    setup/
+    setup-monorepo/
+    polish/
+    ...
+  meta/                        # meta- prefix: self-referential
+    skill-create/              # This skill (conventions)
+    agent-create/
+    ...
+  root/                        # root- prefix: root-repo management
+    project-setup/
+    ...
 ```
 
 ### Required files
@@ -111,7 +119,7 @@ Before executing, instruct the agent to research best practices and state-of-the
 
 ### Conventions within SKILL.md
 
-- **Frontmatter `name`** must match the directory name.
+- **Frontmatter `name`** is the full skill name (e.g. `act-dev`, `project-polish-docs`). Used for references and skill-eval.
 - **Frontmatter `description`** must match the description registered in Cursor's skill config (the `description` field in the skill's `available_skills` entry).
 - **Phases** are numbered sequentially. Each phase is a discrete unit of work. Workflow MUST use `### Phase N: Title` for every step (e.g. `### Phase 1: Design`, `### Phase 2a: Soft switch`). Do not use `### 1. Step` or other formats. Enforced by CI.
 - **Cross-references** to other skills use backtick-quoted names: ``see the `project-polish` skill``.
@@ -139,7 +147,7 @@ When creating a new skill:
 4. Pick the specific name using object-action pattern. Omit the verb if unambiguous.
 5. Check if this skill specializes an existing `act-{area}` skill. If yes, use `act-{area}--{object-action}`.
 6. If the skill is experimental (value or shape still being validated), append `--exp` to the name. This signals it may be removed, reworked, or graduated into a stable skill later.
-7. Create the directory and `SKILL.md`.
+7. Create the directory under the appropriate prefix folder (`act/`, `project/`, `meta/`, `root/`) and add `SKILL.md`. The directory name is the skill name minus the prefix (e.g. `act-dev` → `act/dev/`, `project-polish-docs` → `project/polish-docs/`).
 8. Register the skill in Cursor's skill config.
 9. If the skill should always be active, add it to `.cursor/rules/always-apply-skills.md`.
 10. Update `.cursor/skills/README.md` -- add the skill to the catalog table; add to the diagram if it has connections to other skills; **add to the Common commands table** (see "Common commands" section) if the skill has user-triggerable phrases.
@@ -149,7 +157,7 @@ When creating a new skill:
 When a skill produces **artifacts** (e.g. an analysis markdown file) or **tangible outputs** (code changes):
 
 1. **Verify in a fresh chat** — Ask the agent to carry out a representative task using the skill. Instruct it to place outputs inside the skill's directory.
-2. **Output placement** — New files go in the skill directory (e.g. `act-dev--scraper-discovery/step3-analysis-example.md`). For code changes, capture before/after in a file under the skill directory.
+2. **Output placement** — New files go in the skill directory (e.g. `act/dev--scraper-discovery/step3-analysis-example.md`). For code changes, capture before/after in a file under the skill directory.
 3. **Link from SKILL.md** — Add a link to the example so users and the agent can see what "good" looks like.
 4. **Iterate** — If the output is incomplete or wrong shape, refine the skill prompt and re-run verification until it meets expectations.
 
@@ -162,4 +170,4 @@ using this as the brief @SKILL.md (67-69), and save it to `step3-analysis-profes
 next to the skill file.
 ```
 
-Example: [`act-dev--scraper-discovery/step3-analysis-profesia-sk.md`](../act-dev--scraper-discovery/step3-analysis-profesia-sk.md) — Step 3 analysis artifact produced by the scraper-discovery skill.
+Example: [`act/dev--scraper-discovery/step3-analysis-profesia-sk.md`](../act/dev--scraper-discovery/step3-analysis-profesia-sk.md) — Step 3 analysis artifact produced by the scraper-discovery skill.

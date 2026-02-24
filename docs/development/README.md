@@ -87,13 +87,13 @@ See [docs/project-setup.md](../project-setup.md) for:
 - Removing a nested project clone
 - Soft switching (toggle `.gitignore` to focus on 1–2 projects without removing)
 
-For AI-assisted setup, use the [`root-project-setup`](../../.cursor/skills/root-project-setup/SKILL.md) skill.
+For AI-assisted setup, use the [`root-project-setup`](../../.cursor/skills/root/project-setup/SKILL.md) skill.
 
 ## Editing agents, skills, rules
 
 - **Agents** — `.cursor/agents/*.md` — Role definitions and discovery prompts. See [agents vs skills](../agents-and-skills.md) for how they differ from skills.
 - **Rules** — `.cursor/rules/*.md` — Always-applied guidance (coding standards, conventions).
-- **Skills** — `.cursor/skills/*/SKILL.md` — Reusable workflows. See [.cursor/skills/README.md](../../.cursor/skills/README.md).
+- **Skills** — `.cursor/skills/{act,project,meta,root}/*/SKILL.md` — Reusable workflows, grouped by prefix. See [.cursor/skills/README.md](../../.cursor/skills/README.md).
 
 Changes apply to all nested projects immediately. No build step.
 
@@ -130,5 +130,5 @@ CI job name for branch protection: `validate`.
 
 - [docs/agents-and-skills.md](../agents-and-skills.md) — Agent vs skill: persona vs procedure
 - [docs/project-setup.md](../project-setup.md) — Nested clone workflows, soft vs hard switching
-- [root-project-setup skill](../../.cursor/skills/root-project-setup/SKILL.md) — AI-assisted add/remove/switch
+- [root-project-setup skill](../../.cursor/skills/root/project-setup/SKILL.md) — AI-assisted add/remove/switch
 - [Skills README](../../.cursor/skills/README.md) — Overview of available skills

@@ -34,4 +34,4 @@ You are a worker. Your job is to implement development work from a pool of GitHu
 
 - **Manual:** User says "worker", "implement from pool", "take issues #5 #6 #7", "workers go", or similar.
 - **From architect/PM:** After architect creates issues and PM prioritizes, user says "distribute to workers" or "implement these" — worker takes from that pool.
-- **Skill:** See `.cursor/skills/act-worker/SKILL.md` for full workflow.
+- **Skill:** See `.cursor/skills/act/worker/SKILL.md` for full workflow.

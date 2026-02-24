@@ -95,7 +95,7 @@ The agent defines *who* and *when*. The skill defines *how* (step-by-step).
 ### Phase 5: Create files
 
 1. `.cursor/agents/{name}.md` — Agent persona (see [agent-template.md](agent-template.md)).
-2. `.cursor/skills/act-{name}/SKILL.md` — Skill workflow. Follow `meta-skill-create` conventions.
+2. `.cursor/skills/act/{name}/SKILL.md` — Skill workflow. Follow `meta-skill-create` conventions.
 3. `.cursor/skills/act-{name}/*.md` — Templates, supporting files as needed.
 
 ### Phase 6: Update codebase

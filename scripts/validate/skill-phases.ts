@@ -8,9 +8,15 @@
  */
 
 import fs from 'node:fs/promises';
+import path from 'node:path';
 import { join } from 'node:path';
 
 const SKILLS_DIR = '.cursor/skills';
+
+/** Derive skill name from path: act/dev -> act-dev, project/polish-docs -> project-polish-docs */
+function pathToSkillName(relativePath: string): string {
+  return relativePath.replace(/\//g, '-');
+}
 
 // matches `## Workflow` section heading
 const WORKFLOW_SECTION_REGEX = /^##\s+Workflow\s*$/;
@@ -117,21 +123,43 @@ function extractPhasesFromWorkflow(workflowContent: string): PhaseInfo[] {
 }
 
 /**
+ * Recursively finds all SKILL.md files under skillsDir.
+ * Returns { relativePath, absolutePath } pairs.
+ */
+async function findSkillFiles(
+  dir: string,
+  baseDir: string,
+  acc: { relativePath: string; absolutePath: string }[] = []
+): Promise<{ relativePath: string; absolutePath: string }[]> {
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  for (const e of entries) {
+    const fullPath = join(dir, e.name);
+    const relativePath = path.relative(baseDir, fullPath);
+    if (e.isDirectory() && !e.name.startsWith('.')) {
+      await findSkillFiles(fullPath, baseDir, acc);
+    } else if (e.isFile() && e.name === 'SKILL.md') {
+      acc.push({ relativePath: path.dirname(relativePath), absolutePath: fullPath });
+    }
+  }
+  return acc;
+}
+
+/**
  * Loads the ordered phase list for each skill that has a Workflow section.
  * Returns Map<skillName, PhaseInfo[]>.
+ * Skill names are derived from path (act/dev -> act-dev).
  */
 export async function getSkillPhasesMap(
   skillsDir: string = SKILLS_DIR
 ): Promise<Map<string, PhaseInfo[]>> {
-  const entries = await fs.readdir(skillsDir, { withFileTypes: true });
-  const skillDirs = entries.filter((e) => e.isDirectory()).map((e) => e.name);
+  const skillFiles = await findSkillFiles(skillsDir, skillsDir);
   const result = new Map<string, PhaseInfo[]>();
 
-  for (const skillName of skillDirs.sort()) {
-    const skillPath = join(skillsDir, skillName, 'SKILL.md');
+  for (const { relativePath, absolutePath } of skillFiles.sort((a, b) => a.relativePath.localeCompare(b.relativePath))) {
+    const skillName = pathToSkillName(relativePath);
     let content: string;
     try {
-      content = await fs.readFile(skillPath, 'utf-8');
+      content = await fs.readFile(absolutePath, 'utf-8');
     } catch {
       continue;
     }
@@ -149,20 +177,18 @@ export async function getSkillPhasesMap(
 }
 
 /**
- * Main entry: discover all skills, extract Workflow sections, validate each.
+ * Main entry: discover all skills recursively, extract Workflow sections, validate each.
  * Throws on any violation so the runner exits with code 1.
  */
 export default async function validateSkillPhases(): Promise<void> {
-  const entries = await fs.readdir(SKILLS_DIR, { withFileTypes: true });
-  const skillDirs = entries.filter((e) => e.isDirectory()).map((e) => e.name);
-
+  const skillFiles = await findSkillFiles(SKILLS_DIR, SKILLS_DIR);
   const failures: { skillName: string; violations: string[] }[] = [];
 
-  for (const skillName of skillDirs.sort()) {
-    const skillPath = join(SKILLS_DIR, skillName, 'SKILL.md');
+  for (const { relativePath, absolutePath } of skillFiles.sort((a, b) => a.relativePath.localeCompare(b.relativePath))) {
+    const skillName = pathToSkillName(relativePath);
     let content: string;
     try {
-      content = await fs.readFile(skillPath, 'utf-8');
+      content = await fs.readFile(absolutePath, 'utf-8');
     } catch {
       continue; // No SKILL.md or unreadable — skip
     }

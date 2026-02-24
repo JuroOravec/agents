@@ -7,7 +7,7 @@ description: Create skills from an existing project's patterns. Use when introdu
 
 When an agent is introduced to a new project, it often ignores already-existing patterns — leading to corrections and friction. This skill guides you to **discover project patterns and capture them as skills** before or during development, so the agent follows established conventions from the start.
 
-Before creating skills, read `.cursor/skills/meta-skill-create/SKILL.md` for naming, structure, and directory conventions in this project.
+Before creating skills, read `.cursor/skills/meta/skill-create/SKILL.md` for naming, structure, and directory conventions in this project.
 
 **Example output:** For a full run (analysis → candidates → skills) on a real project, see [example-output-cbc-website.md](example-output-cbc-website.md).
 

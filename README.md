@@ -70,7 +70,7 @@ project-a/
 
 ### 4. Or let the AI do it
 
-I added a [`root-project-setup`](./.cursor/skills/root-project-setup/SKILL.md) skill that makes this trivial: ask your AI to "add a project", "remove a project", or "switch projects", and it walks you through the nested-clone workflow, including asking whether you want soft or hard switch when it's unclear.
+I added a [`root-project-setup`](./.cursor/skills/root/project-setup/SKILL.md) skill that makes this trivial: ask your AI to "add a project", "remove a project", or "switch projects", and it walks you through the nested-clone workflow, including asking whether you want soft or hard switch when it's unclear.
 
 See [docs/project-setup.md](docs/project-setup.md) for the full guide.
 

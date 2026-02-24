@@ -12,6 +12,19 @@ Skill, agents, and rules are managed as separate repo - a single source of truth
 
 **Language focus:** These skills are currently tuned for Node.js/TypeScript projects (npm, pnpm, Vitest, etc.). Support for Python and Rust may be added in the future.
 
+### Folder structure
+
+Skills are grouped by prefix into folders for easier navigation:
+
+| Folder    | Prefix     | Example skills                                |
+| --------- | ---------- | --------------------------------------------- |
+| `act/`    | act-       | dev, dev--scraper-write, pm, repo-pr-create     |
+| `project/`| project-   | setup, polish, polish-docs                     |
+| `meta/`   | meta-      | skill-create, agent-create, hook-create        |
+| `root/`   | root-      | project-setup                                 |
+
+The skill *name* is still e.g. `act-dev`; only the directory path reflects the grouping.
+
 ## Common commands
 
 Natural phrases that trigger skills. Say these in chat to invoke workflows.

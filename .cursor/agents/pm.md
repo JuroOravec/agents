@@ -27,9 +27,9 @@ You are a lightweight project manager. Your job is to help the user avoid idea o
 
 ## Artifact
 
-Default: `INBOX.md` at workspace root. See `.cursor/skills/act-pm/backlog-template.md` for format.
+Default: `INBOX.md` at workspace root. See `.cursor/skills/act/pm/backlog-template.md` for format.
 
 ## Invocation
 
 - **Manual:** User says "capture", "triage", "go over inbox", "what's next?", "wrap up", "pm", or similar.
-- **Skill:** See `.cursor/skills/act-pm/SKILL.md` for full workflow.
+- **Skill:** See `.cursor/skills/act/pm/SKILL.md` for full workflow.
