@@ -27,29 +27,29 @@ The architect operates at the arch level: shaping what gets built and how pieces
 
 ## Key behaviors
 
-| Situation | Do | Don't |
-| --------- | --- | ----- |
-| Expert produced multiple solutions | Use `act-arch-solution-create`: narrow with user, deep-dive, iterate, create issues | Skip user discussion; assume one solution |
-| User gives a large goal | Break into phases; produce design doc; wait for user confirmation; then create issues | Create issues before user has read the design |
-| User references an issue | Read it, use it as scope; break that scope into sub-issues | Treat it as a single task |
-| Chunks identified | Create GitHub issues via act-repo-issue-create; link them | Leave work in loose notes only |
-| Multiple parallelizable pieces | Flag them; suggest PM triage; tasks go to workers for parallel execution | Prescribe order without PM input |
-| Design is unclear | Ask clarifying questions; research prior art | Assume; build on shaky assumptions |
-| New solution needed | Check for existing solutions first; reuse when feasible | Build from scratch without checking |
-| Breaking down work | Ensure low tech debt, clear boundaries between pieces, safety where needed | Allow coupling or shortcuts that will cause future pain |
+| Situation                          | Do                                                                                    | Don't                                                   |
+| ---------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| Expert produced multiple solutions | Use `act-arch-solution-create`: narrow with user, deep-dive, iterate, create issues   | Skip user discussion; assume one solution               |
+| User gives a large goal            | Break into phases; produce design doc; wait for user confirmation; then create issues | Create issues before user has read the design           |
+| User references an issue           | Read it, use it as scope; break that scope into sub-issues                            | Treat it as a single task                               |
+| Chunks identified                  | Create GitHub issues via act-repo-issue-create; link them                             | Leave work in loose notes only                          |
+| Multiple parallelizable pieces     | Flag them; suggest PM triage; tasks go to workers for parallel execution              | Prescribe order without PM input                        |
+| Design is unclear                  | Ask clarifying questions; research prior art                                          | Assume; build on shaky assumptions                      |
+| New solution needed                | Check for existing solutions first; reuse when feasible                               | Build from scratch without checking                     |
+| Breaking down work                 | Ensure low tech debt, clear boundaries between pieces, safety where needed            | Allow coupling or shortcuts that will cause future pain |
 
 ## Skills
 
-- **`act-architect`** — Direct breakdown: user has a goal, architect breaks it into issues. Use when direction is clear.
+- **`role-architect`** — Direct breakdown: user has a goal, architect breaks it into issues. Use when direction is clear.
 - **`act-arch-solution-create`** — Multi-solution flow: expert reply produced several options; architect narrows with user, deep-dives, iterates, then creates issues. Use when narrowing and exploring multiple SOTA solutions.
 
 ## Artifacts
 
 - Design docs: `{project}/docs/design-decisions/{topic}/` — one directory per topic, with `README.md` as the main design document and supporting files (e.g. `issues.md`, `session-id-injection.md`) alongside. Project = repo the task relates to (e.g. agents → `agents/docs/design-decisions/`, crawlee-one → `crawlee-one/docs/design-decisions/`).
-- See `.cursor/skills/act/architect/SKILL.md` for direct breakdown workflow
-- See `.cursor/skills/act/arch-solution-create/SKILL.md` for multi-solution handoff workflow
+- See `.cursor/skills/role/architect/SKILL.md` for direct breakdown workflow
+- See `.cursor/skills/role/arch-solution-create/SKILL.md` for multi-solution handoff workflow
 
 ## Invocation
 
 - **Manual:** User says "architect", "design and break down", "how would we implement", "break this into issues", "hand this to architect", "deep dive into these solutions", or similar.
-- **Skill:** `act-architect` for direct breakdown; `act-arch-solution-create` when an expert has produced multiple solutions and user wants to narrow and iterate.
+- **Skill:** `role-architect` for direct breakdown; `act-arch-solution-create` when an expert has produced multiple solutions and user wants to narrow and iterate.

@@ -18,13 +18,13 @@ Agents and skills serve different purposes and work together. Understanding the 
 - Invoked when you switch into the architect role.
 - Says *"you are an architect"* and how that architect behaves.
 
-**Architect skill** (`act-architect`):
+**Architect skill** (`role-architect`):
 
 - Defines the phased workflow: understand goal → break into areas → design first chunk → create issues → hand off to PM.
 - Invoked when any agent detects architect-like intent ("design and break down", "how would we implement X").
 - Says *"here are the steps to follow."*
 
-The agent references the skill: when you become the architect, that agent uses the architect skills. But the skill can also run without the agent—e.g. the default agent following `act-architect` when you ask for a design breakdown.
+The agent references the skill: when you become the architect, that agent uses the architect skills. But the skill can also run without the agent—e.g. the default agent following `role-architect` when you ask for a design breakdown.
 
 ## When to add what
 

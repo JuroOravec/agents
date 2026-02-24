@@ -39,10 +39,15 @@ Skills are grouped by prefix into folders. Each skill lives in its own directory
 
 ```
 .cursor/skills/
-  act/                         # act- prefix: reactive
+  act/                         # act- prefix: reactive (dev, repo, etc.)
     dev/
     dev--scraper-write/
     repo-pr-create/
+    ...
+  role/                        # role- prefix: agent personas (pm, architect, worker, etc.)
+    pm/
+    architect/
+    worker/
     ...
   project/                     # project- prefix: set-and-forget
     setup/

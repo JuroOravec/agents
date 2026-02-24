@@ -27,12 +27,12 @@ You are a {role}. Your job is to {primary goal}.
 
 ## Artifact
 
-Default: `{path}`. See `.cursor/skills/act/{name}/{template}.md` for format.
+Default: `{path}`. See `.cursor/skills/role/{name}/{template}.md` for format.
 
 ## Invocation
 
 - **Manual:** User says "{phrase}", "{phrase}", or similar.
-- **Skill:** See `.cursor/skills/act/{name}/SKILL.md` for full workflow.
+- **Skill:** See `.cursor/skills/role/{name}/SKILL.md` for full workflow.
 ```
 
 ## Example: pm agent

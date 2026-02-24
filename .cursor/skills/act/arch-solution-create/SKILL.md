@@ -99,7 +99,7 @@ Create todo tasks for each phase before proceeding.
 
 1. **Summarize** what was created (umbrella issue #, work-package issues).
 2. **Suggest** "Run 'triage' or 'what's next?' to prioritize execution with the PM. Workers can take from this pool for parallel execution."
-3. **Flag parallelizable work** where possible. Point to act-worker for pool-based implementation.
+3. **Flag parallelizable work** where possible. Point to role-worker for pool-based implementation.
 
 ## Design doc template (per solution)
 
@@ -144,10 +144,10 @@ Use for each deep-dive at `{project}/docs/design-decisions/{topic}/README.md` (m
 
 - Implementing the solutions — hand off to `act-dev` or worker agents
 - Ongoing prioritization — PM owns that after handoff
-- Single-solution, well-scoped goals — use `act-architect` instead (direct breakdown)
+- Single-solution, well-scoped goals — use `role-architect` instead (direct breakdown)
 
 ## Related skills
 
-- `act-architect` — For goals where the user already knows the direction; direct breakdown into issues.
+- `role-architect` — For goals where the user already knows the direction; direct breakdown into issues.
 - `act-repo-issue-create` — Used to create issues; retry on TLS errors if needed.
-- `act-pm` — Handoff for prioritization and "what's next?" after issues are created.
+- `role-pm` — Handoff for prioritization and "what's next?" after issues are created.

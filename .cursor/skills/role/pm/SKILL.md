@@ -1,5 +1,5 @@
 ---
-name: act-pm
+name: role-pm
 description: Project manager agent for capture, triage, and prioritization. Use when capturing ideas, going over inbox (elevate/drop/prioritize), triaging backlog, asking "what's next?", or restoring context. First local, then GitHub — never auto-create issues.
 ---
 
@@ -30,7 +30,7 @@ See [backlog-template.md](backlog-template.md) for the format. Create the file i
 
 **Format:** All skills MUST use `### Phase N: Title` for each workflow step. Enforced by validation script in CI.
 
-**Skill-eval (meta-evaluation):** From the project root, run `./scripts/skill-eval.sh start {conversation_id} act-pm` at workflow start (conversation_id is injected at session start—look for "Conversation ID (for skill-eval)" in context). Capture the printed `skill_id` from the terminal output. Preserve both `conversation_id` and `skill_id` for the duration—if context gets summarized, ensure these IDs are retained. After each phase (or when skipping a phase), run `./scripts/skill-eval.sh complete {skill_id} {phase_no}` or `./scripts/skill-eval.sh complete {skill_id} {phase_no} --skipped` from the project root.
+**Skill-eval (meta-evaluation):** From the project root, run `./scripts/skill-eval.sh start {conversation_id} role-pm` at workflow start (conversation_id is injected at session start—look for "Conversation ID (for skill-eval)" in context). Capture the printed `skill_id` from the terminal output. Preserve both `conversation_id` and `skill_id` for the duration—if context gets summarized, ensure these IDs are retained. After each phase (or when skipping a phase), run `./scripts/skill-eval.sh complete {skill_id} {phase_no}` or `./scripts/skill-eval.sh complete {skill_id} {phase_no} --skipped` from the project root.
 
 Create todo tasks for each phase before proceeding.
 

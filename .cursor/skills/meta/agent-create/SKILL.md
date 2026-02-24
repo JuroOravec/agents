@@ -87,16 +87,16 @@ If the agent produces or maintains a file:
 | File | Purpose |
 | ---- | ------- |
 | **`agents/{name}.md`** | Persona, role, key behaviors (do/don't table), invocation. Short and identity-focused. |
-| **`skills/act-{name}/SKILL.md`** | Workflow phases, file paths, verification, out of scope. Procedural and detailed. |
-| **`skills/act-{name}/*.md`** | Templates, reference docs (e.g. `backlog-template.md`). |
+| **`skills/role/{name}/SKILL.md`** | Workflow phases, file paths, verification, out of scope. Procedural and detailed. Agent role skills use `role-` prefix. |
+| **`skills/role/{name}/*.md`** | Templates, reference docs (e.g. `backlog-template.md`). |
 
 The agent defines *who* and *when*. The skill defines *how* (step-by-step).
 
 ### Phase 5: Create files
 
 1. `.cursor/agents/{name}.md` — Agent persona (see [agent-template.md](agent-template.md)).
-2. `.cursor/skills/act/{name}/SKILL.md` — Skill workflow. Follow `meta-skill-create` conventions.
-3. `.cursor/skills/act-{name}/*.md` — Templates, supporting files as needed.
+2. `.cursor/skills/role/{name}/SKILL.md` — Skill workflow. Follow `meta-skill-create` conventions. Agent role skills live in `skills/role/` with `role-` prefix.
+3. `.cursor/skills/role/{name}/*.md` — Templates, supporting files as needed.
 
 ### Phase 6: Update codebase
 

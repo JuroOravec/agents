@@ -1,5 +1,5 @@
 ---
-name: act-worker
+name: role-worker
 description: Execute development work from a pool of GitHub issues. Take one at a time, implement via act-dev, close the issue when done. Use when architect/PM has produced a backlog of issues to implement in parallel.
 ---
 
@@ -20,7 +20,7 @@ Trigger this skill when:
 
 **Format:** All skills MUST use `### Phase N: Title` for each workflow step. Enforced by validation script in CI.
 
-**Skill-eval (meta-evaluation):** From the project root, run `./scripts/skill-eval.sh start {conversation_id} act-worker` at workflow start (conversation_id is injected at session start—look for "Conversation ID (for skill-eval)" in context). Capture the printed `skill_id` from the terminal output. Preserve both `conversation_id` and `skill_id` for the duration—if context gets summarized, ensure these IDs are retained. After each phase (or when skipping a phase), run `./scripts/skill-eval.sh complete {skill_id} {phase_no}` or `./scripts/skill-eval.sh complete {skill_id} {phase_no} --skipped` from the project root.
+**Skill-eval (meta-evaluation):** From the project root, run `./scripts/skill-eval.sh start {conversation_id} role-worker` at workflow start (conversation_id is injected at session start—look for "Conversation ID (for skill-eval)" in context). Capture the printed `skill_id` from the terminal output. Preserve both `conversation_id` and `skill_id` for the duration—if context gets summarized, ensure these IDs are retained. After each phase (or when skipping a phase), run `./scripts/skill-eval.sh complete {skill_id} {phase_no}` or `./scripts/skill-eval.sh complete {skill_id} {phase_no} --skipped` from the project root.
 
 Create todo tasks for each phase before proceeding.
 
@@ -85,10 +85,10 @@ Never leave a completed implementation's issue dangling.
 - Creating GitHub issues — see `act-repo-issue-create` or architect skills
 - Prioritization of the pool — PM owns that
 - Single ad-hoc implementation without pool — use `act-dev` directly
-- Architect-level design — see `act-architect`, `act-arch-solution-create`
+- Architect-level design — see `role-architect`, `act-arch-solution-create`
 
 ## Related skills
 
 - `act-dev` — Used for each issue's implementation; includes close-issue responsibility.
-- `act-pm` — Curates backlog; workers take from it when user wants execution.
-- `act-architect` / `act-arch-solution-create` — Create the issues that become the pool.
+- `role-pm` — Curates backlog; workers take from it when user wants execution.
+- `role-architect` / `act-arch-solution-create` — Create the issues that become the pool.

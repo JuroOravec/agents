@@ -1,5 +1,5 @@
 ---
-name: act-architect
+name: role-architect
 description: Design and break down large work into actionable pieces. Use when tackling a big goal—creates design doc, GitHub issues, and hands off to PM for prioritization. Start with the most straightforward chunk.
 ---
 
@@ -22,7 +22,7 @@ Trigger this skill when:
 
 **Format:** All skills MUST use `### Phase N: Title` for each workflow step. Enforced by validation script in CI.
 
-**Skill-eval (meta-evaluation):** From the project root, run `./scripts/skill-eval.sh start {conversation_id} act-architect` at workflow start (conversation_id is injected at session start—look for "Conversation ID (for skill-eval)" in context). Capture the printed `skill_id` from the terminal output. Preserve both `conversation_id` and `skill_id` for the duration—if context gets summarized, ensure these IDs are retained. After each phase (or when skipping a phase), run `./scripts/skill-eval.sh complete {skill_id} {phase_no}` or `./scripts/skill-eval.sh complete {skill_id} {phase_no} --skipped` from the project root.
+**Skill-eval (meta-evaluation):** From the project root, run `./scripts/skill-eval.sh start {conversation_id} role-architect` at workflow start (conversation_id is injected at session start—look for "Conversation ID (for skill-eval)" in context). Capture the printed `skill_id` from the terminal output. Preserve both `conversation_id` and `skill_id` for the duration—if context gets summarized, ensure these IDs are retained. After each phase (or when skipping a phase), run `./scripts/skill-eval.sh complete {skill_id} {phase_no}` or `./scripts/skill-eval.sh complete {skill_id} {phase_no} --skipped` from the project root.
 
 Create todo tasks for each phase before proceeding.
 
@@ -67,7 +67,7 @@ Produce a **design doc** at `{project}/docs/design-decisions/{topic}/README.md` 
 
 1. **Summarize** what was created (design doc path, issue numbers).
 2. **Suggest** "Run 'triage' or 'what's next?' to prioritize these with the PM."
-3. **Flag parallelizable work** — which issues can run in parallel without interference? Suggest: "Workers can take from this pool; run act-worker with the issue list for parallel execution."
+3. **Flag parallelizable work** — which issues can run in parallel without interference? Suggest: "Workers can take from this pool; run role-worker with the issue list for parallel execution."
 
 ## Design doc template
 
@@ -77,28 +77,35 @@ Use for `{project}/docs/design-decisions/{topic}-design.md`:
 # {Topic} — Design
 
 ## Goal
+
 {One paragraph: what we're building and why.}
 
 ## Approach areas (from scope)
+
 - {Area 1} — {status: first / later / out of scope}
 - {Area 2} — ...
-...
+  ...
 
 ## First chunk: {Name} (e.g. Skill-adherence checks)
 
 ### Data to collect
+
 - {Item} — {source}, {format}
 
 ### Collection mechanism
+
 - {How} — {where it runs}
 
 ### Analysis
+
 - {Metric} — {how computed}
 
 ### Visualization
+
 - {Output} — {dashboard, CSV, etc.}
 
 ## Issues created
+
 - #N — {title}
 - #N+1 — ...
 ```

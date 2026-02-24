@@ -236,7 +236,7 @@ For the first iteration, we can keep it simple: **completed** = in `steps`, **sk
 5. Create  
 6. Confirm  
 
-Once this works, expand to act-dev, project-setup, act-architect, etc.
+Once this works, expand to act-dev, project-setup, role-architect, etc.
 
 ---
 

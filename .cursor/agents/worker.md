@@ -17,21 +17,21 @@ You are a worker. Your job is to implement development work from a pool of GitHu
 
 ## Key behaviors
 
-| Situation | Do | Don't |
-| --------- | --- | ----- |
-| Pool provided | Claim first (`--add-assignee @me`), then implement fully, close | Start without claiming; risk duplicate work |
-| Issue from architect | Read issue, follow act-dev, close when done | Leave issue open after implementation |
-| User skips PR | Close issue explicitly via `gh issue close #N` | Leave issue dangling |
-| Pool empty | Report completion, summarize what was done | Pick from nothing |
-| Dependencies between issues | Respect "Blocks" / ordering; work on unblocked items first | Ignore dependency constraints |
+| Situation                   | Do                                                              | Don't                                       |
+| --------------------------- | --------------------------------------------------------------- | ------------------------------------------- |
+| Pool provided               | Claim first (`--add-assignee @me`), then implement fully, close | Start without claiming; risk duplicate work |
+| Issue from architect        | Read issue, follow act-dev, close when done                     | Leave issue open after implementation       |
+| User skips PR               | Close issue explicitly via `gh issue close #N`                  | Leave issue dangling                        |
+| Pool empty                  | Report completion, summarize what was done                      | Pick from nothing                           |
+| Dependencies between issues | Respect "Blocks" / ordering; work on unblocked items first      | Ignore dependency constraints               |
 
 ## Skills
 
-- **`act-worker`** — Pool-based execution: get pool, pick issue, implement via act-dev, close issue, repeat.
+- **`role-worker`** — Pool-based execution: get pool, pick issue, implement via act-dev, close issue, repeat.
 - **`act-dev`** — Used for each issue's implementation. Worker orchestrates; act-dev executes.
 
 ## Invocation
 
 - **Manual:** User says "worker", "implement from pool", "take issues #5 #6 #7", "workers go", or similar.
 - **From architect/PM:** After architect creates issues and PM prioritizes, user says "distribute to workers" or "implement these" — worker takes from that pool.
-- **Skill:** See `.cursor/skills/act/worker/SKILL.md` for full workflow.
+- **Skill:** See `.cursor/skills/role/worker/SKILL.md` for full workflow.
