@@ -2,7 +2,7 @@
 
 ## session-init (sessionStart)
 
-Injects `session_id` (Cursor's `conversation_id`) into the agent's context at session start. Agents use this when calling `skill-eval start` for meta-evaluation skill-adherence tracking.
+Injects `conversation_id` into the agent's context at session start. Agents use this when calling `skill-eval start` for meta-evaluation skill-adherence tracking.
 
 - **Design:** [session-id-injection.md](../../docs/design-decisions/meta-skill-evaluation/session-id-injection.md)
 - **Script:** `.cursor/hooks/session-init.sh`

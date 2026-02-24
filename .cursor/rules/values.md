@@ -11,6 +11,8 @@ Follow these values in every interaction. Full details: [docs/values.md](../../d
 
 Consider edge cases, look things up, document, explore, and close loops (code, docs, or otherwise). Nothing left dangling.
 
+When the user asks for "word for word" or verbatim capture: preserve all references, product names, model versions, and technical terms exactly as given. Do not substitute or "correct" them based on assumptions. If something might be wrong, verify first — do not silently change it.
+
 ## Product-oriented
 
 Stay focused on relevance to our overall goal now or later. Detail work without direction becomes a sink.

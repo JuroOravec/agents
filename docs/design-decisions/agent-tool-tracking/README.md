@@ -4,7 +4,7 @@
 
 Track subagent runs and tool invocations in the agents repo, similar to skill usage tracking. This enables visibility into which subagents are used, how long they run, which tools are invoked and for how long, and how often tools fail. Use cases: meta-evaluation of agent behavior, debugging slow or failing workflows, and trend analysis over time.
 
-**Constraints:** Session ID and parent-agent context are not available in these hooks. Design accordingly—record only what the hooks provide: subagent type, status, duration; tool name, input, duration, and (for failures) error type.
+**Constraints:** Conversation ID and parent-agent context are not available in these hooks. Design accordingly—record only what the hooks provide: subagent type, status, duration; tool name, input, duration, and (for failures) error type.
 
 ---
 
@@ -174,7 +174,7 @@ Extend the existing preview server (`scripts/preview/`) with two new pages:
 
 - Stats tab (histograms, aggregates)
 - Entry detail view (raw JSON for a single row)
-- Correlation with skill-eval (would require session_id, which we don't have)
+- Correlation with skill-eval (would require conversation_id, which we don't have)
 
 ---
 

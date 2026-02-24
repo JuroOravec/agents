@@ -85,13 +85,17 @@ The skills are tuned for **JavaScript/TypeScript projects using a pnpm monorepo*
 Skills in this project emit health metrics when used.
 
 You can open up a dashboard to see the health metrics.
-See [docs/skill-usage-tracking/](docs/skill-usage-tracking/).
+See [docs/features/skill-usage-tracking/](docs/features/skill-usage-tracking/).
 
-![Skill health metrics dashboard](./docs/skill-usage-tracking/skill-eval-dashboard.png)
+![Skill health metrics dashboard](./docs/features/skill-usage-tracking/skill-eval-dashboard.png)
 
 ### Agent, tool, and prompt tracking
 
-Hooks log subagent runs to `.cursor/logs/agents/`, tool invocations to `.cursor/logs/tools/`, and user prompts to `.cursor/logs/prompts/`. A preview server (`scripts/preview/`) exposes `/agents`, `/tools`, and `/prompts` for inspecting runs, durations, failures, and prompt history. See [docs/design-decisions/agent-tool-tracking/](docs/design-decisions/agent-tool-tracking/).
+Beside the skills, also this project logs and displays also agent, tools, and propmpts use.
+
+See [docs/features/telemetry/](docs/features/telemetry/) for the dashboard and individual pages
+
+![Agents Page](./docs/features/telemetry/telemetry-dashboard-agents.png)
 
 ## Try it
 

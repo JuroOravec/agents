@@ -18,8 +18,8 @@ CLI for meta-evaluation skill-adherence tracking. Design: `docs/design-decisions
 **Usage:**
 
 ```bash
-# Start a skill run (pass session_id from context; script prints skill_id)
-./scripts/skill-eval.sh start <session_id> <skill_name>
+# Start a skill run (pass conversation_id from context; script prints skill_id)
+./scripts/skill-eval.sh start <conversation_id> <skill_name>
 
 # Record completed phase
 ./scripts/skill-eval.sh complete <skill_id> <phase_no>
@@ -31,7 +31,7 @@ CLI for meta-evaluation skill-adherence tracking. Design: `docs/design-decisions
 **Example:**
 
 ```bash
-$ ./scripts/skill-eval.sh start "abc-session-123" "act-repo-issue-create"
+$ ./scripts/skill-eval.sh start "abc-conversation-uuid" "act-repo-issue-create"
 72284f1e-382b-4fa7-8035-bf91e3a2263e
 
 $ ./scripts/skill-eval.sh complete 72284f1e-382b-4fa7-8035-bf91e3a2263e 1

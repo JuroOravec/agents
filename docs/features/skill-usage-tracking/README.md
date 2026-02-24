@@ -77,11 +77,11 @@ CI enforces this format across all skills.
 
 ## Step 1: Setup the `session-init` hook
 
-We use Cursor's `session_id` to know in which chat a skill runs.
+We use Cursor's `conversation_id` to know in which chat a skill runs.
 
-Without `session_id`, we'd be cooked if you ran multiple parallel agents.
+Without `conversation_id`, we'd be cooked if you ran multiple parallel agents.
 
-`session_id` is available at session start via Cursor’s `sessionStart` hook.
+`conversation_id` is available at session start via Cursor’s `sessionStart` hook.
 
 ### 1.1 Create the hook script
 
@@ -89,25 +89,24 @@ Create `.cursor/hooks/session-init.sh`:
 
 ```bash
 #!/usr/bin/env bash
-# session-init: Injects session_id (conversation_id) into agent context at session start.
-# Agents use session_id when calling skill-eval start.
+# session-init: Injects conversation_id into agent context at session start.
+# Agents use conversation_id when calling skill-eval start.
 set -e
 
 payload=$(cat)
-session_id=$(echo "$payload" | jq -r '.conversation_id // ""')
+conversation_id=$(echo "$payload" | jq -r '.conversation_id // ""')
 
-if [[ -z "$session_id" ]]; then
+if [[ -z "$conversation_id" ]]; then
   echo "session-init: no conversation_id in payload, skipping injection" >&2
   echo '{"continue": true}'
   exit 0
 fi
 
-additional_context="**Session ID (for skill-eval):** \`$session_id\`
+additional_context="**Conversation ID (for skill-eval):** \`$conversation_id\`
 
-When following phased skills (e.g. act-repo-issue-create), run \`skill-eval start $session_id <skill_name>\` at workflow start. Preserve this session_id and the returned skill_id in context for \`skill-eval complete\` calls."
+When following phased skills (e.g. act-repo-issue-create), run \`skill-eval start $conversation_id <skill_name>\` at workflow start. Preserve this conversation_id and the returned skill_id in context for \`skill-eval complete\` calls."
 
 jq -n \
-  --arg session_id "$session_id" \
   --arg additional_context "$additional_context" \
   '{continue: true, additional_context: $additional_context}'
 ```
@@ -153,13 +152,13 @@ The agent calls a script instead of editing JSON.
 
 ### 2.1 Create the script
 
-Create `scripts/skill-eval.sh` in your repo root. Copy the full implementation from [scripts/skill-eval.sh](../../scripts/skill-eval.sh) in this repo.
+Create `scripts/skill-eval.sh` in your repo root. Copy the full implementation from [scripts/skill-eval.sh](../../../scripts/skill-eval.sh) in this repo.
 
 It has 2 commands:
 
 - `start` → Starts tracking skill workflow, creates a JSON file, prints `skill_id`
   ```sh
-  start {session_id} {skill_name}
+  start {conversation_id} {skill_name}
   ```
 
 - `complete` → Marks a step as completed
@@ -215,7 +214,7 @@ Agents might forget to log their progress. So we need to remind them. Put this p
 
 **Format:** All skills MUST use `### Phase N: Title` for each workflow step. Enforced by validation script in CI.
 
-**Skill-eval (meta-evaluation):** From the project root, run `./scripts/skill-eval.sh start {session_id} {skill-name}` at workflow start (session_id is injected at session start—look for "Session ID (for skill-eval)" in context). Capture the printed `skill_id` from the terminal output. Preserve both `session_id` and `skill_id` for the duration—if context gets summarized, ensure these IDs are retained. After each phase (or when skipping a phase), run `./scripts/skill-eval.sh complete {skill_id} {phase_no}` or `./scripts/skill-eval.sh complete {skill_id} {phase_no} --skipped` from the project root.
+**Skill-eval (meta-evaluation):** From the project root, run `./scripts/skill-eval.sh start {conversation_id} {skill-name}` at workflow start (conversation_id is injected at session start—look for "Conversation ID (for skill-eval)" in context). Capture the printed `skill_id` from the terminal output. Preserve both `conversation_id` and `skill_id` for the duration—if context gets summarized, ensure these IDs are retained. After each phase (or when skipping a phase), run `./scripts/skill-eval.sh complete {skill_id} {phase_no}` or `./scripts/skill-eval.sh complete {skill_id} {phase_no} --skipped` from the project root.
 
 Create todo tasks for each phase before proceeding.
 ```
@@ -234,11 +233,11 @@ This runs `scripts/validate/skill-phases.ts` and fails if any skill uses a non-P
 
 ## Step 4: What the agent does at runtime
 
-1. **Session start** — Cursor runs `session-init.sh`, which injects `Session ID (for skill-eval): …` into the conversation.
+1. **Session start** — Cursor runs `session-init.sh`, which injects `Conversation ID (for skill-eval): …` into the conversation.
 
 2. **Workflow start** — When the agent begins a phased skill, it runs:
    ```bash
-   ./scripts/skill-eval.sh start {session_id} act-repo-issue-create
+   ./scripts/skill-eval.sh start {conversation_id} act-repo-issue-create
    ```
    It captures the printed `skill_id` and keeps it in context.
 3. **After each phase** — The agent runs:
@@ -252,7 +251,7 @@ This runs `scripts/validate/skill-phases.ts` and fails if any skill uses a non-P
     // 20260223T183529Z_act-repo-issue-create_6703f819-407b.json
     {
       "created_at": "2026-02-23T18:35:29Z",
-      "session_id": "1b5c6ca3-4402-4013-a193-484059076602",
+      "conversation_id": "1b5c6ca3-4402-4013-a193-484059076602",
       "skill_id": "6703f819-407b-4684-aabc-899b1206bf0f",
       "skill": "act-repo-issue-create",
       "steps": [
@@ -300,8 +299,8 @@ Data is read from `.cursor/logs/skills/`. Each JSON file is one skill run; the d
 
 | Issue | Check |
 | ----- | ----- |
-| Agent doesn’t see session_id | Reload Cursor after editing hooks; verify `sessionStart` in `hooks.json` |
-| `skill-eval: no file found for skill_id` | Agent lost `skill_id`; ensure preamble says “preserve session_id and skill_id in context” |
+| Agent doesn’t see conversation_id | Reload Cursor after editing hooks; verify `sessionStart` in `hooks.json` |
+| `skill-eval: no file found for skill_id` | Agent lost `skill_id`; ensure preamble says “preserve conversation_id and skill_id in context” |
 | Empty dashboard | No JSON files yet; run a phased skill and complete at least one phase |
 | Phase validation fails | Run `pnpm run validate`; fix non-Phase headings under `## Workflow` |
 | `jq: command not found` | Install jq: `brew install jq` or `apt install jq` |
@@ -318,6 +317,7 @@ Data is read from `.cursor/logs/skills/`. Each JSON file is one skill run; the d
 
 ## Further reading
 
-- [meta-evaluation-skill-adherence-design.md](../design-decisions/meta-evaluation-skill-adherence-design.md) — Design rationale and data model
-- [Development README](../development/README.md) — Skill-eval dashboard, validation, and commands
-- [Cursor hooks](../cursor-hooks.md) — Hook lifecycle and reload behavior
+- [Telemetry dashboard](../telemetry/README.md) — Overview of the dashboard and all pages (Skills, Agents, Tools, Prompts)
+- [meta-skill-evaluation design](../../design-decisions/meta-skill-evaluation/README.md) — Design rationale and data model
+- [Development README](../../development/README.md) — Skill-eval dashboard, validation, and commands
+- [Cursor hooks](../../cursor-hooks.md) — Hook lifecycle and reload behavior

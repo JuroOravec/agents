@@ -103,11 +103,11 @@ Per [issue #2](https://github.com/JuroOravec/agents/issues/2):
 
 Asking the agent to (1) produce correct timestamps and (2) edit JSON without corrupting other parts is error-prone. Instead, we provide a **local CLI script** that the agent calls. The script handles file creation, timestamps, and atomic updates.
 
-### Session ID and skill ID in context
+### Conversation ID and skill ID in context
 
-**Both `session_id` and `skill_id` must live in the agent's context window.** A file-based approach (e.g. writing `session_id` to `.cursor/logs/current-session-id.txt`) would break with multiple agents running in parallel—they would overwrite each other's session_id.
+**Both `conversation_id` and `skill_id` must live in the agent's context window.** A file-based approach (e.g. writing `conversation_id` to `.cursor/logs/current-session-id.txt`) would break with multiple agents running in parallel—they would overwrite each other's conversation_id.
 
-We inject `session_id` via a **sessionStart** hook (or equivalent) that receives it from Cursor and adds it to the conversation context—e.g. as a system message or initial prompt—so the agent sees it and can pass it to the script. The agent passes `session_id` explicitly to `skill-eval start`. Similarly, the agent must preserve the `skill_id` returned by `start` and pass it to `complete`.
+We inject `conversation_id` via a **sessionStart** hook (or equivalent) that receives it from Cursor and adds it to the conversation context—e.g. as a system message or initial prompt—so the agent sees it and can pass it to the script. The agent passes `conversation_id` explicitly to `skill-eval start`. Similarly, the agent must preserve the `skill_id` returned by `start` and pass it to `complete`.
 
 **Note:** Verify that Cursor exposes a sessionStart (or session start) hook and how to inject context. If not, we need an alternative.
 
@@ -127,14 +127,14 @@ When the agent runs the same skill twice in one session (e.g. creates two issues
 
 | Command | Purpose |
 | ------- | ------- |
-| `skill-eval start {session_id} {skill_name}` | Start a skill run; create JSON file; **print skill_id** to stdout |
+| `skill-eval start {conversation_id} {skill_name}` | Start a skill run; create JSON file; **print skill_id** to stdout |
 | `skill-eval complete {skill_id} {phase_no} [--skipped]` | Record completion (or skip) of phase `phase_no` for that skill run |
 
-**`skill-eval start {session_id} {skill_name}`:**
-- Agent passes `session_id` (from context; injected by sessionStart) and `skill_name`
+**`skill-eval start {conversation_id} {skill_name}`:**
+- Agent passes `conversation_id` (from context; injected by sessionStart) and `skill_name`
 - Generates `skill_id` (e.g. UUID) randomly
 - Creates JSON file: `.cursor/logs/skills/{timestamp}_{skill}_{skill_id}.json`
-- Populates: `created_at` (from script timestamp), `session_id`, `skill_id`, `skill`, empty `steps`
+- Populates: `created_at` (from script timestamp), `conversation_id`, `skill_id`, `skill`, empty `steps`
 - **Prints `skill_id` to stdout** — the agent must capture and preserve this in context
 - Returns exit 0 on success
 
@@ -147,12 +147,12 @@ When the agent runs the same skill twice in one session (e.g. creates two issues
 - `timestamp`: filesystem sorts by time
 - `skill`: human lookup
 - `skill_id`: easy lookup via `*_{skill_id}.json`
-- `session_id` is stored only inside the JSON as a field, not in the filename
+- `conversation_id` is stored only inside the JSON as a field, not in the filename
 
 ### Agent workflow
 
-1. **When starting a phased skill:** Run `skill-eval start {session_id} act-repo-issue-create` (pass `session_id` from context). Capture the printed `skill_id` from the terminal output.
-2. **Preserve session_id and skill_id:** Both must remain in the agent's context window for the remainder of the workflow. Add a rule/skill note: *"If context gets summarized, ensure session_id and skill_id are preserved—they are required for skill-eval calls."*
+1. **When starting a phased skill:** Run `skill-eval start {conversation_id} act-repo-issue-create` (pass `conversation_id` from context). Capture the printed `skill_id` from the terminal output.
+2. **Preserve conversation_id and skill_id:** Both must remain in the agent's context window for the remainder of the workflow. Add a rule/skill note: *"If context gets summarized, ensure conversation_id and skill_id are preserved—they are required for skill-eval calls."*
 3. **After each completed phase:** Run `skill-eval complete {skill_id} {phase_no}` (e.g. `skill-eval complete a1b2c3d4 1`, then `skill-eval complete a1b2c3d4 2`, etc.).
 4. **For skipped phases:** Run `skill-eval complete {skill_id} {phase_no} --skipped`.
 
@@ -161,7 +161,7 @@ When the agent runs the same skill twice in one session (e.g. creates two issues
 | Field | Description |
 | ----- | ----------- |
 | `created_at` | ISO timestamp when `skill-eval start` ran |
-| `session_id` | Passed by agent; stored in JSON only (not in filename) |
+| `conversation_id` | Passed by agent; stored in JSON only (not in filename) |
 | `skill_id` | Random UUID per invocation; printed by `start`, used in `complete` |
 | `skill` | Skill name (e.g. `act-repo-issue-create`) |
 | `steps` | Array of `{ phase, completed_at }` or `{ phase, completed_at, skipped: true }` — script sets these |
@@ -175,7 +175,7 @@ When the agent runs the same skill twice in one session (e.g. creates two issues
 ```json
 {
   "created_at": "2026-02-23T14:00:00Z",
-  "session_id": "abc-session-123",
+  "conversation_id": "abc-session-123",
   "skill_id": "a1b2c3d4-5678-90ab-cdef-1234567890ab",
   "skill": "act-repo-issue-create",
   "steps": [
@@ -245,10 +245,10 @@ Once this works, expand to act-dev, project-setup, act-architect, etc.
 | Aspect | Detail |
 | ------ | ------ |
 | **When** | Perpetual — agent calls `skill-eval start` then `skill-eval complete` as it goes. No manual trigger. |
-| **Where** | `.cursor/logs/skills/{timestamp}_{skill}_{skill_id}.json` (`session_id` stored inside JSON) |
+| **Where** | `.cursor/logs/skills/{timestamp}_{skill}_{skill_id}.json` (`conversation_id` stored inside JSON) |
 | **Script** | `scripts/skill-eval.sh` in the **agents** repo |
 | **Who** | The agent (calls CLI); script handles file I/O, timestamps, skill_id generation |
-| **Dependencies** | sessionStart hook to inject session_id into context; phase format enforcement; skill instructions to pass session_id, call script, and preserve session_id + skill_id in context |
+| **Dependencies** | sessionStart hook to inject conversation_id into context; phase format enforcement; skill instructions to pass conversation_id, call script, and preserve conversation_id + skill_id in context |
 
 ---
 
@@ -270,9 +270,9 @@ Once this works, expand to act-dev, project-setup, act-architect, etc.
 | # | Item | Status |
 |---|------|--------|
 | [#9](https://github.com/JuroOravec/agents/issues/9) | **Phase format enforcement** — `scripts/validate/skill-phases.ts`, meta-skill-create, CI | Done |
-| [#10](https://github.com/JuroOravec/agents/issues/10) | **sessionStart hook** — Inject `session_id` into conversation context (no file—breaks with parallel agents) | Open |
+| [#10](https://github.com/JuroOravec/agents/issues/10) | **sessionStart hook** — Inject `conversation_id` into conversation context (no file—breaks with parallel agents) | Open |
 | — | **skill-eval CLI** — `scripts/skill-eval.sh` | **Done** |
-| [#11](https://github.com/JuroOravec/agents/issues/11) | **Add rule/skill instruction** — Pass session_id, preserve skill_id, call complete after each phase (depends on #10) | Done |
+| [#11](https://github.com/JuroOravec/agents/issues/11) | **Add rule/skill instruction** — Pass conversation_id, preserve skill_id, call complete after each phase (depends on #10) | Done |
 | [#12](https://github.com/JuroOravec/agents/issues/12) | **Aggregation script** — Read skills JSON, compute metrics, output CSV/JSONL | Open |
 
 ---
@@ -288,5 +288,5 @@ Once this works, expand to act-dev, project-setup, act-architect, etc.
 
 ## Open questions
 
-1. ~~**sessionStart hook** — Does Cursor expose a session start hook that receives `session_id`?~~ **Resolved:** Cursor exposes `sessionStart`; it receives `conversation_id` (which we use as session_id) and can return `additional_context` to inject into the agent. See [session-id-injection.md](session-id-injection.md).
+1. ~~**sessionStart hook** — Does Cursor expose a session start hook that receives `conversation_id`?~~ **Resolved:** Cursor exposes `sessionStart`; it receives `conversation_id` (which we inject as conversation_id) and can return `additional_context` to inject into the agent. See [session-id-injection.md](session-id-injection.md).
 2. **Skill instruction placement** — Add to always-apply-skills, or to each phased skill individually, or a new rule that applies when a skill with phases is used?

@@ -26,6 +26,8 @@ payload=$(cat)
 prompt=$(echo "$payload" | jq -r '.prompt // ""')
 conversation_id=$(echo "$payload" | jq -r '.conversation_id // ""')
 generation_id=$(echo "$payload" | jq -r '.generation_id // ""')
+model=$(echo "$payload" | jq -r '.model // ""')
+cursor_version=$(echo "$payload" | jq -r '.cursor_version // ""')
 hook_event=$(echo "$payload" | jq -r '.hook_event_name // ""')
 workspace_roots=$(echo "$payload" | jq -c '.workspace_roots // []')
 attachments=$(echo "$payload" | jq -c '.attachments // []')
@@ -68,8 +70,13 @@ jq -n -c \
   --arg ts "$timestamp" \
   --arg cid "$conversation_id" \
   --arg gid "$generation_id" \
+  --arg model "$model" \
+  --arg cursor_version "$cursor_version" \
   --arg event "$hook_event" \
   --arg preview "$last_turn_preview" \
   --arg ctx "$context" \
   --arg msg "$prompt" \
-  '{ts: $ts, conversation_id: $cid, generation_id: $gid, hook: $event, last_turn_preview: $preview, context: $ctx, user_message: $msg}' >> "$LOG_FILE"
+  '{ts: $ts, conversation_id: $cid, generation_id: $gid, model: $model, cursor_version: $cursor_version, hook: $event, last_turn_preview: $preview, context: $ctx, user_message: $msg}' >> "$LOG_FILE"
+
+# Debug: visible in Output → Hooks (stderr); stdout is reserved for Cursor
+echo "capture-prompts: successfully logged to $LOG_FILE" >&2

@@ -3,7 +3,7 @@
 Issues created 2026-02-23. Umbrella: [#2](https://github.com/JuroOravec/agents/issues/2).
 
 - #9 Phase format enforcement
-- #10 sessionStart hook (session_id injection)
+- #10 sessionStart hook (conversation_id injection)
 - #11 Add skill-eval rule (skill-eval CLI done)
 - #12 Aggregation script
 
@@ -33,9 +33,9 @@ Part of meta-evaluation (issue #2). Design: \`docs/design-decisions/meta-skill-e
 ## 2. sessionStart hook
 
 ```bash
-gh issue create --title "Inject session_id into context via sessionStart hook" --label "enhancement" --body "## Summary
+gh issue create --title "Inject conversation_id into context via sessionStart hook" --label "enhancement" --body "## Summary
 
-Session_id must be in the agent's context (not a file—file breaks with parallel agents). Create sessionStart hook to inject session_id into the conversation context so agents can pass it to skill-eval start.
+Conversation_id must be in the agent's context (not a file—file breaks with parallel agents). Create sessionStart hook to inject conversation_id into the conversation context so agents can pass it to skill-eval start.
 
 ## Notes
 
@@ -53,13 +53,13 @@ Part of meta-evaluation (issue #2). Design: \`docs/design-decisions/meta-skill-e
 ```bash
 gh issue create --title "Add skill-eval rule and act-repo-issue-create phase logging" --label "enhancement" --body "## Summary
 
-Tell agents to call skill-eval when following act-repo-issue-create: start at workflow begin, complete after each phase (with --skipped for skips). Preserve session_id and skill_id in context across summarization.
+Tell agents to call skill-eval when following act-repo-issue-create: start at workflow begin, complete after each phase (with --skipped for skips). Preserve conversation_id and skill_id in context across summarization.
 
 ## Notes
 
 - skill-eval CLI is implemented at \`scripts/skill-eval.sh\`
 - Start with act-repo-issue-create only
-- Rule or skill update: pass session_id to start, capture skill_id, preserve both IDs
+- Rule or skill update: pass conversation_id to start, capture skill_id, preserve both IDs
 - Placement: always-apply-skills vs each phased skill vs new rule—TBD
 
 Part of meta-evaluation (issue #2). Design: \`docs/design-decisions/meta-skill-evaluation/\`."

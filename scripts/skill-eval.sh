@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # skill-eval: CLI for meta-evaluation skill-adherence tracking
 # Usage:
-#   skill-eval start {session_id} {skill_name}   -> creates JSON, prints skill_id
+#   skill-eval start {conversation_id} {skill_name}   -> creates JSON, prints skill_id
 #   skill-eval complete {skill_id} {phase_no} [--skipped]  -> appends step
 #
 # Design: docs/design-decisions/meta-skill-evaluation/
@@ -42,10 +42,10 @@ find_file_by_skill_id() {
 }
 
 cmd_start() {
-  local session_id="$1"
+  local conversation_id="$1"
   local skill_name="$2"
-  if [[ -z "$session_id" || -z "$skill_name" ]]; then
-    echo "Usage: skill-eval start <session_id> <skill_name>" >&2
+  if [[ -z "$conversation_id" || -z "$skill_name" ]]; then
+    echo "Usage: skill-eval start <conversation_id> <skill_name>" >&2
     exit 1
   fi
 
@@ -60,10 +60,10 @@ cmd_start() {
   local json
   json=$(jq -n \
     --arg created_at "$now" \
-    --arg session_id "$session_id" \
+    --arg conversation_id "$conversation_id" \
     --arg skill_id "$skill_id" \
     --arg skill "$skill_name" \
-    '{created_at: $created_at, session_id: $session_id, skill_id: $skill_id, skill: $skill, steps: []}')
+    '{created_at: $created_at, conversation_id: $conversation_id, skill_id: $skill_id, skill: $skill, steps: []}')
 
   echo "$json" > "$file"
   echo "$skill_id"
@@ -109,7 +109,7 @@ case "${1:-}" in
     ;;
   *)
     echo "Usage: skill-eval {start|complete} ..." >&2
-    echo "  skill-eval start <session_id> <skill_name>" >&2
+    echo "  skill-eval start <conversation_id> <skill_name>" >&2
     echo "  skill-eval complete <skill_id> <phase_no> [--skipped]" >&2
     exit 1
     ;;

@@ -53,9 +53,9 @@ cd crawlee-one && pnpm test
 
 Data is read from `.cursor/logs/skills/`. Use `-p 3000` to change the port.
 
-**Full setup guide:** [docs/skill-usage-tracking/](../skill-usage-tracking/README.md)
+**Full setup guide:** [docs/features/skill-usage-tracking/](../features/skill-usage-tracking/README.md)
 
-![skill-eval dashboard](../skill-usage-tracking/skill-eval-dashboard.png)
+![skill-eval dashboard](../features/skill-usage-tracking/skill-eval-dashboard.png)
 
 ### Skill phase validation
 
