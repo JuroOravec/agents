@@ -20,7 +20,7 @@ Trigger this skill when:
 
 ## Capture file
 
-Default location: `INBOX.md` at the workspace root. If the workspace has multiple projects (e.g. monorepo with submodules), use one INBOX per project or a single root INBOX — check with the user.
+Default location: `INBOX.md` at the workspace root. If the workspace has multiple projects (e.g. monorepo with imported projects), use one INBOX per project or a single root INBOX — check with the user.
 
 See [backlog-template.md](backlog-template.md) for the format. Create the file if it doesn't exist.
 

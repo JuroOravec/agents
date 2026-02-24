@@ -24,7 +24,7 @@ Look for these patterns. Each one is a signal that a skill may be worth creating
 
 ### 1. Root-repo management
 
-A multi-step task that configures this root repo itself (e.g. managing git submodules, switching which projects are imported). These are reserved for the agents root, not for individual projects.
+A multi-step task that configures this root repo itself (e.g. managing imported projects, switching which projects are imported). These are reserved for the agents root, not for individual projects.
 
 Skill prefix: `root-`
 

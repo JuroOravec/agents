@@ -124,7 +124,7 @@ Before executing, instruct the agent to research best practices and state-of-the
 
 | Prefix     | Purpose                                                         |
 | ---------- | --------------------------------------------------------------- |
-| `root-`    | Managing this root repo itself (submodules, config). Reserved for skills that configure the agents root, not imported projects. |
+| `root-`    | Managing this root repo itself (imported projects, config). Reserved for skills that configure the agents root, not imported projects. |
 | `project-` | One-time setup of a project or major milestone.                  |
 | `act-`     | Reactive, event-driven workflows (bugs, releases, PRs, etc.).   |
 | `meta-`    | Self-referential: skills about skills, conventions, discovery.  |

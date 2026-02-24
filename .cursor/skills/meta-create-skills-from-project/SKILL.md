@@ -15,14 +15,14 @@ Before creating skills, read `.cursor/skills/meta-skill-create/SKILL.md` for nam
 
 Trigger this skill when:
 
-- Introducing an agent to a new project (e.g. a newly added submodule).
+- Introducing an agent to a new project (e.g. a newly added nested clone).
 - Onboarding to a codebase and you want to capture its patterns for future AI assistance.
 - The agent repeatedly ignores existing patterns and you want to codify them.
 - The user says "create skills from this project", "capture project patterns", or "onboard the agent to [project]".
 
 ## Prerequisites
 
-- A target project in scope — either the current workspace or a submodule path (e.g. `cbc-website/`).
+- A target project in scope — either the current workspace or an imported project path (e.g. `cbc-website/`).
 - Access to this skills repo (`.cursor/skills/`) for conventions and output location.
 - The project has enough structure to infer patterns (src, package.json, tests, etc.).
 
@@ -36,7 +36,7 @@ Create todo tasks for each phase before proceeding.
 
 ### Phase 1: Identify target and scope
 
-1. **Target project** — Which project? If this is a root repo with submodules, specify the path (e.g. `cbc-website/`). If the workspace is the project itself, use `.`.
+1. **Target project** — Which project? If this is a root repo with imported nested clones, specify the path (e.g. `cbc-website/`). If the workspace is the project itself, use `.`.
 2. **Scope** — Confirm with the user: create skills for all discoverable areas, or focus on specific ones (e.g. only development, only content editing)?
 3. **Skill prefix** — For project-specific patterns, prefer `project-{name}--{area}` or `act-dev--{name}-{action}` when the pattern fits a known prefix. Use `meta-skill-create` conventions.
 
@@ -75,7 +75,7 @@ Avoid creating skills for things already covered by existing skills. Check `.cur
 2. Follow the structure in `meta-skill-create`: frontmatter, When to use, Workflow phases, Verification, Out of scope.
 3. Add supporting `.md` files if a pattern needs detailed reference (e.g. `content-structure.md`).
 4. Update `.cursor/skills/README.md` — add the skill to the catalog table and to the Common commands table if it has user-triggerable phrases.
-5. If the skill should always apply when working on that project, consider `.cursor/rules/always-apply-skills.md` (or document that it’s project-scoped and loaded when editing that submodule).
+5. If the skill should always apply when working on that project, consider `.cursor/rules/always-apply-skills.md` (or document that it’s project-scoped and loaded when editing that project).
 
 ### Phase 5: Verify
 
@@ -95,4 +95,4 @@ Avoid creating skills for things already covered by existing skills. Check `.cur
 
 - Creating skills from scratch without a project to analyze — see `create-skill` or `meta-skill-create`.
 - Evaluating whether a pattern is worth a skill after a task — see `meta-discovery`.
-- Managing the root repo or submodules — see `root-gitmodule-setup`.
+- Managing the root repo or imported projects — see `root-project-setup`.

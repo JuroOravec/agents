@@ -12,7 +12,7 @@ There's a better way.
 
 ## The idea: one root, many projects
 
-Instead of scattering your AI config across each repo, put it in a **single root repository** and import your projects as **git submodules**. Open that root in your editor, and every project inside it shares the same rules and definitions. Update once, apply everywhere.
+Instead of scattering your AI config across each repo, put it in a **single root repository** and import your projects as **regular nested git clones**. Open that root in your editor, and every project inside it shares the same rules and definitions. Update once, apply everywhere.
 
 *This repo is set up for Cursor (`.cursor/` with agents, skills, rules). The same pattern works for other tools - just swap in their config layout.*
 
@@ -22,42 +22,41 @@ agents/                    ← you open this
 │   ├── agents/
 │   ├── rules/
 │   └── skills/
-├── my-api/                ← your projects (git submodules)
+├── my-api/                ← your projects (independent git clones)
 ├── my-dashboard/
 ├── my-scraper/
 └── ...
 ```
 
-All submodules are indexed together. The AI has full context. No duplication, no drift.
+All cloned projects are indexed together. The AI has full context. No duplication, no drift.
 
-## Why submodules (and not symlinks)?
+## Why nested clones (and not symlinks/submodules)?
 
-You might think: "Can't I just symlink my projects into a mega folder?" You can, but many AI tools **don't index symlinks** - Cursor, for example, skips them, so the AI can't see the files. Git submodules are real directories; they get indexed and everything works.
+You might think: "Can't I just symlink my projects into a mega folder?" You can, but many AI tools **don't index symlinks** - Cursor, for example, skips them, so the AI can't see the files. Nested git clones are real directories; they get indexed and everything works.
 
-Each project keeps its own git history. The root repo just holds pointers to specific commits. Clean, standard, and it plays nicely with `git clone --recurse-submodules`.
+Each project keeps its own git history. The root repo stays focused on shared `.cursor/` config and ignores imported project folders via `.gitignore`. This keeps day-to-day git operations simple while preserving project isolation.
 
 ## Getting started
 
 ### 1. Clone this repo
 
 ```bash
-git clone --recurse-submodules https://github.com/JuroOravec/agents.git
+git clone https://github.com/JuroOravec/agents.git
 cd agents
 ```
 
 ### 2. Add your projects
 
 ```bash
-git submodule add https://github.com/you/your-project.git your-project
-git add .gitmodules your-project
-git commit -m "Add your-project as submodule"
+git clone https://github.com/you/your-project.git your-project
+echo "your-project/" >> .gitignore
 ```
 
 Open the repo in Cursor. Your projects are now inside, sharing the same `.cursor/` config. Edit a skill once, and it applies to every project.
 
 ### 3. Switching focus when you have too many projects
 
-Indexing and tooling can slow down with dozens of submodules. You have two ways to change which projects are "active":
+Indexing and tooling can slow down with dozens of nested projects. You have two ways to change which projects are "active":
 
 **Soft switch** - Toggle `.gitignore` so tooling skips projects you're not using. Add a path to deactivate, remove it to activate, reload the window. Your WIP stays local; no push, no commit. Use this when you just want to focus on 1–2 projects for a while.
 
@@ -67,11 +66,11 @@ project-a/
 # project-b/
 ```
 
-**Hard switch** - Remove one submodule and add another. The AI will prompt you to store progress (commit & push) before removing, so you never lose work. Use this when you want to permanently drop a project from the root and bring in a different one.
+**Hard switch** - Remove one nested clone folder and clone another project. The AI will prompt you to store progress (commit & push) before removing, so you never lose work. Use this when you want to permanently drop a project from the root and bring in a different one.
 
 ### 4. Or let the AI do it
 
-I added a [`root-gitmodule-setup`](./.cursor/skills/root-gitmodule-setup/SKILL.md) skill that makes this trivial: ask your AI to "add a project", "remove a project", or "switch projects", and it walks you through the right steps - including asking whether you want soft or hard switch when it's unclear.
+I added a [`root-project-setup`](./.cursor/skills/root-project-setup/SKILL.md) skill that makes this trivial: ask your AI to "add a project", "remove a project", or "switch projects", and it walks you through the nested-clone workflow, including asking whether you want soft or hard switch when it's unclear.
 
 See [docs/project-setup.md](docs/project-setup.md) for the full guide.
 

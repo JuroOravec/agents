@@ -6,7 +6,7 @@ files.
 
 These skills and rules are **shared across multiple projects and repos**.
 
-During development, projects are brought into the scope as git submodules.
+During development, projects are brought into scope as nested git clones.
 
 Skill, agents, and rules are managed as separate repo - a single source of truth.
 
@@ -39,6 +39,7 @@ Natural phrases that trigger skills. Say these in chat to invoke workflows.
 | **"create PR"**, "open pull request", "push and create PR" | `act-repo-pr-create` |
 | "file an issue", "create issue" | `act-repo-issue-create` |
 | **"release"**, "publish", "cut a release" | `act-repo-release` |
+| **"evangelize"**, "share my work", "evangelist", "where could I plug this?" | `act-evangelist` — Find opportunities to share work |
 | **"architect"**, "design and break down", "how would we implement", "break into issues" | `act-architect` — Design large work, create issues, hand off to PM |
 | "hand to architect", "narrow these solutions", "deep dive into these" | `act-arch-solution-create` — Multi-solution flow: narrow, deep-dive, iterate, create issues |
 | "set up project", "scaffold", "bootstrap" | `project-setup` |
@@ -46,7 +47,7 @@ Natural phrases that trigger skills. Say these in chat to invoke workflows.
 | "project polish", "community health", "make it professional" | `project-polish` |
 | "write docs", "improve README", "restructure docs" | `project-polish-docs` |
 | "benchmark infrastructure", "performance CI" | `project-polish-bench` |
-| "add project", "remove project", **"switch projects"** | `root-gitmodule-setup` |
+| "add project", "remove project", **"switch projects"** | `root-project-setup` |
 | "create agent", "new role" | `meta-agent-create` |
 | "create skill", "skill conventions", "update skill" | `meta-skill-create` |
 | "create skills from project", "capture project patterns", "onboard agent" | `meta-create-skills-from-project` |
@@ -72,7 +73,7 @@ prefix would mean discovering an entirely new class of behavior.
 
 | Prefix     | When it runs                                                 |
 | ---------- | ------------------------------------------------------------ |
-| `root-`    | Root-repo management. Configuring this repo itself (submodules, etc.). |
+| `root-`    | Root-repo management. Configuring this repo itself (imported nested projects, ignore toggles, etc.). |
 | `project-` | One-time setup. Run once per project or major milestone.     |
 | `act-`     | Reactive. Triggered by an event (bug report, release, etc.). |
 | `meta-`    | Self-referential. Skills about the skill system itself.      |
@@ -139,7 +140,7 @@ Reserved for managing the root repo. Do not use for skills that operate on impor
 
 | Skill          | Purpose                                                                 |
 | -------------- | ----------------------------------------------------------------------- |
-| `root-gitmodule-setup`  | Configure git submodules: add projects, remove projects, switch between projects. Asks for repo URL and branch when adding; stores progress before removing; reminds about window reload. |
+| `root-project-setup`  | Configure imported nested project clones: add projects, remove projects, switch between projects. Asks for repo URL and branch when adding; stores progress before removing; reminds about window reload. |
 
 #### `project-` -- One-time setup
 
@@ -175,6 +176,7 @@ Reserved for managing the root repo. Do not use for skills that operate on impor
 | `act-repo-release`            | Prepare and publish a release                                                                 |
 | `act-security-vuln`           | Handle a security vulnerability report                                                        |
 | `act-pm`                     | Project manager: capture ideas, triage backlog, "what's next?", context restore. First local, then GitHub. |
+| `act-evangelist`            | Personal evangelist: proactively find opportunities to share work, surface venues and asks. |
 | `act-architect`             | Architect: design and break down large work into issues; hand off to PM for prioritization. Start with most straightforward chunk. |
 | `act-arch-solution-create`  | Architect-led: when expert produced multiple solutions — narrow with user, deep-dive, iterate, prioritize, create umbrella + work-package issues. |
 | `act-worker`               | Worker: execute from pool of GitHub issues; take one, implement via act-dev, close when done. Used for parallel execution after architect/PM handoff. |
@@ -262,13 +264,14 @@ flowchart TD
     agentcreate -.->|"produces"| pm
 
     %% ── Root repo management ─────────────────────────────────────
-    rootsetup["root-gitmodule-setup<br/><i>Submodule config</i>"]
+    rootsetup["root-project-setup<br/><i>Nested clone config</i>"]
 
     %% ── Standalone act skills ────────────────────────────────────
     issue["act-repo-issue-create"]
     release["act-repo-release"]
     secvuln["act-security-vuln"]
     pm["act-pm<br/><i>Capture, triage, prioritize</i>"]
+    evangelist["act-evangelist<br/><i>Evangelize, find opportunities</i>"]
     architect["act-architect<br/><i>Design, break down, create issues</i>"]
     worker["act-worker<br/><i>Pool execution, close when done</i>"]
 
@@ -297,7 +300,7 @@ flowchart TD
     class scraper,scraperdisc,scraperintegrity,depup,pkgcreate,pkgmigrate specialization
     class setup,polish,polishbench,polishdocs project
     class discovery,skillcreate meta
-    class issue,release,secvuln,pm,architect,worker,archsolution standalone
+    class issue,release,secvuln,pm,evangelist,architect,worker,archsolution standalone
 ```
 
 ### Reading the diagram
@@ -339,9 +342,9 @@ flowchart TD
   setup. For example, `act-dev-bench` points to `project-polish-bench` if
   the benchmarking infrastructure hasn't been set up yet.
 
-- **`root-gitmodule-setup`** manages this root repo's git submodules (add, remove, switch).
+- **`root-project-setup`** manages this root repo's imported nested projects (add, remove, switch).
   It asks for repo URL and branch when adding; offers progress storage before
-  removing; and reminds about window reload after submodule changes.
+  removing; and reminds about window reload after project import changes.
 
 - **`meta-discovery`** runs as part of the `act-dev-reviewer` subagent (Phase 8b).
   When the reviewer runs, it evaluates for skill discovery. If it identifies a new

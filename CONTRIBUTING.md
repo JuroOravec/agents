@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing to this repo. It holds shared Cursor configuration (agents, skills, rules) and imports projects as git submodules.
+Thanks for your interest in contributing to this repo. It holds shared Cursor configuration (agents, skills, rules) and imports projects as nested git clones.
 
 ## How to report bugs
 
@@ -16,16 +16,16 @@ Open an issue, describe the problem you're solving and how you'd like it to work
 
 ## Development setup
 
-1. Clone with submodules:
+1. Clone the root repo:
 
    ```bash
-   git clone --recurse-submodules https://github.com/JuroOravec/agents.git
+   git clone https://github.com/JuroOravec/agents.git
    cd agents
    ```
 
-2. See [docs/development/README.md](docs/development/README.md) for prerequisites, project structure, and how to add/remove submodules.
+2. See [docs/development/README.md](docs/development/README.md) for prerequisites, project structure, and how to add/remove nested project clones.
 
-3. See [docs/project-setup.md](docs/project-setup.md) for submodule workflows (add, remove, soft switching).
+3. See [docs/project-setup.md](docs/project-setup.md) for clone workflows (add, remove, soft switching).
 
 ## Pull request process
 
@@ -35,7 +35,7 @@ Open an issue, describe the problem you're solving and how you'd like it to work
 4. Open a PR against `main`.
 5. Describe what you changed and why.
 
-There is no build or test at root — changes to agents, skills, and rules are markdown/config. Submodules have their own CI; if you change files inside a submodule, follow that project's contribution guidelines.
+There is no build or test at root — changes to agents, skills, and rules are markdown/config. Nested projects have their own CI; if you change files inside a nested project, follow that project's contribution guidelines.
 
 ## Code style
 

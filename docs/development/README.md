@@ -1,14 +1,14 @@
 # Development Guide
 
-Internal guide for contributors to the agents repo. This root holds shared Cursor configuration (agents, skills, rules) and imports projects as git submodules.
+Internal guide for contributors to the agents repo. This root holds shared Cursor configuration (agents, skills, rules) and imports projects as nested git clones.
 
 ## Prerequisites
 
-- **Node.js** — Used for TypeScript resolution when editing files across submodules. The root `package.json` provides `@types/node` so built-ins like `node:path` resolve correctly.
-- **Git** — Standard git with submodule support.
+- **Node.js** — Used for TypeScript resolution when editing files across nested projects. The root `package.json` provides `@types/node` so built-ins like `node:path` resolve correctly.
+- **Git** — Standard git tooling.
 - **Cursor** (or compatible AI editor) — The `.cursor/` config targets Cursor; the pattern works with other tools that support similar layouts.
 
-Submodules have their own prerequisites (pnpm, Node version, etc.). Check each project's docs.
+Nested projects have their own prerequisites (pnpm, Node version, etc.). Check each project's docs.
 
 ## Project structure
 
@@ -20,23 +20,22 @@ agents/                    ← root repo
 │   └── skills/             ← reusable skills (prompts, workflows)
 ├── docs/                   ← documentation
 │   ├── development/        ← this guide
-│   └── project-setup.md    ← submodule workflow
-├── project-a/            ← imported project (git submodule)
-├── project-b/            ← imported project (git submodule)
-├── .gitmodules
+│   └── project-setup.md    ← nested-clone workflow
+├── project-a/            ← imported project (independent git clone)
+├── project-b/            ← imported project (independent git clone)
 ├── package.json            ← minimal; fixes TypeScript resolution
 └── ...
 ```
 
 ## Architecture
 
-- **Entry points** — No library code at root. Open the root in Cursor; submodules are indexed and share `.cursor/` config.
-- **Core flow** — Agents and rules apply globally. Skills are invoked when the AI detects a relevant task. Each submodule has its own build, test, and lint pipelines.
-- **Submodule model** — Real directories (not symlinks), so Cursor indexes them. Each project keeps its own git history; the root stores commit pointers.
+- **Entry points** — No library code at root. Open the root in Cursor; nested projects are indexed and share `.cursor/` config.
+- **Core flow** — Agents and rules apply globally. Skills are invoked when the AI detects a relevant task. Each nested project has its own build, test, and lint pipelines.
+- **Nested clone model** — Real directories (not symlinks), so Cursor indexes them. Each project keeps its own git history.
 
 ## Root commands
 
-The root `package.json` is minimal. One validation script runs at root; all other development commands live inside submodules.
+The root `package.json` is minimal. One validation script runs at root; all other development commands live inside nested projects.
 
 ```bash
 pnpm run validate   # Validate skill phase format (see below)
@@ -84,11 +83,11 @@ Data is read from `.cursor/logs/skills-eval/`. Use `-p 3000` to change the port.
 
 See [docs/project-setup.md](../project-setup.md) for:
 
-- Adding a submodule
-- Removing a submodule
+- Adding a nested project clone
+- Removing a nested project clone
 - Soft switching (toggle `.gitignore` to focus on 1–2 projects without removing)
 
-For AI-assisted setup, use the [`root-gitmodule-setup`](../../.cursor/skills/root-gitmodule-setup/SKILL.md) skill.
+For AI-assisted setup, use the [`root-project-setup`](../../.cursor/skills/root-project-setup/SKILL.md) skill.
 
 ## Editing agents, skills, rules
 
@@ -96,7 +95,7 @@ For AI-assisted setup, use the [`root-gitmodule-setup`](../../.cursor/skills/roo
 - **Rules** — `.cursor/rules/*.md` — Always-applied guidance (coding standards, conventions).
 - **Skills** — `.cursor/skills/*/SKILL.md` — Reusable workflows. See [.cursor/skills/README.md](../../.cursor/skills/README.md).
 
-Changes apply to all submodules immediately. No build step.
+Changes apply to all nested projects immediately. No build step.
 
 ## CI
 
@@ -130,6 +129,6 @@ CI job name for branch protection: `validate`.
 ## Further reading
 
 - [docs/agents-and-skills.md](../agents-and-skills.md) — Agent vs skill: persona vs procedure
-- [docs/project-setup.md](../project-setup.md) — Submodule workflows, soft vs hard switching
-- [root-gitmodule-setup skill](../../.cursor/skills/root-gitmodule-setup/SKILL.md) — AI-assisted add/remove/switch
+- [docs/project-setup.md](../project-setup.md) — Nested clone workflows, soft vs hard switching
+- [root-project-setup skill](../../.cursor/skills/root-project-setup/SKILL.md) — AI-assisted add/remove/switch
 - [Skills README](../../.cursor/skills/README.md) — Overview of available skills

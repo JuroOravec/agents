@@ -1,8 +1,0 @@
-[submodule "cbc-website"]
-	path = cbc-website
-	url = https://github.com/codebridgecollege/cbc-website.git
-	branch = dev
-[submodule "crawlee-one"]
-	path = crawlee-one
-	url = https://github.com/JuroOravec/crawlee-one.git
-	branch = dev/crawlee-one-v4
