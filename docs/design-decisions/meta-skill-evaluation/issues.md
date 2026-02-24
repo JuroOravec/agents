@@ -72,7 +72,7 @@ Part of meta-evaluation (issue #2). Design: \`docs/design-decisions/meta-skill-e
 ```bash
 gh issue create --title "Implement skill-eval aggregation script for adherence metrics" --label "enhancement" --body "## Summary
 
-Read \`.cursor/logs/skills-eval/*.json\`, compute adherence metrics (completed/total per session, per skill), output CSV/JSONL for trending.
+Read \`.cursor/logs/skills/*.json\`, compute adherence metrics (completed/total per session, per skill), output CSV/JSONL for trending.
 
 Part of meta-evaluation (issue #2). Design: \`docs/design-decisions/meta-skill-evaluation/\`."
 ```

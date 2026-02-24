@@ -9,7 +9,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-LOG_DIR="${REPO_ROOT}/.cursor/logs/skills-eval"
+LOG_DIR="${REPO_ROOT}/.cursor/logs/skills"
 mkdir -p "$LOG_DIR"
 
 gen_uuid() {
@@ -59,11 +59,11 @@ cmd_start() {
 
   local json
   json=$(jq -n \
-    --arg createdAt "$now" \
+    --arg created_at "$now" \
     --arg session_id "$session_id" \
     --arg skill_id "$skill_id" \
     --arg skill "$skill_name" \
-    '{createdAt: $createdAt, session_id: $session_id, skill_id: $skill_id, skill: $skill, steps: []}')
+    '{created_at: $created_at, session_id: $session_id, skill_id: $skill_id, skill: $skill, steps: []}')
 
   echo "$json" > "$file"
   echo "$skill_id"
@@ -90,9 +90,9 @@ cmd_complete() {
 
   local step
   if [[ "$skipped" == "--skipped" ]]; then
-    step=$(jq -n --arg phase "$phase_no" --arg completedAt "$now" '{phase: ($phase | tonumber), completedAt: $completedAt, skipped: true}')
+    step=$(jq -n --arg phase "$phase_no" --arg completed_at "$now" '{phase: ($phase | tonumber), completed_at: $completed_at, skipped: true}')
   else
-    step=$(jq -n --arg phase "$phase_no" --arg completedAt "$now" '{phase: ($phase | tonumber), completedAt: $completedAt}')
+    step=$(jq -n --arg phase "$phase_no" --arg completed_at "$now" '{phase: ($phase | tonumber), completed_at: $completed_at}')
   fi
 
   jq --argjson step "$step" '.steps += [$step]' "$file" > "${file}.tmp" && mv "${file}.tmp" "$file"

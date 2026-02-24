@@ -28,7 +28,7 @@ import {
   parseSortParam,
 } from "./storage.js";
 
-const LOG_DIR = ".cursor/logs/skills-eval";
+const LOG_DIR = ".cursor/logs/skills";
 const AGENTS_LOG_DIR = ".cursor/logs/agents";
 const TOOLS_LOG_DIR = ".cursor/logs/tools";
 const PROMPTS_LOG_DIR = ".cursor/logs/prompts";

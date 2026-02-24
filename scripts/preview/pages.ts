@@ -1,5 +1,5 @@
 /**
- * HTML page generators for the skills-eval dashboard.
+ * HTML page generators for the skills dashboard.
  * Skills page: heatmap (skill x phase) + line chart (success over time).
  * Agents/Tools pages: tables with filter, sort, pagination.
  */
@@ -153,7 +153,7 @@ export function computeHeatmapData(
 }
 
 /**
- * Compute line chart data: for each skill, points (createdAt, successRate) ordered by time.
+ * Compute line chart data: for each skill, points (created_at, successRate) ordered by time.
  */
 export function computeLineChartData(
   runs: SkillEvalRun[],
@@ -173,16 +173,16 @@ export function computeLineChartData(
     const expectedCount = phases.length;
     if (expectedCount === 0) continue; // No phases defined → skip (can't compute rate)
 
-    // Order runs by createdAt (chronological)
+    // Order runs by created_at (chronological)
     const sorted = [...skillRuns].sort((a, b) =>
-      a.createdAt.localeCompare(b.createdAt),
+      a.created_at.localeCompare(b.created_at),
     );
     const points: LineChartPoint[] = sorted.map((run) => {
       // Success rate = (completed phases / expected phases) × 100
       const completedCount = run.steps.length;
       const rate = Math.round((completedCount / expectedCount) * 100);
       return {
-        x: run.createdAt,
+        x: run.created_at,
         y: Math.min(100, rate),
         runId: run.skill_id,
       };
@@ -250,7 +250,7 @@ export function pageSkills(
 
   return `${layoutStart("Skills")}
 <h1>Skills</h1>
-<p>${runsCount} run${runsCount === 1 ? "" : "s"} in .cursor/logs/skills-eval/</p>
+<p>${runsCount} run${runsCount === 1 ? "" : "s"} in .cursor/logs/skills/</p>
 ${emptyMsg}
 <h2>Heatmap: skill × phase (success rate %)</h2>
 <p class="chart-container">Each cell: % of that skill's runs that completed that phase. Green = 100%, red = 0%.</p>

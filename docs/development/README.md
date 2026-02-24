@@ -51,7 +51,7 @@ cd crawlee-one && pnpm test
 - **Heatmap** — skill × phase; each cell is 0–100% success rate (green = 100%, red = 0%)
 - **Line chart** — each skill over time; Y = 0–100% (completed phases / expected phases)
 
-Data is read from `.cursor/logs/skills-eval/`. Use `-p 3000` to change the port.
+Data is read from `.cursor/logs/skills/`. Use `-p 3000` to change the port.
 
 **Full setup guide:** [docs/skill-usage-tracking/](../skill-usage-tracking/README.md)
 

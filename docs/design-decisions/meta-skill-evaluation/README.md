@@ -133,14 +133,14 @@ When the agent runs the same skill twice in one session (e.g. creates two issues
 **`skill-eval start {session_id} {skill_name}`:**
 - Agent passes `session_id` (from context; injected by sessionStart) and `skill_name`
 - Generates `skill_id` (e.g. UUID) randomly
-- Creates JSON file: `.cursor/logs/skills-eval/{timestamp}_{skill}_{skill_id}.json`
-- Populates: `createdAt` (from script timestamp), `session_id`, `skill_id`, `skill`, empty `steps`
+- Creates JSON file: `.cursor/logs/skills/{timestamp}_{skill}_{skill_id}.json`
+- Populates: `created_at` (from script timestamp), `session_id`, `skill_id`, `skill`, empty `steps`
 - **Prints `skill_id` to stdout** — the agent must capture and preserve this in context
 - Returns exit 0 on success
 
 **`skill-eval complete {skill_id} {phase_no} [--skipped]`:**
 - Finds the JSON file by glob: `*_{skill_id}.json`
-- Appends to `steps`: `{ phase: phase_no, completedAt: <now> }` or, with `--skipped`: `{ phase: phase_no, completedAt: <now>, skipped: true }`
+- Appends to `steps`: `{ phase: phase_no, completed_at: <now> }` or, with `--skipped`: `{ phase: phase_no, completed_at: <now>, skipped: true }`
 - Returns exit 0 on success
 
 **Filename:** `{timestamp}_{skill}_{skill_id}.json` — e.g. `20260223T140000Z_act-repo-issue-create_a1b2c3d4.json`
@@ -160,35 +160,35 @@ When the agent runs the same skill twice in one session (e.g. creates two issues
 
 | Field | Description |
 | ----- | ----------- |
-| `createdAt` | ISO timestamp when `skill-eval start` ran |
+| `created_at` | ISO timestamp when `skill-eval start` ran |
 | `session_id` | Passed by agent; stored in JSON only (not in filename) |
 | `skill_id` | Random UUID per invocation; printed by `start`, used in `complete` |
 | `skill` | Skill name (e.g. `act-repo-issue-create`) |
-| `steps` | Array of `{ phase, completedAt }` or `{ phase, completedAt, skipped: true }` — script sets these |
+| `steps` | Array of `{ phase, completed_at }` or `{ phase, completed_at, skipped: true }` — script sets these |
 
 **Step shape:**
-- Completed: `{ "phase": 1, "completedAt": "2026-02-23T14:00:05Z" }`
-- Skipped: `{ "phase": 1, "completedAt": "2026-02-23T14:00:05Z", "skipped": true }`
+- Completed: `{ "phase": 1, "completed_at": "2026-02-23T14:00:05Z" }`
+- Skipped: `{ "phase": 1, "completed_at": "2026-02-23T14:00:05Z", "skipped": true }`
 
 **Example:**
 
 ```json
 {
-  "createdAt": "2026-02-23T14:00:00Z",
+  "created_at": "2026-02-23T14:00:00Z",
   "session_id": "abc-session-123",
   "skill_id": "a1b2c3d4-5678-90ab-cdef-1234567890ab",
   "skill": "act-repo-issue-create",
   "steps": [
-    { "phase": 1, "completedAt": "2026-02-23T14:00:05Z" },
-    { "phase": 2, "completedAt": "2026-02-23T14:00:45Z", "skipped": true },
-    { "phase": 3, "completedAt": "2026-02-23T14:01:10Z" }
+    { "phase": 1, "completed_at": "2026-02-23T14:00:05Z" },
+    { "phase": 2, "completed_at": "2026-02-23T14:00:45Z", "skipped": true },
+    { "phase": 3, "completed_at": "2026-02-23T14:01:10Z" }
   ]
 }
 ```
 
 ### Tool log correlation (future)
 
-Optionally, we can add **post-tool-use hooks** that log tool calls to `.cursor/logs/tools/` with timestamps. With `createdAt` and `completedAt` in the skill JSON, we can correlate: "which tools were used during Phase 2?" This is a separate enhancement and not required for the first iteration.
+Optionally, we can add **post-tool-use hooks** that log tool calls to `.cursor/logs/tools/` with timestamps. With `created_at` and `completed_at` in the skill JSON, we can correlate: "which tools were used during Phase 2?" This is a separate enhancement and not required for the first iteration.
 
 ---
 
@@ -217,9 +217,9 @@ This task should be created as a separate GitHub issue and completed before or i
 
 With skill-eval data, we have explicit data:
 
-- **Completed** — Step appears in `steps` with a non-null `completedAt`. Agent did the work and recorded it.
+- **Completed** — Step appears in `steps` with a non-null `completed_at`. Agent did the work and recorded it.
 - **Skipped** — Agent calls `skill-eval complete {skill_id} {phase_no} --skipped`; step has `skipped: true` in the JSON. Or we infer "not in steps" as skipped.
-- **Mishandled** — Wrong order (e.g. Phase 3 completed before Phase 2), or conflicting with skill rules. Detectable from `completedAt` ordering and phase sequence.
+- **Mishandled** — Wrong order (e.g. Phase 3 completed before Phase 2), or conflicting with skill rules. Detectable from `completed_at` ordering and phase sequence.
 
 For the first iteration, we can keep it simple: **completed** = in `steps`, **skipped** = not in `steps` (with the caveat that the agent might have forgotten to log). Refinement can come later.
 
@@ -245,7 +245,7 @@ Once this works, expand to act-dev, project-setup, act-architect, etc.
 | Aspect | Detail |
 | ------ | ------ |
 | **When** | Perpetual — agent calls `skill-eval start` then `skill-eval complete` as it goes. No manual trigger. |
-| **Where** | `.cursor/logs/skills-eval/{timestamp}_{skill}_{skill_id}.json` (`session_id` stored inside JSON) |
+| **Where** | `.cursor/logs/skills/{timestamp}_{skill}_{skill_id}.json` (`session_id` stored inside JSON) |
 | **Script** | `scripts/skill-eval.sh` in the **agents** repo |
 | **Who** | The agent (calls CLI); script handles file I/O, timestamps, skill_id generation |
 | **Dependencies** | sessionStart hook to inject session_id into context; phase format enforcement; skill instructions to pass session_id, call script, and preserve session_id + skill_id in context |
@@ -254,7 +254,7 @@ Once this works, expand to act-dev, project-setup, act-architect, etc.
 
 ## Analysis and visualization
 
-- **Input:** JSON files in `.cursor/logs/skills-eval/`.
+- **Input:** JSON files in `.cursor/logs/skills/`.
 - **Aggregation:** Script to read all files, group by skill, compute per-session adherence: `completed_steps / total_phases`.
 - **Output:** CSV or JSONL for trending; simple dashboard later (heatmap skill × phase, adherence over time).
 
@@ -273,7 +273,7 @@ Once this works, expand to act-dev, project-setup, act-architect, etc.
 | [#10](https://github.com/JuroOravec/agents/issues/10) | **sessionStart hook** — Inject `session_id` into conversation context (no file—breaks with parallel agents) | Open |
 | — | **skill-eval CLI** — `scripts/skill-eval.sh` | **Done** |
 | [#11](https://github.com/JuroOravec/agents/issues/11) | **Add rule/skill instruction** — Pass session_id, preserve skill_id, call complete after each phase (depends on #10) | Done |
-| [#12](https://github.com/JuroOravec/agents/issues/12) | **Aggregation script** — Read skills-eval JSON, compute metrics, output CSV/JSONL | Open |
+| [#12](https://github.com/JuroOravec/agents/issues/12) | **Aggregation script** — Read skills JSON, compute metrics, output CSV/JSONL | Open |
 
 ---
 

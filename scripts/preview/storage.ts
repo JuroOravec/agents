@@ -1,5 +1,5 @@
 /**
- * Load skill-eval logs from .cursor/logs/skills-eval/.
+ * Load skill-eval logs from .cursor/logs/skills/.
  * Log files: {timestamp}_{skill}_{skill_id}.json
  *
  * Also loads agent and tool logs from .cursor/logs/agents/ and .cursor/logs/tools/.
@@ -233,12 +233,12 @@ export async function loadToolLogs(logDir: string): Promise<LogEntry[]> {
 
 export interface SkillEvalStep {
   phase: number;
-  completedAt: string;
+  completed_at: string;
   skipped?: boolean;
 }
 
 export interface SkillEvalRun {
-  createdAt: string;
+  created_at: string;
   session_id: string;
   skill_id: string;
   skill: string;
@@ -249,7 +249,7 @@ export interface SkillEvalRun {
 
 /**
  * Load all skill-eval JSON files from the log directory.
- * Sorted by createdAt ascending.
+ * Sorted by created_at ascending.
  */
 export async function loadSkillEvalLogs(logDir: string): Promise<SkillEvalRun[]> {
   const fullPath = path.resolve(logDir);
@@ -268,7 +268,7 @@ export async function loadSkillEvalLogs(logDir: string): Promise<SkillEvalRun[]>
     try {
       const content = await fsp.readFile(filePath, 'utf-8');
       const data = JSON.parse(content) as {
-        createdAt?: string;
+        created_at?: string;
         session_id?: string;
         skill_id?: string;
         skill?: string;
@@ -276,7 +276,7 @@ export async function loadSkillEvalLogs(logDir: string): Promise<SkillEvalRun[]>
       };
       if (data.skill && data.skill_id) {
         runs.push({
-          createdAt: data.createdAt ?? '',
+          created_at: data.created_at ?? '',
           session_id: data.session_id ?? '',
           skill_id: data.skill_id ?? '',
           skill: data.skill,
@@ -289,6 +289,6 @@ export async function loadSkillEvalLogs(logDir: string): Promise<SkillEvalRun[]>
     }
   }
 
-  runs.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  runs.sort((a, b) => a.created_at.localeCompare(b.created_at));
   return runs;
 }

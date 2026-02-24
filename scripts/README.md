@@ -38,7 +38,7 @@ $ ./scripts/skill-eval.sh complete 72284f1e-382b-4fa7-8035-bf91e3a2263e 1
 $ ./scripts/skill-eval.sh complete 72284f1e-382b-4fa7-8035-bf91e3a2263e 2 --skipped
 ```
 
-Output: `.cursor/logs/skills-eval/{timestamp}_{skill}_{skill_id}.json`
+Output: `.cursor/logs/skills/{timestamp}_{skill}_{skill_id}.json`
 
 ## preview
 

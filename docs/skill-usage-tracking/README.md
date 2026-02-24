@@ -15,7 +15,7 @@ This guide shows how to set up **skill usage tracking** from scratch: how to log
 - **Track workflows step-by-step** — Which steps completed, which were skipped, and when
 - **A preview dashboard** — Heatmap (skill × phase success rate) and line chart (adherence over time)
 - **CI job that checks skill conformity** — Skills use a consistent structure so tracking is reliable
-- **Structured logs** — JSON files in `.cursor/logs/skills-eval/` for every skill run
+- **Structured logs** — JSON files in `.cursor/logs/skills/` for every skill run
 
 ---
 
@@ -180,7 +180,7 @@ Requires `jq`; install with `brew install jq` (macOS) or your package manager.
 ./scripts/skill-eval.sh complete a1b2c3d4-5678-90ab-cdef-1234567890ab 2 --skipped
 ```
 
-Check `.cursor/logs/skills-eval/` — you should see a JSON file with `steps` containing phases 1 and 2.
+Check `.cursor/logs/skills/` — you should see a JSON file with `steps` containing phases 1 and 2.
 
 ---
 
@@ -251,22 +251,22 @@ This runs `scripts/validate/skill-phases.ts` and fails if any skill uses a non-P
     ```json
     // 20260223T183529Z_act-repo-issue-create_6703f819-407b.json
     {
-      "createdAt": "2026-02-23T18:35:29Z",
+      "created_at": "2026-02-23T18:35:29Z",
       "session_id": "1b5c6ca3-4402-4013-a193-484059076602",
       "skill_id": "6703f819-407b-4684-aabc-899b1206bf0f",
       "skill": "act-repo-issue-create",
       "steps": [
         {
           "phase": 1,
-          "completedAt": "2026-02-23T18:35:37Z"
+          "completed_at": "2026-02-23T18:35:37Z"
         },
         {
           "phase": 2,
-          "completedAt": "2026-02-23T18:35:37Z"
+          "completed_at": "2026-02-23T18:35:37Z"
         },
         {
           "phase": 3,
-          "completedAt": "2026-02-23T18:35:37Z"
+          "completed_at": "2026-02-23T18:35:37Z"
         },
       ]
     }
@@ -290,7 +290,7 @@ Open http://localhost:3040/skills.
 - **Heatmap** — Rows = skills, columns = phases. Each cell is 0–100% success rate (green = 100%, red = 0%). Shows how often each phase was completed across all runs of that skill.
 - **Line chart** — Each line = one skill. X = time, Y = success rate (completed phases / expected phases). Shows adherence trends over time.
 
-Data is read from `.cursor/logs/skills-eval/`. Each JSON file is one skill run; the dashboard aggregates them and computes metrics from your `SKILL.md` phase definitions.
+Data is read from `.cursor/logs/skills/`. Each JSON file is one skill run; the dashboard aggregates them and computes metrics from your `SKILL.md` phase definitions.
 
 ![Skill health metrics](./skill-eval-dashboard.png)
 
