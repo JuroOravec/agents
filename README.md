@@ -4,7 +4,7 @@
 
 ---
 
-If you use an AI coding assistant - Cursor, Claude Code, Codeium, Windsurf, or similar - and maintain more than one project, you've probably felt the pain: 
+If you use an AI coding assistant - Cursor, Claude Code, Codeium, Windsurf, or similar - and maintain more than one project, you've probably felt the pain:
 
 You craft a solid set of rules, prompts, and agent definitions in one repo, and then you copy them into the next. And the next. Before long, you're maintaining five versions of the same config, and improvements in one place never make it to the others.
 
@@ -14,7 +14,7 @@ There's a better way.
 
 Instead of scattering your AI config across each repo, put it in a **single root repository** and import your projects as **regular nested git clones**. Open that root in your editor, and every project inside it shares the same rules and definitions. Update once, apply everywhere.
 
-*This repo is set up for Cursor (`.cursor/` with agents, skills, rules). The same pattern works for other tools - just swap in their config layout.*
+_This repo is set up for Cursor (`.cursor/` with agents, skills, rules). The same pattern works for other tools - just swap in their config layout._
 
 ```
 agents/                    ← you open this

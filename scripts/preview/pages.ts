@@ -4,21 +4,16 @@
  * Agents/Tools pages: tables with filter, sort, pagination.
  */
 
-import type { PhaseInfo } from "../validate/skill-phases.js";
-import type {
-  ChatWaterfallEntry,
-  LogEntry,
-  SkillEvalRun,
-  SortSpec,
-} from "./storage.js";
-import { buildSortParam } from "./storage.js";
+import type { PhaseInfo } from '../validate/skill-phases.js';
+import type { ChatWaterfallEntry, LogEntry, SkillEvalRun, SortSpec } from './storage.js';
+import { buildSortParam } from './storage.js';
 
 function escapeHtml(s: string): string {
   return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 /** Shared nav: Skills, Agents, Tools, Prompts, Chats. */
@@ -106,13 +101,12 @@ export function computeHeatmapData(
   }
   // Sort phases: 1, 2, 2a, 2b, 3, … (numeric first, then suffix)
   const phases = Array.from(allPhaseKeys).sort((a, b) => {
-    const na = parseInt(a.replace(/\D/g, ""), 10);
-    const nb = parseInt(b.replace(/\D/g, ""), 10);
+    const na = parseInt(a.replace(/\D/g, ''), 10);
+    const nb = parseInt(b.replace(/\D/g, ''), 10);
     if (na !== nb) return na - nb;
     return a.localeCompare(b);
   });
 
-  const phaseToIndex = new Map(phases.map((p, i) => [p, i]));
   const values: number[][] = skills.map(() => phases.map(() => -1)); // -1 = n/a (phase not in skill)
 
   for (let si = 0; si < skills.length; si++) {
@@ -123,12 +117,10 @@ export function computeHeatmapData(
     for (let pi = 0; pi < phases.length; pi++) {
       const phaseKey = phases[pi]!;
       if (!phaseKeys.has(phaseKey)) continue; // Phase not in this skill — leave -1 (n/a)
-      const phaseNum = parseInt(phaseKey.replace(/\D/g, ""), 10);
+      const phaseNum = parseInt(phaseKey.replace(/\D/g, ''), 10);
       // Match steps by phase number or exact key (handles "2" vs "2a" when JSON stores numeric)
       const completed = skillRuns.filter((r) =>
-        r.steps.some(
-          (s) => s.phase === phaseNum || String(s.phase) === phaseKey,
-        ),
+        r.steps.some((s) => s.phase === phaseNum || String(s.phase) === phaseKey),
       ).length;
       const total = skillRuns.length;
       values[si]![pi] = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -138,9 +130,7 @@ export function computeHeatmapData(
   return {
     skills,
     phases: phases.map((key) => {
-      const info = skills
-        .flatMap((s) => skillPhasesMap.get(s) ?? [])
-        .find((p) => p.key === key);
+      const info = skills.flatMap((s) => skillPhasesMap.get(s) ?? []).find((p) => p.key === key);
       return { key, title: info?.title ?? key };
     }),
     values,
@@ -159,9 +149,7 @@ export interface SkillsPerDayPoint {
  * Compute skill runs count and avg runs per session by day.
  * Uses created_at for date and conversation_id for unique sessions.
  */
-export function computeSkillsPerDayChartData(
-  runs: SkillEvalRun[]
-): SkillsPerDayPoint[] {
+export function computeSkillsPerDayChartData(runs: SkillEvalRun[]): SkillsPerDayPoint[] {
   const byDate = new Map<string, { count: number; sessions: Set<string> }>();
   for (const run of runs) {
     const date = run.created_at.slice(0, 10);
@@ -185,7 +173,7 @@ export function computeSkillsPerDayChartData(
  * Returns Map<skill, {x, y}[]> with zeros for missing dates.
  */
 export function computeSkillsPerDayByTypeChartData(
-  runs: SkillEvalRun[]
+  runs: SkillEvalRun[],
 ): Map<string, ToolChartPoint[]> {
   const byTypeAndDate = new Map<string, number>();
   const allDates = new Set<string>();
@@ -200,7 +188,7 @@ export function computeSkillsPerDayByTypeChartData(
   const sortedDates = Array.from(allDates).sort();
   const byType = new Map<string, Map<string, number>>();
   for (const [key, count] of byTypeAndDate) {
-    const [skill, date] = key.split("|") as [string, string];
+    const [skill, date] = key.split('|') as [string, string];
     const inner = byType.get(skill) ?? new Map<string, number>();
     inner.set(date, count);
     byType.set(skill, inner);
@@ -222,7 +210,7 @@ export function computeSkillsPerDayByTypeChartData(
  */
 export function computeSkillSuccessRateChartData(
   runs: SkillEvalRun[],
-  skillPhasesMap: Map<string, PhaseInfo[]>
+  skillPhasesMap: Map<string, PhaseInfo[]>,
 ): Map<string, ToolChartPoint[]> {
   const agg = new Map<string, { success: number; total: number }>();
   for (const run of runs) {
@@ -239,7 +227,7 @@ export function computeSkillSuccessRateChartData(
 
   const bySkill = new Map<string, { date: string; success: number; total: number }[]>();
   for (const [key, v] of agg) {
-    const [skill, date] = key.split("|") as [string, string];
+    const [skill, date] = key.split('|') as [string, string];
     const list = bySkill.get(skill) ?? [];
     list.push({ date, success: v.success, total: v.total });
     bySkill.set(skill, list);
@@ -265,7 +253,7 @@ export function computeSkillSuccessRateChartData(
  */
 export function computeSkillTimeShareChartData(
   chats: LogEntry[],
-  runs: SkillEvalRun[]
+  runs: SkillEvalRun[],
 ): ToolChartPoint[] {
   const allDates = new Set<string>();
   type Interval = { startMs: number; endMs: number };
@@ -273,9 +261,9 @@ export function computeSkillTimeShareChartData(
   const chatPeriodsByDate = new Map<string, Map<string, Interval[]>>();
   for (const entry of chats) {
     const d = entry.data as Record<string, unknown>;
-    const convId = (d.conversation_id as string) ?? "";
-    const start = (d.started_at as string) ?? "";
-    const end = (d.finished_at as string) ?? "";
+    const convId = (d.conversation_id as string) ?? '';
+    const start = (d.started_at as string) ?? '';
+    const end = (d.finished_at as string) ?? '';
     if (!convId || !start || !end) continue;
     const startMs = new Date(start).getTime();
     const endMs = new Date(end).getTime();
@@ -303,13 +291,11 @@ export function computeSkillTimeShareChartData(
 
   const skillPeriodsByDate = new Map<string, Map<string, Interval[]>>();
   for (const run of runs) {
-    const convId = run.conversation_id ?? "";
+    const convId = run.conversation_id ?? '';
     if (!convId) continue;
     const lastStep = run.steps.length > 0 ? run.steps[run.steps.length - 1] : null;
     const startMs = new Date(run.created_at).getTime();
-    const endMs = lastStep?.completed_at
-      ? new Date(lastStep.completed_at).getTime()
-      : startMs;
+    const endMs = lastStep?.completed_at ? new Date(lastStep.completed_at).getTime() : startMs;
     const startDate = run.created_at.slice(0, 10);
     const endDate = (lastStep?.completed_at ?? run.created_at).slice(0, 10);
     for (let d = startDate; d <= endDate; ) {
@@ -377,8 +363,8 @@ export function computeSkillTimeShareChartData(
  * RGB: green=#22c55e (34,197,94), red=#ef4444 (239,68,68).
  */
 function colorForRate(rate: number): string {
-  if (rate >= 100) return "#22c55e";
-  if (rate <= 0) return "#ef4444";
+  if (rate >= 100) return '#22c55e';
+  if (rate <= 0) return '#ef4444';
   const r = Math.round(255 - (rate / 100) * (255 - 34));
   const g = Math.round(34 + (rate / 100) * (197 - 34));
   const b = Math.round(68 + (rate / 100) * (94 - 68));
@@ -412,40 +398,37 @@ export function pageSkills(
         return `<td class="heatmap-cell" style="background:#eee;color:#999" title="N/A">—</td>`;
       }
       const bg = colorForRate(v);
-      return `<td class="heatmap-cell" style="background:${bg};color:${v > 50 ? "#fff" : "#333"}" title="Phase ${heatmapData.phases[pi]!.key}: ${v}%">${v}%</td>`;
+      return `<td class="heatmap-cell" style="background:${bg};color:${v > 50 ? '#fff' : '#333'}" title="Phase ${heatmapData.phases[pi]!.key}: ${v}%">${v}%</td>`;
     })
-    .join("")}
+    .join('')}
 </tr>`,
     )
-    .join("");
+    .join('');
 
   const heatmapHeaders = heatmapData.phases
     .map((p) => `<th class="heatmap-cell">${escapeHtml(p.key)}</th>`)
-    .join("");
+    .join('');
 
   const emptyMsg =
     runsCount === 0
-      ? "<p>No skill-eval logs found. Run skills with skill-eval to collect data.</p>"
-      : "";
+      ? '<p>No skill-eval logs found. Run skills with skill-eval to collect data.</p>'
+      : '';
 
-  let chartsHtml = "";
+  let chartsHtml = '';
 
   if (skillsPerDayData.length > 0 || skillsPerDayByTypeData.size > 0) {
     const maxY = Math.max(
       0,
       ...skillsPerDayData.map((p) => p.y),
-      ...Array.from(skillsPerDayByTypeData.values()).flatMap((pts) => pts.map((p) => p.y))
+      ...Array.from(skillsPerDayByTypeData.values()).flatMap((pts) => pts.map((p) => p.y)),
     );
     const maxAvg = Math.max(0, ...skillsPerDayData.map((p) => p.avgPerConv));
-    const yAxisMax =
-      maxY === 0 && maxAvg === 0
-        ? 1
-        : Math.ceil(Math.max(maxY * 1.1, maxAvg * 1.1));
+    const yAxisMax = maxY === 0 && maxAvg === 0 ? 1 : Math.ceil(Math.max(maxY * 1.1, maxAvg * 1.1));
 
     const series: { name: string; data: { x: string; y: number }[] }[] = [];
     if (skillsPerDayData.length > 0) {
       series.push({
-        name: "Skills per day",
+        name: 'Skills per day',
         data: skillsPerDayData.map((p) => ({ x: p.x, y: p.y })),
       });
     }
@@ -457,12 +440,12 @@ export function pageSkills(
     }
     if (skillsPerDayData.length > 0) {
       series.push({
-        name: "Avg. num of skills in one session",
+        name: 'Avg. num of skills in one session',
         data: skillsPerDayData.map((p) => ({ x: p.x, y: p.avgPerConv })),
       });
     }
     const containerId = `skills-per-day-${Math.random().toString(36).slice(2, 11)}`;
-    const seriesJson = JSON.stringify(series).replace(/</g, "\\u003c");
+    const seriesJson = JSON.stringify(series).replace(/</g, '\\u003c');
     chartsHtml += `
 <h2>Skills per day</h2>
 <p class="chart-container">X = date (daily bucket). Y = number of skill runs. One line per skill plus total and avg overlay.</p>
@@ -488,14 +471,12 @@ export function pageSkills(
   }
 
   if (skillSuccessRateChartData.size > 0) {
-    const lineSeries = Array.from(skillSuccessRateChartData.entries()).map(
-      ([skill, points]) => ({
-        name: skill,
-        data: points.map((p) => ({ x: p.x, y: p.y })),
-      })
-    );
+    const lineSeries = Array.from(skillSuccessRateChartData.entries()).map(([skill, points]) => ({
+      name: skill,
+      data: points.map((p) => ({ x: p.x, y: p.y })),
+    }));
     const containerId = `skill-success-${Math.random().toString(36).slice(2, 11)}`;
-    const lineSeriesJson = JSON.stringify(lineSeries).replace(/</g, "\\u003c");
+    const lineSeriesJson = JSON.stringify(lineSeries).replace(/</g, '\\u003c');
     chartsHtml += `
 <h2>Success rate over time (by skill)</h2>
 <p class="chart-container">Each line = one skill. X = date (daily bucket). Y = 0–100% (runs that completed all phases / total for that skill that day).</p>
@@ -521,12 +502,12 @@ export function pageSkills(
   if (skillTimeShareChartData.length > 0) {
     const timeShareSeries = [
       {
-        name: "Time in skill workflows",
+        name: 'Time in skill workflows',
         data: skillTimeShareChartData.map((p) => ({ x: p.x, y: p.y })),
       },
     ];
     const containerId = `skill-time-share-${Math.random().toString(36).slice(2, 11)}`;
-    const seriesJson = JSON.stringify(timeShareSeries).replace(/</g, "\\u003c");
+    const seriesJson = JSON.stringify(timeShareSeries).replace(/</g, '\\u003c');
     chartsHtml += `
 <h2>Time in skill workflows (% of work time)</h2>
 <p class="chart-container">X = date (daily bucket). Y = 0–100% (time spent in active skill workflows while working / total time spent working).</p>
@@ -559,14 +540,14 @@ export function pageSkills(
   </table>
 </div>`;
 
-  const contentAboveTable = `<p>${runsCount} run${runsCount === 1 ? "" : "s"} in .cursor/logs/skills/</p>
+  const contentAboveTable = `<p>${runsCount} run${runsCount === 1 ? '' : 's'} in .cursor/logs/skills/</p>
 ${emptyMsg}
 ${chartsHtml}
 ${heatmapHtml}`;
 
   return pageLogTable(
-    "Skills",
-    "/skills",
+    'Skills',
+    '/skills',
     SKILL_COLUMNS,
     entries,
     totalCount,
@@ -577,12 +558,12 @@ ${heatmapHtml}`;
     filterError,
     emptyMsg,
     "obj.skill === 'act-dev'  // JS expression, obj = log entry",
-    contentAboveTable
+    contentAboveTable,
   );
 }
 
 export function pageError(message: string): string {
-  return `${layoutStart("Error")}
+  return `${layoutStart('Error')}
 <h1>Error</h1>
 <p>${escapeHtml(message)}</p>
 ${layoutEnd}`;
@@ -590,47 +571,46 @@ ${layoutEnd}`;
 
 /** Agent schema columns (design doc order). */
 const AGENT_COLUMNS = [
-  "finished_at",
-  "started_at",
-  "event",
-  "subagent_type",
-  "status",
-  "duration",
-  "conversation_id",
-  "generation_id",
-  "model",
-  "cursor_version",
+  'finished_at',
+  'started_at',
+  'event',
+  'subagent_type',
+  'status',
+  'duration',
+  'conversation_id',
+  'generation_id',
+  'model',
+  'cursor_version',
 ];
 
 /** Prompt schema columns. */
 const PROMPT_COLUMNS = [
-  "ts",
-  "conversation_id",
-  "generation_id",
-  "model",
-  "cursor_version",
-  "hook",
-  "last_turn_preview",
-  "context",
-  "user_message",
+  'ts',
+  'conversation_id',
+  'generation_id',
+  'model',
+  'cursor_version',
+  'hook',
+  'last_turn_preview',
+  'context',
+  'user_message',
 ];
 
 /** Skill-eval run columns (for table). */
 const SKILL_COLUMNS = [
-  "created_at",
-  "finished_at",
-  "skill",
-  "skill_id",
-  "conversation_id",
-  "phases_completed",
-  "filename",
+  'created_at',
+  'finished_at',
+  'skill',
+  'skill_id',
+  'conversation_id',
+  'phases_completed',
+  'filename',
 ];
 
 /** Convert SkillEvalRun to LogEntry for filter/sort/pagination. */
 export function skillRunsToLogEntries(runs: SkillEvalRun[]): LogEntry[] {
   return runs.map((run, i) => {
-    const lastStep =
-      run.steps.length > 0 ? run.steps[run.steps.length - 1] : null;
+    const lastStep = run.steps.length > 0 ? run.steps[run.steps.length - 1] : null;
     const finished_at = lastStep?.completed_at ?? run.created_at;
     return {
       id: run.filename || `skill-${i}`,
@@ -639,7 +619,7 @@ export function skillRunsToLogEntries(runs: SkillEvalRun[]): LogEntry[] {
         finished_at,
         skill: run.skill,
         skill_id: run.skill_id,
-        conversation_id: run.conversation_id ?? "",
+        conversation_id: run.conversation_id ?? '',
         phases_completed: run.steps.length,
         filename: run.filename,
       },
@@ -649,53 +629,49 @@ export function skillRunsToLogEntries(runs: SkillEvalRun[]): LogEntry[] {
 
 /** Chat schema columns (agent responses). */
 const CHAT_COLUMNS = [
-  "finished_at",
-  "started_at",
-  "event",
-  "user_message",
-  "text",
-  "conversation_id",
-  "generation_id",
-  "model",
-  "cursor_version",
+  'finished_at',
+  'started_at',
+  'event',
+  'user_message',
+  'text',
+  'conversation_id',
+  'generation_id',
+  'model',
+  'cursor_version',
 ];
 
 /** Tool schema columns (union of success + failure). */
 const TOOL_COLUMNS = [
-  "finished_at",
-  "started_at",
-  "event",
-  "tool_name",
-  "tool_use_id",
-  "cwd",
-  "duration",
-  "model",
-  "tool_input",
-  "error_message",
-  "failure_type",
-  "is_interrupt",
+  'finished_at',
+  'started_at',
+  'event',
+  'tool_name',
+  'tool_use_id',
+  'cwd',
+  'duration',
+  'model',
+  'tool_input',
+  'error_message',
+  'failure_type',
+  'is_interrupt',
 ];
 
 function formatCellValue(v: unknown): string {
-  if (v === null || v === undefined) return "";
-  if (typeof v === "object") {
+  if (v === null || v === undefined) return '';
+  if (typeof v === 'object') {
     const s = JSON.stringify(v);
-    return s.length > 200 ? s.slice(0, 200) + "…" : s;
+    return s.length > 200 ? s.slice(0, 200) + '…' : s;
   }
   return String(v);
 }
 
-function buildLogQuery(
-  page: number,
-  sortParam: string,
-  filterValue: string
-): string {
+function buildLogQuery(page: number, sortParam: string, filterValue: string): string {
   const params = new URLSearchParams();
-  if (page > 1) params.set("page", String(page));
-  if (sortParam) params.set("sort", sortParam);
-  if (filterValue) params.set("filter", filterValue);
+  if (page > 1) params.set('page', String(page));
+  if (sortParam) params.set('sort', sortParam);
+  if (filterValue) params.set('filter', filterValue);
   const q = params.toString();
-  return q ? `?${q}` : "";
+  return q ? `?${q}` : '';
 }
 
 /** Point for tool/agent success rate chart: x = date (YYYY-MM-DD), y = 0..100 */
@@ -717,18 +693,18 @@ export interface AgentsPerDayPoint {
  * Each tool gets a series of (date, rate) points.
  */
 export function computeToolSuccessRateChartData(
-  entries: LogEntry[]
+  entries: LogEntry[],
 ): Map<string, ToolChartPoint[]> {
   // Aggregate: key = tool_name|date -> { success, total }
   const agg = new Map<string, { success: number; total: number }>();
   for (const entry of entries) {
     const d = entry.data as Record<string, unknown>;
-    const toolName = (d.tool_name as string) ?? "?";
-    const finishedAt = (d.finished_at as string) ?? "";
+    const toolName = (d.tool_name as string) ?? '?';
+    const finishedAt = (d.finished_at as string) ?? '';
     const date = finishedAt.slice(0, 10);
     if (!date) continue;
-    const event = (d.event as string) ?? "";
-    const success = event === "toolUse" ? 1 : 0;
+    const event = (d.event as string) ?? '';
+    const success = event === 'toolUse' ? 1 : 0;
     const key = `${toolName}|${date}`;
     const prev = agg.get(key) ?? { success: 0, total: 0 };
     agg.set(key, { success: prev.success + success, total: prev.total + 1 });
@@ -737,7 +713,7 @@ export function computeToolSuccessRateChartData(
   // Group by tool, build sorted points per tool
   const byTool = new Map<string, { date: string; success: number; total: number }[]>();
   for (const [key, v] of agg) {
-    const [toolName, date] = key.split("|") as [string, string];
+    const [toolName, date] = key.split('|') as [string, string];
     const list = byTool.get(toolName) ?? [];
     list.push({ date, success: v.success, total: v.total });
     byTool.set(toolName, list);
@@ -774,15 +750,13 @@ export interface ChatsPerDayPoint {
 /**
  * Compute chats count and avg chats per conversation by day.
  */
-export function computeChatsPerDayChartData(
-  entries: LogEntry[]
-): ChatsPerDayPoint[] {
+export function computeChatsPerDayChartData(entries: LogEntry[]): ChatsPerDayPoint[] {
   const byDate = new Map<string, { count: number; conversations: Set<string> }>();
   for (const entry of entries) {
     const d = entry.data as Record<string, unknown>;
-    const finishedAt = (d.finished_at as string) ?? "";
+    const finishedAt = (d.finished_at as string) ?? '';
     const date = finishedAt.slice(0, 10);
-    const convId = (d.conversation_id as string) ?? "";
+    const convId = (d.conversation_id as string) ?? '';
     if (!date) continue;
     const prev = byDate.get(date) ?? { count: 0, conversations: new Set<string>() };
     prev.count++;
@@ -801,15 +775,13 @@ export function computeChatsPerDayChartData(
 /**
  * Compute prompts count and avg prompts per conversation by day.
  */
-export function computePromptsPerDayChartData(
-  entries: LogEntry[]
-): PromptsPerDayPoint[] {
+export function computePromptsPerDayChartData(entries: LogEntry[]): PromptsPerDayPoint[] {
   const byDate = new Map<string, { count: number; conversations: Set<string> }>();
   for (const entry of entries) {
     const d = entry.data as Record<string, unknown>;
-    const ts = (d.ts as string) ?? "";
+    const ts = (d.ts as string) ?? '';
     const date = ts.slice(0, 10);
-    const convId = (d.conversation_id as string) ?? "";
+    const convId = (d.conversation_id as string) ?? '';
     if (!date) continue;
     const prev = byDate.get(date) ?? { count: 0, conversations: new Set<string>() };
     prev.count++;
@@ -837,16 +809,14 @@ export interface ToolsPerDayPoint {
 /**
  * Compute tools count and avg tool calls per conversation by day.
  */
-export function computeToolsPerDayChartData(
-  entries: LogEntry[]
-): ToolsPerDayPoint[] {
+export function computeToolsPerDayChartData(entries: LogEntry[]): ToolsPerDayPoint[] {
   // Aggregate by date: total tool count and unique conversation_ids
   const byDate = new Map<string, { count: number; conversations: Set<string> }>();
   for (const entry of entries) {
     const d = entry.data as Record<string, unknown>;
-    const finishedAt = (d.finished_at as string) ?? "";
+    const finishedAt = (d.finished_at as string) ?? '';
     const date = finishedAt.slice(0, 10);
-    const convId = (d.conversation_id as string) ?? "";
+    const convId = (d.conversation_id as string) ?? '';
     if (!date) continue;
     const prev = byDate.get(date) ?? { count: 0, conversations: new Set<string>() };
     prev.count++;
@@ -870,14 +840,14 @@ export function computeToolsPerDayChartData(
  * Returns Map<tool_name, {x, y}[]> for separate lines per tool.
  */
 export function computeToolsPerDayByTypeChartData(
-  entries: LogEntry[]
+  entries: LogEntry[],
 ): Map<string, ToolChartPoint[]> {
   const byTypeAndDate = new Map<string, number>();
   const allDates = new Set<string>();
   for (const entry of entries) {
     const d = entry.data as Record<string, unknown>;
-    const toolName = (d.tool_name as string) ?? "?";
-    const finishedAt = (d.finished_at as string) ?? "";
+    const toolName = (d.tool_name as string) ?? '?';
+    const finishedAt = (d.finished_at as string) ?? '';
     const date = finishedAt.slice(0, 10);
     if (!date) continue;
     allDates.add(date);
@@ -888,7 +858,7 @@ export function computeToolsPerDayByTypeChartData(
   const sortedDates = Array.from(allDates).sort();
   const byType = new Map<string, Map<string, number>>();
   for (const [key, count] of byTypeAndDate) {
-    const [toolName, date] = key.split("|") as [string, string];
+    const [toolName, date] = key.split('|') as [string, string];
     const inner = byType.get(toolName) ?? new Map<string, number>();
     inner.set(date, count);
     byType.set(toolName, inner);
@@ -916,15 +886,13 @@ export interface AgentsPerDayPoint {
 /**
  * Compute agent runs count and avg runs per conversation by day.
  */
-export function computeAgentsPerDayChartData(
-  entries: LogEntry[]
-): AgentsPerDayPoint[] {
+export function computeAgentsPerDayChartData(entries: LogEntry[]): AgentsPerDayPoint[] {
   const byDate = new Map<string, { count: number; conversations: Set<string> }>();
   for (const entry of entries) {
     const d = entry.data as Record<string, unknown>;
-    const finishedAt = (d.finished_at as string) ?? "";
+    const finishedAt = (d.finished_at as string) ?? '';
     const date = finishedAt.slice(0, 10);
-    const convId = (d.conversation_id as string) ?? "";
+    const convId = (d.conversation_id as string) ?? '';
     if (!date) continue;
     const prev = byDate.get(date) ?? { count: 0, conversations: new Set<string>() };
     prev.count++;
@@ -945,17 +913,17 @@ export function computeAgentsPerDayChartData(
  * Success = status === "completed".
  */
 export function computeAgentSuccessRateChartData(
-  entries: LogEntry[]
+  entries: LogEntry[],
 ): Map<string, ToolChartPoint[]> {
   const agg = new Map<string, { success: number; total: number }>();
   for (const entry of entries) {
     const d = entry.data as Record<string, unknown>;
-    const agentType = (d.subagent_type as string) ?? "?";
-    const finishedAt = (d.finished_at as string) ?? "";
+    const agentType = (d.subagent_type as string) ?? '?';
+    const finishedAt = (d.finished_at as string) ?? '';
     const date = finishedAt.slice(0, 10);
     if (!date) continue;
-    const status = (d.status as string) ?? "";
-    const success = status === "completed" ? 1 : 0;
+    const status = (d.status as string) ?? '';
+    const success = status === 'completed' ? 1 : 0;
     const key = `${agentType}|${date}`;
     const prev = agg.get(key) ?? { success: 0, total: 0 };
     agg.set(key, { success: prev.success + success, total: prev.total + 1 });
@@ -963,7 +931,7 @@ export function computeAgentSuccessRateChartData(
 
   const byAgent = new Map<string, { date: string; success: number; total: number }[]>();
   for (const [key, v] of agg) {
-    const [agentType, date] = key.split("|") as [string, string];
+    const [agentType, date] = key.split('|') as [string, string];
     const list = byAgent.get(agentType) ?? [];
     list.push({ date, success: v.success, total: v.total });
     byAgent.set(agentType, list);
@@ -986,14 +954,14 @@ export function computeAgentSuccessRateChartData(
  * Returns Map<subagent_type, {x, y}[]> for separate lines per type.
  */
 export function computeAgentsPerDayByTypeChartData(
-  entries: LogEntry[]
+  entries: LogEntry[],
 ): Map<string, ToolChartPoint[]> {
   const byTypeAndDate = new Map<string, number>();
   const allDates = new Set<string>();
   for (const entry of entries) {
     const d = entry.data as Record<string, unknown>;
-    const agentType = (d.subagent_type as string) ?? "?";
-    const finishedAt = (d.finished_at as string) ?? "";
+    const agentType = (d.subagent_type as string) ?? '?';
+    const finishedAt = (d.finished_at as string) ?? '';
     const date = finishedAt.slice(0, 10);
     if (!date) continue;
     allDates.add(date);
@@ -1004,7 +972,7 @@ export function computeAgentsPerDayByTypeChartData(
   const sortedDates = Array.from(allDates).sort();
   const byType = new Map<string, Map<string, number>>();
   for (const [key, count] of byTypeAndDate) {
-    const [agentType, date] = key.split("|") as [string, string];
+    const [agentType, date] = key.split('|') as [string, string];
     const inner = byType.get(agentType) ?? new Map<string, number>();
     inner.set(date, count);
     byType.set(agentType, inner);
@@ -1046,56 +1014,51 @@ function pageLogTable(
   filterError: string | null,
   emptyMsg: string,
   filterPlaceholder: string,
-  contentAboveTable = "",
-  leadingColumn?: LeadingColumn
+  contentAboveTable = '',
+  leadingColumn?: LeadingColumn,
 ): string {
   const currentSortParam = buildSortParam(sortSpec);
-  const query = buildLogQuery(page, currentSortParam, filterValue);
 
-  const sortByPath = new Map(
-    sortSpec.map((s, i) => [s.path, { dir: s.dir, order: i }])
-  );
+  const sortByPath = new Map(sortSpec.map((s, i) => [s.path, { dir: s.dir, order: i }]));
 
-  let tableRows = "";
+  let tableRows = '';
   for (const entry of entries) {
     const data = entry.data as Record<string, unknown>;
-    tableRows += "<tr>";
+    tableRows += '<tr>';
     if (leadingColumn) {
       const href = leadingColumn.href(entry);
-      const label = leadingColumn.label ?? "View";
+      const label = leadingColumn.label ?? 'View';
       tableRows += `<td><a href="${escapeHtml(href)}">${escapeHtml(label)}</a></td>`;
     }
     for (const col of columns) {
       const v = data[col];
       tableRows += `<td>${escapeHtml(formatCellValue(v))}</td>`;
     }
-    tableRows += "</tr>";
+    tableRows += '</tr>';
   }
 
-  let thead = "<tr>";
+  let thead = '<tr>';
   if (leadingColumn) {
     thead += `<th>${escapeHtml(leadingColumn.header)}</th>`;
   }
   for (const col of columns) {
     const current = sortByPath.get(col);
     let nextSort: SortSpec[];
-    let sortClass = "";
+    let sortClass = '';
     if (!current) {
-      nextSort = [{ path: col, dir: "asc" }, ...sortSpec.filter((s) => s.path !== col)];
-    } else if (current.dir === "asc") {
-      nextSort = sortSpec.map((s) =>
-        s.path === col ? { path: col, dir: "desc" as const } : s
-      );
-      sortClass = " sort-asc";
+      nextSort = [{ path: col, dir: 'asc' }, ...sortSpec.filter((s) => s.path !== col)];
+    } else if (current.dir === 'asc') {
+      nextSort = sortSpec.map((s) => (s.path === col ? { path: col, dir: 'desc' as const } : s));
+      sortClass = ' sort-asc';
     } else {
       nextSort = sortSpec.filter((s) => s.path !== col);
-      sortClass = " sort-desc";
+      sortClass = ' sort-desc';
     }
     const nextParam = buildSortParam(nextSort);
     const href = `${basePath}${buildLogQuery(1, nextParam, filterValue)}`;
     thead += `<th class="sort-header${sortClass}"><a href="${escapeHtml(href)}" style="text-decoration:none;color:inherit">${escapeHtml(col)}<span class="sort-icons"><span class="arrow-up">↑</span><span class="arrow-down">↓</span></span></a></th>`;
   }
-  thead += "</tr>";
+  thead += '</tr>';
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   let pagination = '<div class="pagination">';
@@ -1106,7 +1069,7 @@ function pageLogTable(
   if (page < totalPages) {
     pagination += ` <a href="${escapeHtml(basePath)}${buildLogQuery(page + 1, currentSortParam, filterValue)}">Next</a>`;
   }
-  pagination += "</div>";
+  pagination += '</div>';
 
   const filterForm =
     `<form class="filter-form" method="get" action="${escapeHtml(basePath)}">
@@ -1115,14 +1078,14 @@ function pageLogTable(
   <input type="hidden" name="page" value="1">
   <button type="submit">Apply filter</button>
 </form>` +
-    (filterError ? `<p class="filter-error">Filter error: ${escapeHtml(filterError)}</p>` : "");
+    (filterError ? `<p class="filter-error">Filter error: ${escapeHtml(filterError)}</p>` : '');
 
   return `${layoutStart(title)}
 <h1>${escapeHtml(title)}</h1>
 ${contentAboveTable}
 <h2>Table</h2>
-<p>${totalCount} entr${totalCount === 1 ? "y" : "ies"}</p>
-${totalCount === 0 ? emptyMsg : ""}
+<p>${totalCount} entr${totalCount === 1 ? 'y' : 'ies'}</p>
+${totalCount === 0 ? emptyMsg : ''}
 ${filterForm}
 <div class="table-scroll">
   <table>
@@ -1144,26 +1107,23 @@ export function pageAgents(
   filterError: string | null,
   agentChartData: Map<string, ToolChartPoint[]>,
   agentsPerDayData: AgentsPerDayPoint[],
-  agentsPerDayByTypeData: Map<string, ToolChartPoint[]>
+  agentsPerDayByTypeData: Map<string, ToolChartPoint[]>,
 ): string {
-  let chartHtml = "";
+  let chartHtml = '';
 
   if (agentsPerDayData.length > 0 || agentsPerDayByTypeData.size > 0) {
     const maxY = Math.max(
       0,
       ...agentsPerDayData.map((p) => p.y),
-      ...Array.from(agentsPerDayByTypeData.values()).flatMap((pts) => pts.map((p) => p.y))
+      ...Array.from(agentsPerDayByTypeData.values()).flatMap((pts) => pts.map((p) => p.y)),
     );
     const maxAvg = Math.max(0, ...agentsPerDayData.map((p) => p.avgPerConv));
-    const yAxisMax =
-      maxY === 0 && maxAvg === 0
-        ? 1
-        : Math.ceil(Math.max(maxY * 1.1, maxAvg * 1.1));
+    const yAxisMax = maxY === 0 && maxAvg === 0 ? 1 : Math.ceil(Math.max(maxY * 1.1, maxAvg * 1.1));
 
     const series: { name: string; data: { x: string; y: number }[] }[] = [];
     if (agentsPerDayData.length > 0) {
       series.push({
-        name: "Agents per day",
+        name: 'Agents per day',
         data: agentsPerDayData.map((p) => ({ x: p.x, y: p.y })),
       });
     }
@@ -1175,12 +1135,12 @@ export function pageAgents(
     }
     if (agentsPerDayData.length > 0) {
       series.push({
-        name: "Avg. num of agents in one conversation",
+        name: 'Avg. num of agents in one conversation',
         data: agentsPerDayData.map((p) => ({ x: p.x, y: p.avgPerConv })),
       });
     }
     const containerId = `agents-per-day-${Math.random().toString(36).slice(2, 11)}`;
-    const seriesJson = JSON.stringify(series).replace(/</g, "\\u003c");
+    const seriesJson = JSON.stringify(series).replace(/</g, '\\u003c');
     chartHtml += `
 <h2>Agents per day</h2>
 <p class="chart-container">X = date (daily bucket). Y = number of agent runs. One line per subagent type plus total and avg overlay.</p>
@@ -1206,14 +1166,12 @@ export function pageAgents(
   }
 
   if (agentChartData.size > 0) {
-    const lineSeries = Array.from(agentChartData.entries()).map(
-      ([agentType, points]) => ({
-        name: agentType,
-        data: points.map((p) => ({ x: p.x, y: p.y })),
-      })
-    );
+    const lineSeries = Array.from(agentChartData.entries()).map(([agentType, points]) => ({
+      name: agentType,
+      data: points.map((p) => ({ x: p.x, y: p.y })),
+    }));
     const containerId = `agent-chart-${Math.random().toString(36).slice(2, 11)}`;
-    const lineSeriesJson = JSON.stringify(lineSeries).replace(/</g, "\\u003c");
+    const lineSeriesJson = JSON.stringify(lineSeries).replace(/</g, '\\u003c');
     chartHtml += `
 <h2>Success rate over time (by agent)</h2>
 <p class="chart-container">Each line = one subagent type. X = date (daily bucket). Y = 0–100% (completed / total for that agent type that day).</p>
@@ -1237,8 +1195,8 @@ export function pageAgents(
   }
 
   return pageLogTable(
-    "Agents",
-    "/agents",
+    'Agents',
+    '/agents',
     AGENT_COLUMNS,
     entries,
     totalCount,
@@ -1247,9 +1205,9 @@ export function pageAgents(
     sortSpec,
     filterValue,
     filterError,
-    "<p>No agent logs found. Subagent runs are logged when subagentStop hook fires.</p>",
+    '<p>No agent logs found. Subagent runs are logged when subagentStop hook fires.</p>',
     "obj.subagent_type === 'architect'  // JS expression, obj = log entry",
-    chartHtml
+    chartHtml,
   );
 }
 
@@ -1261,25 +1219,22 @@ export function pagePrompts(
   sortSpec: SortSpec[],
   filterValue: string,
   filterError: string | null,
-  promptsChartData: PromptsPerDayPoint[]
+  promptsChartData: PromptsPerDayPoint[],
 ): string {
-  let chartHtml = "";
+  let chartHtml = '';
   if (promptsChartData.length > 0) {
     const maxY = Math.max(0, ...promptsChartData.map((p) => p.y));
     const maxAvg = Math.max(0, ...promptsChartData.map((p) => p.avgPerConv));
-    const yAxisMax =
-      maxY === 0 && maxAvg === 0
-        ? 1
-        : Math.ceil(Math.max(maxY * 1.1, maxAvg * 1.1));
+    const yAxisMax = maxY === 0 && maxAvg === 0 ? 1 : Math.ceil(Math.max(maxY * 1.1, maxAvg * 1.1));
     const series = [
-      { name: "Prompts per day", data: promptsChartData.map((p) => ({ x: p.x, y: p.y })) },
+      { name: 'Prompts per day', data: promptsChartData.map((p) => ({ x: p.x, y: p.y })) },
       {
-        name: "Avg. num of prompts in one conversation",
+        name: 'Avg. num of prompts in one conversation',
         data: promptsChartData.map((p) => ({ x: p.x, y: p.avgPerConv })),
       },
     ];
     const containerId = `prompts-chart-${Math.random().toString(36).slice(2, 11)}`;
-    const seriesJson = JSON.stringify(series).replace(/</g, "\\u003c");
+    const seriesJson = JSON.stringify(series).replace(/</g, '\\u003c');
     chartHtml = `
 <h2>Prompts per day</h2>
 <p class="chart-container">X = date (daily bucket). Y = number of prompts.</p>
@@ -1305,8 +1260,8 @@ export function pagePrompts(
   }
 
   return pageLogTable(
-    "Prompts",
-    "/prompts",
+    'Prompts',
+    '/prompts',
     PROMPT_COLUMNS,
     entries,
     totalCount,
@@ -1315,9 +1270,9 @@ export function pagePrompts(
     sortSpec,
     filterValue,
     filterError,
-    "<p>No prompt logs found. Prompts are logged when beforeSubmitPrompt hook fires (capture-prompts.sh).</p>",
+    '<p>No prompt logs found. Prompts are logged when beforeSubmitPrompt hook fires (capture-prompts.sh).</p>',
     "obj.conversation_id === 'uuid'  // JS expression, obj = log entry",
-    chartHtml
+    chartHtml,
   );
 }
 
@@ -1329,25 +1284,22 @@ export function pageChats(
   sortSpec: SortSpec[],
   filterValue: string,
   filterError: string | null,
-  chatsChartData: ChatsPerDayPoint[]
+  chatsChartData: ChatsPerDayPoint[],
 ): string {
-  let chartHtml = "";
+  let chartHtml = '';
   if (chatsChartData.length > 0) {
     const maxY = Math.max(0, ...chatsChartData.map((p) => p.y));
     const maxAvg = Math.max(0, ...chatsChartData.map((p) => p.avgPerConv));
-    const yAxisMax =
-      maxY === 0 && maxAvg === 0
-        ? 1
-        : Math.ceil(Math.max(maxY * 1.1, maxAvg * 1.1));
+    const yAxisMax = maxY === 0 && maxAvg === 0 ? 1 : Math.ceil(Math.max(maxY * 1.1, maxAvg * 1.1));
     const series = [
-      { name: "Chats per day", data: chatsChartData.map((p) => ({ x: p.x, y: p.y })) },
+      { name: 'Chats per day', data: chatsChartData.map((p) => ({ x: p.x, y: p.y })) },
       {
-        name: "Avg. num of chats in one conversation",
+        name: 'Avg. num of chats in one conversation',
         data: chatsChartData.map((p) => ({ x: p.x, y: p.avgPerConv })),
       },
     ];
     const containerId = `chats-chart-${Math.random().toString(36).slice(2, 11)}`;
-    const seriesJson = JSON.stringify(series).replace(/</g, "\\u003c");
+    const seriesJson = JSON.stringify(series).replace(/</g, '\\u003c');
     chartHtml = `
 <h2>Chats per day</h2>
 <p class="chart-container">X = date (daily bucket). Y = number of agent responses.</p>
@@ -1373,8 +1325,8 @@ export function pageChats(
   }
 
   return pageLogTable(
-    "Chats",
-    "/chats",
+    'Chats',
+    '/chats',
     CHAT_COLUMNS,
     entries,
     totalCount,
@@ -1383,32 +1335,29 @@ export function pageChats(
     sortSpec,
     filterValue,
     filterError,
-    "<p>No chat logs found. Chats are logged when afterAgentResponse hook fires (log-chats.sh).</p>",
+    '<p>No chat logs found. Chats are logged when afterAgentResponse hook fires (log-chats.sh).</p>',
     "obj.conversation_id === 'uuid'  // JS expression, obj = log entry",
     chartHtml,
     {
-      header: "",
+      header: '',
       href: (e) => `/chats/${encodeURIComponent(e.id)}`,
-      label: "View",
-    }
+      label: 'View',
+    },
   );
 }
 
 const WATERFALL_COLORS: Record<string, string> = {
-  thought: "#6366f1",
-  tool: "#22c55e",
-  agent: "#3b82f6",
-  skill: "#f59e0b",
+  thought: '#6366f1',
+  tool: '#22c55e',
+  agent: '#3b82f6',
+  skill: '#f59e0b',
 };
 
 /**
  * Render waterfall chart HTML for chat detail.
  * Bars sorted by started_at; width = duration; color by type.
  */
-function renderChatWaterfallChart(
-  entries: ChatWaterfallEntry[],
-  chatStart: string
-): string {
+function renderChatWaterfallChart(entries: ChatWaterfallEntry[], chatStart: string): string {
   if (entries.length === 0) {
     return `
 <h2>Timeline</h2>
@@ -1417,7 +1366,7 @@ function renderChatWaterfallChart(
 
   const chatStartMs = new Date(chatStart).getTime();
   const maxEndSec = Math.max(
-    ...entries.map((e) => (new Date(e.finished_at).getTime() - chatStartMs) / 1000)
+    ...entries.map((e) => (new Date(e.finished_at).getTime() - chatStartMs) / 1000),
   );
   const maxRounded = Math.max(1, Math.ceil(maxEndSec / 10) * 10);
 
@@ -1425,15 +1374,15 @@ function renderChatWaterfallChart(
   const MIN_BAR_PX = 3.5;
   const minBarSec = (MIN_BAR_PX / PLOT_AREA_ESTIMATE_PX) * maxRounded;
 
-  const seriesData = entries.map((e, i) => {
+  const seriesData = entries.map((e, _i) => {
     const startSec = (new Date(e.started_at).getTime() - chatStartMs) / 1000;
     let durationSec = e.duration_ms / 1000;
     if (durationSec < minBarSec) durationSec = minBarSec;
     const endSec = startSec + durationSec;
     return {
-      x: e.label.length > 60 ? e.label.slice(0, 57) + "…" : e.label,
+      x: e.label.length > 60 ? e.label.slice(0, 57) + '…' : e.label,
       y: [startSec, endSec],
-      fillColor: WATERFALL_COLORS[e.type] ?? "#94a3b8",
+      fillColor: WATERFALL_COLORS[e.type] ?? '#94a3b8',
       type: e.type,
       metadata: e.metadata,
       durationSec,
@@ -1445,8 +1394,8 @@ function renderChatWaterfallChart(
   const chartHeight = Math.min(500, Math.max(200, entries.length * 24));
   const containerId = `waterfall-${Math.random().toString(36).slice(2, 11)}`;
   const seriesDataJson = JSON.stringify(
-    seriesData.map(({ x, y, fillColor }) => ({ x, y, fillColor }))
-  ).replace(/</g, "\\u003c");
+    seriesData.map(({ x, y, fillColor }) => ({ x, y, fillColor })),
+  ).replace(/</g, '\\u003c');
   const customDataJson = JSON.stringify(
     seriesData.map(({ type, metadata, durationSec, started_at, finished_at }) => ({
       type,
@@ -1454,22 +1403,22 @@ function renderChatWaterfallChart(
       durationSec,
       started_at,
       finished_at,
-    }))
-  ).replace(/</g, "\\u003c");
+    })),
+  ).replace(/</g, '\\u003c');
 
   const tickAmount = Math.max(1, Math.min(12, maxRounded / 5));
 
   const legendItems = [
-    ["thought", WATERFALL_COLORS.thought],
-    ["tool", WATERFALL_COLORS.tool],
-    ["agent", WATERFALL_COLORS.agent],
-    ["skill", WATERFALL_COLORS.skill],
+    ['thought', WATERFALL_COLORS.thought],
+    ['tool', WATERFALL_COLORS.tool],
+    ['agent', WATERFALL_COLORS.agent],
+    ['skill', WATERFALL_COLORS.skill],
   ]
     .map(
       ([name, color]) =>
-        `<span class="waterfall-legend-item"><span class="waterfall-legend-dot" style="background:${color}"></span>${escapeHtml(name)}</span>`
+        `<span class="waterfall-legend-item"><span class="waterfall-legend-dot" style="background:${color}"></span>${escapeHtml(name)}</span>`,
     )
-    .join(" ");
+    .join(' ');
 
   return `
 <h2>Timeline</h2>
@@ -1549,35 +1498,35 @@ function renderChatWaterfallChart(
  */
 export function pageChatDetail(
   entry: LogEntry,
-  waterfallEntries: ChatWaterfallEntry[] = []
+  waterfallEntries: ChatWaterfallEntry[] = [],
 ): string {
   const d = entry.data as Record<string, unknown>;
-  const backHref = "/chats";
-  const chatStart = (d.started_at as string) ?? "";
+  const backHref = '/chats';
+  const chatStart = (d.started_at as string) ?? '';
 
   const sections: { label: string; value: unknown }[] = [
-    { label: "ID", value: entry.id },
-    { label: "Finished at", value: d.finished_at },
-    { label: "Started at", value: d.started_at },
-    { label: "Conversation ID", value: d.conversation_id },
-    { label: "Generation ID", value: d.generation_id },
-    { label: "Model", value: d.model },
-    { label: "Cursor version", value: d.cursor_version },
-    { label: "User message", value: d.user_message },
-    { label: "Agent response (text)", value: d.text },
+    { label: 'ID', value: entry.id },
+    { label: 'Finished at', value: d.finished_at },
+    { label: 'Started at', value: d.started_at },
+    { label: 'Conversation ID', value: d.conversation_id },
+    { label: 'Generation ID', value: d.generation_id },
+    { label: 'Model', value: d.model },
+    { label: 'Cursor version', value: d.cursor_version },
+    { label: 'User message', value: d.user_message },
+    { label: 'Agent response (text)', value: d.text },
   ];
 
   const rows = sections
-    .filter((s) => s.value !== undefined && s.value !== null && s.value !== "")
+    .filter((s) => s.value !== undefined && s.value !== null && s.value !== '')
     .map(
       (s) =>
-        `<tr><th style="text-align:left;padding-right:1rem;vertical-align:top">${escapeHtml(s.label)}</th><td style="white-space:pre-wrap;word-break:break-word">${escapeHtml(formatCellValue(s.value))}</td></tr>`
+        `<tr><th style="text-align:left;padding-right:1rem;vertical-align:top">${escapeHtml(s.label)}</th><td style="white-space:pre-wrap;word-break:break-word">${escapeHtml(formatCellValue(s.value))}</td></tr>`,
     )
-    .join("");
+    .join('');
 
   const waterfallHtml = renderChatWaterfallChart(waterfallEntries, chatStart);
 
-  return `${layoutStart("Chat detail")}
+  return `${layoutStart('Chat detail')}
 <h1>Chat detail</h1>
 <p><a href="${escapeHtml(backHref)}">← Back to Chats</a></p>
 <table style="margin-top:1rem">
@@ -1597,26 +1546,23 @@ export function pageTools(
   filterError: string | null,
   toolChartData: Map<string, ToolChartPoint[]>,
   toolsPerDayData: ToolsPerDayPoint[],
-  toolsPerDayByTypeData: Map<string, ToolChartPoint[]>
+  toolsPerDayByTypeData: Map<string, ToolChartPoint[]>,
 ): string {
-  let chartHtml = "";
+  let chartHtml = '';
 
   if (toolsPerDayData.length > 0 || toolsPerDayByTypeData.size > 0) {
     const maxY = Math.max(
       0,
       ...toolsPerDayData.map((p) => p.y),
-      ...Array.from(toolsPerDayByTypeData.values()).flatMap((pts) => pts.map((p) => p.y))
+      ...Array.from(toolsPerDayByTypeData.values()).flatMap((pts) => pts.map((p) => p.y)),
     );
     const maxAvg = Math.max(0, ...toolsPerDayData.map((p) => p.avgPerConv));
-    const yAxisMax =
-      maxY === 0 && maxAvg === 0
-        ? 1
-        : Math.ceil(Math.max(maxY * 1.1, maxAvg * 1.1));
+    const yAxisMax = maxY === 0 && maxAvg === 0 ? 1 : Math.ceil(Math.max(maxY * 1.1, maxAvg * 1.1));
 
     const series: { name: string; data: { x: string; y: number }[] }[] = [];
     if (toolsPerDayData.length > 0) {
       series.push({
-        name: "Tools per day",
+        name: 'Tools per day',
         data: toolsPerDayData.map((p) => ({ x: p.x, y: p.y })),
       });
     }
@@ -1628,12 +1574,12 @@ export function pageTools(
     }
     if (toolsPerDayData.length > 0) {
       series.push({
-        name: "Avg. num of tools in one conversation",
+        name: 'Avg. num of tools in one conversation',
         data: toolsPerDayData.map((p) => ({ x: p.x, y: p.avgPerConv })),
       });
     }
     const containerId = `tools-per-day-${Math.random().toString(36).slice(2, 11)}`;
-    const seriesJson = JSON.stringify(series).replace(/</g, "\\u003c");
+    const seriesJson = JSON.stringify(series).replace(/</g, '\\u003c');
     chartHtml += `
 <h2>Tools per day</h2>
 <p class="chart-container">X = date (daily bucket). Y = number of tool invocations. One line per tool plus total and avg overlay.</p>
@@ -1659,14 +1605,12 @@ export function pageTools(
   }
 
   if (toolChartData.size > 0) {
-    const lineSeries = Array.from(toolChartData.entries()).map(
-      ([toolName, points]) => ({
-        name: toolName,
-        data: points.map((p) => ({ x: p.x, y: p.y })),
-      })
-    );
+    const lineSeries = Array.from(toolChartData.entries()).map(([toolName, points]) => ({
+      name: toolName,
+      data: points.map((p) => ({ x: p.x, y: p.y })),
+    }));
     const containerId = `tool-chart-${Math.random().toString(36).slice(2, 11)}`;
-    const lineSeriesJson = JSON.stringify(lineSeries).replace(/</g, "\\u003c");
+    const lineSeriesJson = JSON.stringify(lineSeries).replace(/</g, '\\u003c');
     chartHtml += `
 <h2>Success rate over time (by tool)</h2>
 <p class="chart-container">Each line = one tool. X = date (daily bucket). Y = 0–100% (successful calls / total calls for that tool that day).</p>
@@ -1690,8 +1634,8 @@ export function pageTools(
   }
 
   return pageLogTable(
-    "Tools",
-    "/tools",
+    'Tools',
+    '/tools',
     TOOL_COLUMNS,
     entries,
     totalCount,
@@ -1700,8 +1644,8 @@ export function pageTools(
     sortSpec,
     filterValue,
     filterError,
-    "<p>No tool logs found. Tool invocations are logged when postToolUse/postToolUseFailure hooks fire.</p>",
+    '<p>No tool logs found. Tool invocations are logged when postToolUse/postToolUseFailure hooks fire.</p>',
     "obj.tool_name === 'Shell'  // JS expression, obj = log entry",
-    chartHtml
+    chartHtml,
   );
 }

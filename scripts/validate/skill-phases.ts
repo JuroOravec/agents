@@ -59,10 +59,7 @@ function extractWorkflowSection(content: string): string | null {
  * Validates a single Workflow section's content for phase format.
  * Returns a list of violation messages (empty if valid).
  */
-function validateWorkflowContent(
-  workflowContent: string,
-  skillName: string
-): string[] {
+function validateWorkflowContent(workflowContent: string, _skillName: string): string[] {
   const violations: string[] = [];
   const seenPhases = new Set<string>();
   const lines = workflowContent.split('\n');
@@ -82,11 +79,8 @@ function validateWorkflowContent(
         seenPhases.add(phaseKey);
       }
       continue;
-    }
-    else {
-      violations.push(
-        `  - Non-Phase format: '${line.trim()}' (use ### Phase N: Title)`
-      );
+    } else {
+      violations.push(`  - Non-Phase format: '${line.trim()}' (use ### Phase N: Title)`);
       continue;
     }
   }
@@ -129,7 +123,7 @@ function extractPhasesFromWorkflow(workflowContent: string): PhaseInfo[] {
 async function findSkillFiles(
   dir: string,
   baseDir: string,
-  acc: { relativePath: string; absolutePath: string }[] = []
+  acc: { relativePath: string; absolutePath: string }[] = [],
 ): Promise<{ relativePath: string; absolutePath: string }[]> {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   for (const e of entries) {
@@ -150,12 +144,14 @@ async function findSkillFiles(
  * Skill names are derived from path (act/dev -> act-dev).
  */
 export async function getSkillPhasesMap(
-  skillsDir: string = SKILLS_DIR
+  skillsDir: string = SKILLS_DIR,
 ): Promise<Map<string, PhaseInfo[]>> {
   const skillFiles = await findSkillFiles(skillsDir, skillsDir);
   const result = new Map<string, PhaseInfo[]>();
 
-  for (const { relativePath, absolutePath } of skillFiles.sort((a, b) => a.relativePath.localeCompare(b.relativePath))) {
+  for (const { relativePath, absolutePath } of skillFiles.sort((a, b) =>
+    a.relativePath.localeCompare(b.relativePath),
+  )) {
     const skillName = pathToSkillName(relativePath);
     let content: string;
     try {
@@ -184,7 +180,9 @@ export default async function validateSkillPhases(): Promise<void> {
   const skillFiles = await findSkillFiles(SKILLS_DIR, SKILLS_DIR);
   const failures: { skillName: string; violations: string[] }[] = [];
 
-  for (const { relativePath, absolutePath } of skillFiles.sort((a, b) => a.relativePath.localeCompare(b.relativePath))) {
+  for (const { relativePath, absolutePath } of skillFiles.sort((a, b) =>
+    a.relativePath.localeCompare(b.relativePath),
+  )) {
     const skillName = pathToSkillName(relativePath);
     let content: string;
     try {
@@ -209,7 +207,7 @@ export default async function validateSkillPhases(): Promise<void> {
       console.error(violations.join('\n'));
     }
     throw new Error(
-      'Validation failed. Fix the violations above.\nFormat required: ### Phase N: Title or ### Phase Na: Title'
+      'Validation failed. Fix the violations above.\nFormat required: ### Phase N: Title or ### Phase Na: Title',
     );
   }
 

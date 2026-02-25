@@ -8,7 +8,7 @@
  * @returns Filter function for entries, or throws on syntax error.
  */
 export function createFilterFn(
-  userScript: string
+  userScript: string,
 ): (entry: { id: string; data: object }) => boolean {
   const trimmed = userScript.trim();
   if (!trimmed) {
@@ -16,7 +16,7 @@ export function createFilterFn(
   }
 
   const body = `"use strict"; return !!(${trimmed})`;
-  const fn = new Function("obj", body);
+  const fn = new Function('obj', body);
   return (entry: { id: string; data: object }) => {
     try {
       return Boolean(fn(entry.data));
@@ -34,7 +34,7 @@ export function validateFilterScript(userScript: string): string | null {
   if (!trimmed) return null;
 
   try {
-    new Function("obj", `"use strict"; return !!(${trimmed})`);
+    new Function('obj', `"use strict"; return !!(${trimmed})`);
     return null;
   } catch (e) {
     return e instanceof Error ? e.message : String(e);

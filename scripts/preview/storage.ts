@@ -8,7 +8,7 @@
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 
-export type SortDir = "asc" | "desc";
+export type SortDir = 'asc' | 'desc';
 
 export interface SortSpec {
   path: string;
@@ -19,26 +19,23 @@ export interface SortSpec {
  * Parse sort param string. Format: "field1,-field2" (comma-sep, - = desc).
  */
 export function parseSortParam(param: string | undefined): SortSpec[] {
-  if (!param || typeof param !== "string") return [];
+  if (!param || typeof param !== 'string') return [];
   return param
-    .split(",")
+    .split(',')
     .map((s) => s.trim())
     .filter(Boolean)
     .map((s) => ({
-      path: s.startsWith("-") ? s.slice(1) : s,
-      dir: (s.startsWith("-") ? "desc" : "asc") as SortDir,
+      path: s.startsWith('-') ? s.slice(1) : s,
+      dir: (s.startsWith('-') ? 'desc' : 'asc') as SortDir,
     }));
 }
 
 export function buildSortParam(spec: SortSpec[]): string {
-  return spec.map((s) => (s.dir === "desc" ? `-${s.path}` : s.path)).join(",");
+  return spec.map((s) => (s.dir === 'desc' ? `-${s.path}` : s.path)).join(',');
 }
 
 function get(obj: object, pathStr: string): unknown {
-  return pathStr.split(".").reduce(
-    (o: unknown, key) => (o as Record<string, unknown>)?.[key],
-    obj
-  );
+  return pathStr.split('.').reduce((o: unknown, key) => (o as Record<string, unknown>)?.[key], obj);
 }
 
 function compareValues(a: unknown, b: unknown): number {
@@ -49,9 +46,8 @@ function compareValues(a: unknown, b: unknown): number {
   if (bNull) return -1;
   const ta = typeof a;
   const tb = typeof b;
-  if (ta === "number" && tb === "number")
-    return (a as number) - (b as number);
-  if (ta === "boolean" && tb === "boolean")
+  if (ta === 'number' && tb === 'number') return (a as number) - (b as number);
+  if (ta === 'boolean' && tb === 'boolean')
     return (a as boolean) === (b as boolean) ? 0 : (a as boolean) ? 1 : -1;
   return String(a).localeCompare(String(b), undefined, { numeric: true });
 }
@@ -73,7 +69,7 @@ export function getLogEntriesPageWithSort(
   offset: number,
   limit: number,
   sortSpec: SortSpec[],
-  filterFn?: LogFilterFn
+  filterFn?: LogFilterFn,
 ): LogEntriesPageResult {
   let entries = filterFn ? allEntries.filter(filterFn) : [...allEntries];
   const totalCount = entries.length;
@@ -84,7 +80,7 @@ export function getLogEntriesPageWithSort(
         const va = get(a.data, p);
         const vb = get(b.data, p);
         const cmp = compareValues(va, vb);
-        if (cmp !== 0) return dir === "asc" ? cmp : -cmp;
+        if (cmp !== 0) return dir === 'asc' ? cmp : -cmp;
       }
       return 0;
     });
@@ -110,20 +106,18 @@ export async function loadAgentLogs(logDir: string): Promise<LogEntry[]> {
     return [];
   }
 
-  const jsonlFiles = files
-    .filter((f) => f.startsWith("agents-") && f.endsWith(".jsonl"))
-    .sort();
+  const jsonlFiles = files.filter((f) => f.startsWith('agents-') && f.endsWith('.jsonl')).sort();
 
   const entries: LogEntry[] = [];
   for (const file of jsonlFiles) {
     const filePath = path.join(fullPath, file);
     try {
-      const content = await fsp.readFile(filePath, "utf-8");
-      const lines = content.split("\n").filter((l) => l.trim());
+      const content = await fsp.readFile(filePath, 'utf-8');
+      const lines = content.split('\n').filter((l) => l.trim());
       for (let i = 0; i < lines.length; i++) {
         try {
           const data = JSON.parse(lines[i]!) as object;
-          entries.push({ id: `${path.basename(file, ".jsonl")}-${i}`, data });
+          entries.push({ id: `${path.basename(file, '.jsonl')}-${i}`, data });
         } catch {
           // Skip malformed lines
         }
@@ -136,7 +130,7 @@ export async function loadAgentLogs(logDir: string): Promise<LogEntry[]> {
   entries.sort((a, b) => {
     const fa = (a.data as Record<string, unknown>).finished_at as string | undefined;
     const fb = (b.data as Record<string, unknown>).finished_at as string | undefined;
-    return (fb ?? "").localeCompare(fa ?? "");
+    return (fb ?? '').localeCompare(fa ?? '');
   });
   return entries;
 }
@@ -155,20 +149,18 @@ export async function loadPromptLogs(logDir: string): Promise<LogEntry[]> {
     return [];
   }
 
-  const jsonlFiles = files
-    .filter((f) => f.startsWith("prompts-") && f.endsWith(".jsonl"))
-    .sort();
+  const jsonlFiles = files.filter((f) => f.startsWith('prompts-') && f.endsWith('.jsonl')).sort();
 
   const entries: LogEntry[] = [];
   for (const file of jsonlFiles) {
     const filePath = path.join(fullPath, file);
     try {
-      const content = await fsp.readFile(filePath, "utf-8");
-      const lines = content.split("\n").filter((l) => l.trim());
+      const content = await fsp.readFile(filePath, 'utf-8');
+      const lines = content.split('\n').filter((l) => l.trim());
       for (let i = 0; i < lines.length; i++) {
         try {
           const data = JSON.parse(lines[i]!) as object;
-          entries.push({ id: `${path.basename(file, ".jsonl")}-${i}`, data });
+          entries.push({ id: `${path.basename(file, '.jsonl')}-${i}`, data });
         } catch {
           // Skip malformed lines
         }
@@ -181,7 +173,7 @@ export async function loadPromptLogs(logDir: string): Promise<LogEntry[]> {
   entries.sort((a, b) => {
     const fa = (a.data as Record<string, unknown>).ts as string | undefined;
     const fb = (b.data as Record<string, unknown>).ts as string | undefined;
-    return (fb ?? "").localeCompare(fa ?? "");
+    return (fb ?? '').localeCompare(fa ?? '');
   });
   return entries;
 }
@@ -195,7 +187,7 @@ export async function loadPromptLogs(logDir: string): Promise<LogEntry[]> {
  */
 export async function loadChatLogs(
   chatsLogDir: string,
-  promptsLogDir?: string
+  promptsLogDir?: string,
 ): Promise<LogEntry[]> {
   const fullPath = path.resolve(chatsLogDir);
   let files: string[];
@@ -205,9 +197,7 @@ export async function loadChatLogs(
     return [];
   }
 
-  const jsonlFiles = files
-    .filter((f) => f.startsWith("chats-") && f.endsWith(".jsonl"))
-    .sort();
+  const jsonlFiles = files.filter((f) => f.startsWith('chats-') && f.endsWith('.jsonl')).sort();
 
   const byFile = new Map<string, { filePath: string; entries: LogEntry[] }>();
   const allEntries: LogEntry[] = [];
@@ -216,13 +206,13 @@ export async function loadChatLogs(
   for (const file of jsonlFiles) {
     const filePath = path.join(fullPath, file);
     try {
-      const content = await fsp.readFile(filePath, "utf-8");
-      const lines = content.split("\n").filter((l) => l.trim());
+      const content = await fsp.readFile(filePath, 'utf-8');
+      const lines = content.split('\n').filter((l) => l.trim());
       const fileEntries: LogEntry[] = [];
       for (let i = 0; i < lines.length; i++) {
         try {
           const data = JSON.parse(lines[i]!) as object;
-          const entryId = `${path.basename(file, ".jsonl")}-${i}`;
+          const entryId = `${path.basename(file, '.jsonl')}-${i}`;
           const entry: LogEntry = {
             id: entryId,
             data,
@@ -242,16 +232,13 @@ export async function loadChatLogs(
 
   if (promptsLogDir) {
     const promptsEntries = await loadPromptLogs(promptsLogDir);
-    const promptByKey = new Map<
-      string,
-      { ts: string; user_message: string }
-    >();
+    const promptByKey = new Map<string, { ts: string; user_message: string }>();
     for (const pe of promptsEntries) {
       const d = pe.data as Record<string, unknown>;
-      const cid = (d.conversation_id as string) ?? "";
-      const gid = (d.generation_id as string) ?? "";
-      const ts = (d.ts as string) ?? "";
-      const userMessage = (d.user_message as string) ?? "";
+      const cid = (d.conversation_id as string) ?? '';
+      const gid = (d.generation_id as string) ?? '';
+      const ts = (d.ts as string) ?? '';
+      const userMessage = (d.user_message as string) ?? '';
       if (cid && gid && ts) {
         promptByKey.set(`${cid}|${gid}`, { ts, user_message: userMessage });
       }
@@ -260,8 +247,8 @@ export async function loadChatLogs(
     const modifiedFiles = new Set<string>();
     for (const entry of allEntries) {
       const d = entry.data as Record<string, unknown>;
-      const cid = (d.conversation_id as string) ?? "";
-      const gid = (d.generation_id as string) ?? "";
+      const cid = (d.conversation_id as string) ?? '';
+      const gid = (d.generation_id as string) ?? '';
       const key = `${cid}|${gid}`;
       const match = promptByKey.get(key);
       if (!match) continue;
@@ -284,16 +271,16 @@ export async function loadChatLogs(
       if (!modifiedFiles.has(fileName)) continue;
       const lines = entries
         .map((e) => JSON.stringify(e.data))
-        .join("\n")
-        .concat(entries.length ? "\n" : "");
-      await fsp.writeFile(filePath, lines, "utf-8");
+        .join('\n')
+        .concat(entries.length ? '\n' : '');
+      await fsp.writeFile(filePath, lines, 'utf-8');
     }
   }
 
   allEntries.sort((a, b) => {
     const fa = (a.data as Record<string, unknown>).finished_at as string | undefined;
     const fb = (b.data as Record<string, unknown>).finished_at as string | undefined;
-    return (fb ?? "").localeCompare(fa ?? "");
+    return (fb ?? '').localeCompare(fa ?? '');
   });
   return allEntries;
 }
@@ -312,20 +299,18 @@ export async function loadThoughtLogs(logDir: string): Promise<LogEntry[]> {
     return [];
   }
 
-  const jsonlFiles = files
-    .filter((f) => f.startsWith("thoughts-") && f.endsWith(".jsonl"))
-    .sort();
+  const jsonlFiles = files.filter((f) => f.startsWith('thoughts-') && f.endsWith('.jsonl')).sort();
 
   const entries: LogEntry[] = [];
   for (const file of jsonlFiles) {
     const filePath = path.join(fullPath, file);
     try {
-      const content = await fsp.readFile(filePath, "utf-8");
-      const lines = content.split("\n").filter((l) => l.trim());
+      const content = await fsp.readFile(filePath, 'utf-8');
+      const lines = content.split('\n').filter((l) => l.trim());
       for (let i = 0; i < lines.length; i++) {
         try {
           const data = JSON.parse(lines[i]!) as object;
-          entries.push({ id: `${path.basename(file, ".jsonl")}-${i}`, data });
+          entries.push({ id: `${path.basename(file, '.jsonl')}-${i}`, data });
         } catch {
           // Skip malformed lines
         }
@@ -338,7 +323,7 @@ export async function loadThoughtLogs(logDir: string): Promise<LogEntry[]> {
   entries.sort((a, b) => {
     const fa = (a.data as Record<string, unknown>).finished_at as string | undefined;
     const fb = (b.data as Record<string, unknown>).finished_at as string | undefined;
-    return (fb ?? "").localeCompare(fa ?? "");
+    return (fb ?? '').localeCompare(fa ?? '');
   });
   return entries;
 }
@@ -357,20 +342,18 @@ export async function loadToolLogs(logDir: string): Promise<LogEntry[]> {
     return [];
   }
 
-  const jsonlFiles = files
-    .filter((f) => f.startsWith("tools-") && f.endsWith(".jsonl"))
-    .sort();
+  const jsonlFiles = files.filter((f) => f.startsWith('tools-') && f.endsWith('.jsonl')).sort();
 
   const entries: LogEntry[] = [];
   for (const file of jsonlFiles) {
     const filePath = path.join(fullPath, file);
     try {
-      const content = await fsp.readFile(filePath, "utf-8");
-      const lines = content.split("\n").filter((l) => l.trim());
+      const content = await fsp.readFile(filePath, 'utf-8');
+      const lines = content.split('\n').filter((l) => l.trim());
       for (let i = 0; i < lines.length; i++) {
         try {
           const data = JSON.parse(lines[i]!) as object;
-          entries.push({ id: `${path.basename(file, ".jsonl")}-${i}`, data });
+          entries.push({ id: `${path.basename(file, '.jsonl')}-${i}`, data });
         } catch {
           // Skip malformed lines
         }
@@ -383,7 +366,7 @@ export async function loadToolLogs(logDir: string): Promise<LogEntry[]> {
   entries.sort((a, b) => {
     const fa = (a.data as Record<string, unknown>).finished_at as string | undefined;
     const fb = (b.data as Record<string, unknown>).finished_at as string | undefined;
-    return (fb ?? "").localeCompare(fa ?? "");
+    return (fb ?? '').localeCompare(fa ?? '');
   });
   return entries;
 }
@@ -451,7 +434,7 @@ export async function loadSkillEvalLogs(logDir: string): Promise<SkillEvalRun[]>
   return runs;
 }
 
-export type WaterfallEntryType = "thought" | "tool" | "agent" | "skill";
+export type WaterfallEntryType = 'thought' | 'tool' | 'agent' | 'skill';
 
 export interface ChatWaterfallEntry {
   type: WaterfallEntryType;
@@ -473,12 +456,12 @@ export function getChatWaterfallEntries(
   thoughts: LogEntry[],
   tools: LogEntry[],
   agents: LogEntry[],
-  skills: SkillEvalRun[]
+  skills: SkillEvalRun[],
 ): ChatWaterfallEntry[] {
   const chatData = chat.data as Record<string, unknown>;
-  const convId = (chatData.conversation_id as string) ?? "";
-  const chatStart = (chatData.started_at as string) ?? "";
-  const chatEnd = (chatData.finished_at as string) ?? "";
+  const convId = (chatData.conversation_id as string) ?? '';
+  const chatStart = (chatData.started_at as string) ?? '';
+  const chatEnd = (chatData.finished_at as string) ?? '';
   if (!convId || !chatStart || !chatEnd) return [];
 
   const chatStartMs = new Date(chatStart).getTime();
@@ -500,21 +483,21 @@ export function getChatWaterfallEntries(
   for (const t of thoughts) {
     const d = t.data as Record<string, unknown>;
     if ((d.conversation_id as string) !== convId) continue;
-    const start = (d.started_at as string) ?? "";
-    const end = (d.finished_at as string) ?? "";
+    const start = (d.started_at as string) ?? '';
+    const end = (d.finished_at as string) ?? '';
     if (!inWindow(start, end)) continue;
     const dur = (d.duration_ms as number) ?? 0;
-    const text = ((d.text as string) ?? "").slice(0, 80);
+    const text = ((d.text as string) ?? '').slice(0, 80);
     entries.push({
-      type: "thought",
-      label: "Thinking",
+      type: 'thought',
+      label: 'Thinking',
       started_at: start,
       finished_at: end,
       duration_ms: dur,
       metadata: {
-        text: text || "(empty)",
+        text: text || '(empty)',
         duration_ms: dur,
-        model: String(d.model ?? ""),
+        model: String(d.model ?? ''),
       },
     });
   }
@@ -522,14 +505,14 @@ export function getChatWaterfallEntries(
   for (const t of tools) {
     const d = t.data as Record<string, unknown>;
     if ((d.conversation_id as string) !== convId) continue;
-    const start = (d.started_at as string) ?? "";
-    const end = (d.finished_at as string) ?? "";
+    const start = (d.started_at as string) ?? '';
+    const end = (d.finished_at as string) ?? '';
     if (!inWindow(start, end)) continue;
     const dur = (d.duration as number) ?? 0; // duration in ms (from postToolUse)
-    const toolName = (d.tool_name as string) ?? "?";
-    const event = (d.event as string) ?? "";
+    const toolName = (d.tool_name as string) ?? '?';
+    const event = (d.event as string) ?? '';
     entries.push({
-      type: "tool",
+      type: 'tool',
       label: `Tool: ${toolName}`,
       started_at: start,
       finished_at: end,
@@ -538,7 +521,7 @@ export function getChatWaterfallEntries(
         tool_name: toolName,
         event,
         duration_ms: Math.round(dur),
-        cwd: String(d.cwd ?? ""),
+        cwd: String(d.cwd ?? ''),
       },
     });
   }
@@ -546,14 +529,14 @@ export function getChatWaterfallEntries(
   for (const a of agents) {
     const d = a.data as Record<string, unknown>;
     if ((d.conversation_id as string) !== convId) continue;
-    const start = (d.started_at as string) ?? "";
-    const end = (d.finished_at as string) ?? "";
+    const start = (d.started_at as string) ?? '';
+    const end = (d.finished_at as string) ?? '';
     if (!inWindow(start, end)) continue;
     const dur = (d.duration as number) ?? 0;
-    const subagentType = (d.subagent_type as string) ?? "?";
-    const status = (d.status as string) ?? "";
+    const subagentType = (d.subagent_type as string) ?? '?';
+    const status = (d.status as string) ?? '';
     entries.push({
-      type: "agent",
+      type: 'agent',
       label: `Agent: ${subagentType}`,
       started_at: start,
       finished_at: end,
@@ -572,12 +555,10 @@ export function getChatWaterfallEntries(
     if (!inWindowPoint(s.created_at)) continue;
     const createdMs = new Date(s.created_at).getTime();
     const lastStep = s.steps[s.steps.length - 1];
-    const endMs = lastStep?.completed_at
-      ? new Date(lastStep.completed_at).getTime()
-      : createdMs;
+    const endMs = lastStep?.completed_at ? new Date(lastStep.completed_at).getTime() : createdMs;
     const dur = endMs - createdMs;
     entries.push({
-      type: "skill",
+      type: 'skill',
       label: `Skill: ${s.skill}`,
       started_at: s.created_at,
       finished_at: lastStep?.completed_at ?? s.created_at,
