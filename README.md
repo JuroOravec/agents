@@ -80,6 +80,15 @@ This repo contains AI agents, skills, and rules I used in other projects - devel
 
 The skills are tuned for **JavaScript/TypeScript projects using a pnpm monorepo**.
 
+### Running AI crews
+
+Multi-agent committees (PRD Review Committee, etc.) run via KaibanJS. Use your API keys or Cursor CLI. See [docs/features/ai-crews/](docs/features/ai-crews/) for how to run crews.
+
+```bash
+pnpm run crew-prd-review draft.md refined.md
+pnpm run crew-prd-review --demo output.md   # example input
+```
+
 ### Skill health metrics
 
 Skills in this project emit health metrics when used.

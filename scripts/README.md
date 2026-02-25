@@ -40,6 +40,10 @@ $ ./scripts/skill-eval.sh complete 72284f1e-382b-4fa7-8035-bf91e3a2263e 2 --skip
 
 Output: `.cursor/logs/skills/{timestamp}_{skill}_{skill_id}.json`
 
+## crews
+
+AI crews (KaibanJS). See `scripts/crews/README.md`.
+
 ## preview
 
 Local dashboard for skill-eval, agent, and tool logs. Design: `docs/design-decisions/agent-tool-tracking/`.

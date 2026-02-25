@@ -55,6 +55,8 @@ Natural phrases that trigger skills. Say these in chat to invoke workflows.
 | **"release"**, "publish", "cut a release"                                               | `act-repo-release`                                                                          |
 | **"architect"**, "design and break down", "how would we implement", "break into issues" | `role-architect` — Design large work, create issues, hand off to PM                         |
 | "hand to architect", "narrow these solutions", "deep dive into these"                   | `act-arch-solution-create` — Multi-solution flow: narrow, deep-dive, iterate, create issues |
+| "create AI crew", "AI committee", "multi-agent workflow", "CrewAI-style"                 | `act-ai-crew-create` — Design and implement KaibanJS crew                                   |
+| "run AI crew", "run crew-prd-review", "execute crew"                                    | `act-ai-crew-run` — Pass inputs, invoke crew script                                         |
 | "set up project", "scaffold", "bootstrap"                                               | `project-setup`                                                                             |
 | "add Cursor hooks", "create hook", "beforeSubmitPrompt"                                 | `meta-hook-create`                                                                          |
 | "project polish", "community health", "make it professional"                            | `project-polish`                                                                            |
@@ -112,6 +114,7 @@ Current areas under `act-`:
 | `arch`     | Architecture and composition (1–2 layers above dev): new data kinds, processes, system boundaries; not implementation | `act-arch-solution-create` |
 | `repo`     | Git and GitHub operations: PRs, issues, releases                                                                      | `act-repo-pr-create`       |
 | `security` | Security concerns: vulnerability handling, audits                                                                     | `act-security-vuln`        |
+| `ai`       | AI/LLM-based workflows: crews, committees, multi-agent tasks                                                            | `act-ai-crew-create`, `act-ai-crew-run` |
 
 Agent role skills (`role-`) don't use areas.
 
@@ -191,6 +194,8 @@ Reserved for managing the root repo. Do not use for skills that operate on impor
 | `act-repo-release`                | Prepare and publish a release                                                                                      |
 | `act-security-vuln`               | Handle a security vulnerability report                                                                             |
 | `act-arch-solution-create`        | Architect-led: when expert produced multiple solutions — narrow with user, deep-dive, iterate, prioritize, create umbrella + work-package issues. |
+| `act-ai-crew-create`             | Create KaibanJS crew/committee: gather context, define strategy, agents, generate scripts/crews/{name}.ts using config.ts tiers. |
+| `act-ai-crew-run`               | Run existing AI crew: pass inputs (file, stdin, programmatic), handle output, env vars. |
 
 #### `role-` — Agent personas (behaviors for agent definitions)
 
