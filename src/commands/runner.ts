@@ -12,10 +12,7 @@ import type { CommandDef, ParseArgsResult } from './types.js';
  * Parses args, then calls the handler with { values, positionals }.
  * Strips a leading "--" (end-of-options separator from npm/pnpm run).
  */
-export async function runCommand(
-  def: CommandDef,
-  args: readonly string[],
-): Promise<void> {
+export async function runCommand(def: CommandDef, args: readonly string[]): Promise<void> {
   const filtered = args[0] === '--' ? args.slice(1) : args;
   const config = {
     args: [...filtered],

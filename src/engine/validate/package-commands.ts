@@ -3,9 +3,9 @@
  * required fields: name, description, usage, options, handler.
  */
 
-import { pathToFileURL } from 'node:url';
 import { readdir } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
+import { dirname, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -55,9 +55,7 @@ export default async function (): Promise<void> {
       const def = mod.default;
       errors.push(...checkCommandDef(def, file));
     } catch (err) {
-      errors.push(
-        `${file}: failed to load (${err instanceof Error ? err.message : String(err)})`,
-      );
+      errors.push(`${file}: failed to load (${err instanceof Error ? err.message : String(err)})`);
     }
   }
 

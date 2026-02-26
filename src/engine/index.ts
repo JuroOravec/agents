@@ -15,11 +15,7 @@ const phases = [
   { name: 'Custom Constraints', command: 'npm run validate' },
 ];
 
-async function runPhase(
-  name: string,
-  command: string,
-  captureOutput: boolean,
-): Promise<string> {
+async function runPhase(name: string, command: string, captureOutput: boolean): Promise<string> {
   return new Promise((resolve, reject) => {
     const [cmd, ...cmdArgs] = command.split(' ');
 
@@ -58,9 +54,7 @@ async function runPhase(
  * Run the check pipeline with optional agent reporter mode.
  * When reporter=agent, stdout is JSON only (status, phase, command, details).
  */
-export async function runCheck(opts: {
-  reporter?: string;
-}): Promise<void> {
+export async function runCheck(opts: { reporter?: string }): Promise<void> {
   const isAgentReporter = opts.reporter === 'agent';
 
   for (let i = 0; i < phases.length; i++) {

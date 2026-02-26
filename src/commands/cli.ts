@@ -6,9 +6,9 @@
  * Example: tsx src/commands/cli.ts preview -p 3040
  */
 
-import { pathToFileURL } from 'node:url';
 import { readdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { fileURLToPath } from 'node:url';
 
 import { runCommand } from './runner.js';

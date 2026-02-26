@@ -1,5 +1,5 @@
-import { runValidation } from '../../src/engine/validate/index.js';
 import type { CommandDef } from '../../src/commands/types.js';
+import { runValidation } from '../../src/engine/validate/index.js';
 
 const command: CommandDef = {
   name: 'validate',

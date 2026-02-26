@@ -9,20 +9,21 @@ import path from 'node:path';
 import express from 'express';
 
 import { getSkillPhasesMap } from '../engine/validate/skill-phases.js';
+import { createFilterFn, validateFilterScript } from './filter.js';
 import {
-  computeAgentSuccessRateChartData,
   computeAgentsPerDayByTypeChartData,
   computeAgentsPerDayChartData,
+  computeAgentSuccessRateChartData,
   computeChatsPerDayChartData,
   computeHeatmapData,
   computePromptsPerDayChartData,
-  computeSkillSuccessRateChartData,
-  computeSkillTimeShareChartData,
   computeSkillsPerDayByTypeChartData,
   computeSkillsPerDayChartData,
-  computeToolSuccessRateChartData,
+  computeSkillSuccessRateChartData,
+  computeSkillTimeShareChartData,
   computeToolsPerDayByTypeChartData,
   computeToolsPerDayChartData,
+  computeToolSuccessRateChartData,
   pageAgents,
   pageChatDetail,
   pageChats,
@@ -32,7 +33,6 @@ import {
   pageTools,
   skillRunsToLogEntries,
 } from './pages.js';
-import { createFilterFn, validateFilterScript } from './filter.js';
 import {
   getChatWaterfallEntries,
   getLogEntriesPageWithSort,

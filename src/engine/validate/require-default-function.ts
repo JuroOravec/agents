@@ -3,9 +3,9 @@
  * function as the default export.
  */
 
-import { pathToFileURL } from 'node:url';
 import { readdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,9 +13,7 @@ const __dirname = dirname(__filename);
 
 export default async function (): Promise<void> {
   const files = await readdir(__dirname);
-  const scripts = files
-    .filter((f) => f.endsWith('.ts') && f !== 'index.ts')
-    .sort();
+  const scripts = files.filter((f) => f.endsWith('.ts') && f !== 'index.ts').sort();
 
   const errors: string[] = [];
 
@@ -27,9 +25,7 @@ export default async function (): Promise<void> {
         errors.push(`${file}: default export must be a function (got ${typeof mod.default})`);
       }
     } catch (err) {
-      errors.push(
-        `${file}: failed to load (${err instanceof Error ? err.message : String(err)})`,
-      );
+      errors.push(`${file}: failed to load (${err instanceof Error ? err.message : String(err)})`);
     }
   }
 
