@@ -82,7 +82,7 @@ The skills are tuned for **JavaScript/TypeScript projects using a pnpm monorepo*
 
 ### Running AI crews
 
-Multi-agent committees (PRD Review Committee, etc.) run via KaibanJS. Use your API keys or Cursor CLI. See [docs/features/ai-crews/](docs/features/ai-crews/) for how to run crews.
+Multi-agent committees (PRD Review Committee, etc.) run via Mastra. Use your API keys or Cursor CLI. See [docs/features/ai-crews/](docs/features/ai-crews/) for how to run crews.
 
 ```bash
 pnpm run crew-prd-review draft.md refined.md

@@ -8,7 +8,7 @@ import path from 'node:path';
 
 import express from 'express';
 
-import { getSkillPhasesMap } from '../validate/skill-phases.js';
+import { getSkillPhasesMap } from '../engine/validate/skill-phases.js';
 import {
   computeAgentSuccessRateChartData,
   computeAgentsPerDayByTypeChartData,

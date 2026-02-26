@@ -1,15 +1,22 @@
 # Scripts
 
+## Unified CLI (preview, validate, check)
+
+Commands are defined as objects in `scripts/commands/`. Each file exports a `CommandDef` with name, description, usage, options (parseArgs config), and handler. The runner at `src/commands/cli.ts` discovers and executes them.
+
+```bash
+pnpm run preview [-- -p 3040]
+pnpm run validate [-- --help]
+pnpm run check [-- --reporter=agent]
+```
+
 ## validate
 
-Validation runner (same pattern as crawlee-one). Runs all scripts in `scripts/validate/`. Each script exports a default async function; any throw causes exit 1.
+Validation runner. Runs all scripts in `src/engine/validate/`. Each script exports a default async function; any throw causes exit 1.
 
 ```bash
 pnpm run validate
 ```
-
-**Scripts:**
-- `skill-phases.ts` — Validates `### Phase N: Title` format in `.cursor/skills/*/SKILL.md`
 
 ## skill-eval
 
@@ -42,7 +49,7 @@ Output: `.cursor/logs/skills/{timestamp}_{skill}_{skill_id}.json`
 
 ## crews
 
-AI crews (KaibanJS). See `scripts/crews/README.md`.
+AI crews. See `scripts/crews/README.md`.
 
 ## preview
 

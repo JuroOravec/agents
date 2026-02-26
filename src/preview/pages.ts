@@ -4,7 +4,7 @@
  * Agents/Tools pages: tables with filter, sort, pagination.
  */
 
-import type { PhaseInfo } from '../validate/skill-phases.js';
+import type { PhaseInfo } from '../engine/validate/skill-phases.js';
 import type { ChatWaterfallEntry, LogEntry, SkillEvalRun, SortSpec } from './storage.js';
 import { buildSortParam } from './storage.js';
 

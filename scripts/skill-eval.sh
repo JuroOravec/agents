@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# skill-eval: CLI for meta-evaluation skill-adherence tracking
+# skill-eval: CLI for tracking whether Cursor agents are following skills' workflow steps.
 # Usage:
 #   skill-eval start {conversation_id} {skill_name}   -> creates JSON, prints skill_id
 #   skill-eval complete {skill_id} {phase_no} [--skipped]  -> appends step

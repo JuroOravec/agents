@@ -44,6 +44,16 @@ cd crawlee-one && pnpm build
 cd crawlee-one && pnpm test
 ```
 
+### Command management
+
+CLI commands (`preview`, `validate`, `check`) use a unified runner. Each command is defined in `scripts/commands/` as an object with `name`, `description`, `usage`, `options` (Node `parseArgs` config), and `handler`. The runner at `src/commands/cli.ts` discovers commands and invokes the handler with parsed `{ values, positionals }`.
+
+To add a command:
+1. Create `scripts/commands/<name>.ts` exporting a `CommandDef` default.
+2. Add a script to `package.json`, e.g. `"mycmd": "tsx src/commands/cli.ts mycmd"`.
+
+Validation enforces that each file in `scripts/commands/` exports a valid `CommandDef` with all required fields (`package-commands.ts`).
+
 ### Skill-eval dashboard
 
 `pnpm run preview` starts a local web server at http://localhost:3040. The **Skills** page shows:
@@ -59,7 +69,7 @@ Data is read from `.cursor/logs/skills/`. Use `-p 3000` to change the port.
 
 ### Skill phase validation
 
-`pnpm run validate` runs `scripts/validate/index.ts`, which discovers and runs all validation scripts. The main one is **skill-phases** (see `scripts/validate/skill-phases.ts`).
+`pnpm run validate` runs `src/engine/validate/index.ts`, which discovers and runs all validation scripts. The main one is **skill-phases** (see `src/engine/validate/skill-phases.ts`).
 
 **What it checks:** Every `###` heading under `## Workflow` in `.cursor/skills/*/SKILL.md` must use the format:
 
