@@ -4,7 +4,7 @@
 #   skill-eval start {conversation_id} {skill_name}   -> creates JSON, prints skill_id
 #   skill-eval complete {skill_id} {phase_no} [--skipped]  -> appends step
 #
-# Design: docs/design-decisions/meta-skill-evaluation/
+# Design: specs/meta-skill-evaluation/
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

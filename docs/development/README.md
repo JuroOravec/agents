@@ -90,7 +90,7 @@ Data is read from `.cursor/logs/skills/`. Use `-p 3000` to change the port.
 
 **Exempt:** Subheadings like `### Reference:`, `### Output:`, `### Format:` are metadata, not workflow steps, and are not flagged.
 
-**Design:** [docs/design-decisions/meta-skill-evaluation/](../design-decisions/meta-evaluation/) (phase format enforcement is a prerequisite for skill-eval tracking).
+**Design:** [specs/meta-skill-evaluation/](../../specs/meta-skill-evaluation/) (phase format enforcement is a prerequisite for skill-eval tracking).
 
 ### Dead code and unused exports (Knip)
 

@@ -8,20 +8,20 @@ This document showcases the output produced when running `meta-create-skills-fro
 
 ### Development
 
-| Area | Pattern |
-| ---- | ------- |
+| Area                  | Pattern                                                                                                                                                                                               |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Feature structure** | `content/` for JSON, `src/types/` for types, `src/lib/content.ts` for getters. One type per content kind. Components in `src/components/landing/`, UI primitives from shadcn in `src/components/ui/`. |
-| **Tests** | None. No test framework in package.json. |
-| **Commands** | `npm run dev`, `build`, `start`, `lint`. Images: `./scripts/download-images.sh` for Google Drive fetch. |
-| **Data flow** | JSON → `getX()` in `lib/content.ts` → page → components as props. No API; all static at build. |
+| **Tests**             | None. No test framework in package.json.                                                                                                                                                              |
+| **Commands**          | `npm run dev`, `build`, `start`, `lint`. Images: `./scripts/download-images.sh` for Google Drive fetch.                                                                                               |
+| **Data flow**         | JSON → `getX()` in `lib/content.ts` → page → components as props. No API; all static at build.                                                                                                        |
 
 ### Other areas
 
-| Area | Pattern |
-| ---- | ------- |
+| Area        | Pattern                                                                                                              |
+| ----------- | -------------------------------------------------------------------------------------------------------------------- |
 | **Content** | JSON under `content/`. Each type: `content/{name}/index.json`, `src/types/{name}.ts`, `get{Name}()` in `content.ts`. |
 | **Styling** | Tailwind v4, shadcn (new-york, neutral). Course themes in `content/course-themes/index.json` (amber, blue, emerald). |
-| **Pages** | Next.js 15 App Router. Route = folder path; `page.tsx` per route. |
+| **Pages**   | Next.js 15 App Router. Route = folder path; `page.tsx` per route.                                                    |
 
 ### Content types
 
@@ -31,12 +31,12 @@ This document showcases the output produced when running `meta-create-skills-fro
 
 ## Phase 3: Skill candidates
 
-| Skill name | Trigger | Purpose |
-| ---------- | ------- | ------- |
-| `project-cbc-website--content-add` | Adding a new content type (e.g. mentors, sponsors) | Create JSON + type + getter — three-part pattern |
-| `project-cbc-website--content-edit` | Editing courses, tutors, FAQ, contact, etc. | File map and editing workflow |
-| `project-cbc-website--course-add` | Adding a new course | Schema, themes (amber/blue/emerald), workflow |
-| `project-cbc-website--page-add` | Adding a new route | App Router, static vs dynamic routes |
+| Skill name                          | Trigger                                            | Purpose                                          |
+| ----------------------------------- | -------------------------------------------------- | ------------------------------------------------ |
+| `project-cbc-website--content-add`  | Adding a new content type (e.g. mentors, sponsors) | Create JSON + type + getter — three-part pattern |
+| `project-cbc-website--content-edit` | Editing courses, tutors, FAQ, contact, etc.        | File map and editing workflow                    |
+| `project-cbc-website--course-add`   | Adding a new course                                | Schema, themes (amber/blue/emerald), workflow    |
+| `project-cbc-website--page-add`     | Adding a new route                                 | App Router, static vs dynamic routes             |
 
 ---
 
@@ -80,12 +80,12 @@ Workflow phases: Create content file → Define type → Add getter in content.t
 
 Key artifact: a **content file map** table:
 
-| Content | File path | Shape / notes |
-| ------- | ---------- | ------------- |
-| Courses | `content/courses/index.json` | Array of `{ id, title, badgeText, duration, ... }` |
-| Tutors | `content/tutors/index.json` | Array of `{ name, role, img, link, desc }` |
+| Content | File path                    | Shape / notes                                                  |
+| ------- | ---------------------------- | -------------------------------------------------------------- |
+| Courses | `content/courses/index.json` | Array of `{ id, title, badgeText, duration, ... }`             |
+| Tutors  | `content/tutors/index.json`  | Array of `{ name, role, img, link, desc }`                     |
 | Contact | `content/contact/index.json` | Single object: `{ emails[], phones[], linkedin?, instagram? }` |
-| ... | ... | ... |
+| ...     | ...                          | ...                                                            |
 
 ---
 

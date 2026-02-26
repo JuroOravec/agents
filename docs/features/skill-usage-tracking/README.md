@@ -4,9 +4,9 @@
 
 ---
 
-If you use Cursor with custom skills—those step-by-step workflows that guide your AI through multi-phase tasks—you’ve probably wondered: *does the agent actually follow them?* Do they complete each phase, or do they skip steps, merge phases, or go off-script? Without data, it’s guesswork. You tweak skill text, hope for the best, and never really know if it helped.
+If you use Cursor with custom skills—those step-by-step workflows that guide your AI through multi-phase tasks—you’ve probably wondered: _does the agent actually follow them?_ Do they complete each phase, or do they skip steps, merge phases, or go off-script? Without data, it’s guesswork. You tweak skill text, hope for the best, and never really know if it helped.
 
-This guide shows how to set up **skill usage tracking** from scratch: how to log which phases were completed or skipped, where the data lives, and how to preview it in a simple dashboard. By the end, you’ll have a system that answers: *are agents going in the right direction?*
+This guide shows how to set up **skill usage tracking** from scratch: how to log which phases were completed or skipped, where the data lives, and how to preview it in a simple dashboard. By the end, you’ll have a system that answers: _are agents going in the right direction?_
 
 ---
 
@@ -50,26 +50,32 @@ For tracking to work, skills must have special structure:
 
 ```markdown
 ## Workflow
+
 ### Phase N: Title
-### Phase Na: Title   (optional a/b suffix for sub-steps)
+
+### Phase Na: Title (optional a/b suffix for sub-steps)
 ```
 
 Example:
+
 ```markdown
 ## Workflow
+
 ...
 
 ### Phase 1: Classify
+
 ...
 
 ### Phase 2: Check duplicates
+
 ### Phase 2a: Soft switch
 ```
 
 This is solely so that we can parse the steps
 by code. Otherwise we'd need an LLM model just to parse the steps from a workflow.
 
-So do not use `### 1. Step` or `### Adding a dependency` - the validation script will fail. 
+So do not use `### 1. Step` or `### Adding a dependency` - the validation script will fail.
 
 CI enforces this format across all skills.
 
@@ -157,6 +163,7 @@ Create `scripts/skill-eval.sh` in your repo root. Copy the full implementation f
 It has 2 commands:
 
 - `start` → Starts tracking skill workflow, creates a JSON file, prints `skill_id`
+
   ```sh
   start {conversation_id} {skill_name}
   ```
@@ -189,13 +196,21 @@ For tracking to work, every skill must define the workflow step with titles like
 
 ```markdown
 ## Workflow
+
 ...
+
 ### Phase 1: Classify
+
 ...
+
 ### Phase 2: Check duplicates
+
 ...
+
 ### Phase 3a: Optional suffix
+
 ...
+
 ### Phase 3b: Alternative
 ```
 
@@ -224,10 +239,10 @@ Replace `{skill-name}` with the skill’s directory name (e.g. `act-repo-issue-c
 ### 3.3 Validate
 
 ```bash
-pnpm run validate   # or: npx tsx scripts/validate/index.ts
+pnpm run validate   # or: npx tsx src/engine/validate/index.ts
 ```
 
-This runs `scripts/validate/skill-phases.ts` and fails if any skill uses a non-Phase heading under `## Workflow`.
+This runs `src/engine/validate/skill-phases.ts` and fails if any skill uses a non-Phase heading under `## Workflow`.
 
 ---
 
@@ -247,29 +262,29 @@ This runs `scripts/validate/skill-phases.ts` and fails if any skill uses a non-P
    ```
 4. **Progression logs** — Each time the agent calls the `complete` command, this is logged. In the end, the log file for this workflow will look like this:
 
-    ```json
-    // 20260223T183529Z_act-repo-issue-create_6703f819-407b.json
-    {
-      "created_at": "2026-02-23T18:35:29Z",
-      "conversation_id": "1b5c6ca3-4402-4013-a193-484059076602",
-      "skill_id": "6703f819-407b-4684-aabc-899b1206bf0f",
-      "skill": "act-repo-issue-create",
-      "steps": [
-        {
-          "phase": 1,
-          "completed_at": "2026-02-23T18:35:37Z"
-        },
-        {
-          "phase": 2,
-          "completed_at": "2026-02-23T18:35:37Z"
-        },
-        {
-          "phase": 3,
-          "completed_at": "2026-02-23T18:35:37Z"
-        },
-      ]
-    }
-    ```
+   ```json
+   // 20260223T183529Z_act-repo-issue-create_6703f819-407b.json
+   {
+     "created_at": "2026-02-23T18:35:29Z",
+     "conversation_id": "1b5c6ca3-4402-4013-a193-484059076602",
+     "skill_id": "6703f819-407b-4684-aabc-899b1206bf0f",
+     "skill": "act-repo-issue-create",
+     "steps": [
+       {
+         "phase": 1,
+         "completed_at": "2026-02-23T18:35:37Z"
+       },
+       {
+         "phase": 2,
+         "completed_at": "2026-02-23T18:35:37Z"
+       },
+       {
+         "phase": 3,
+         "completed_at": "2026-02-23T18:35:37Z"
+       }
+     ]
+   }
+   ```
 
 ---
 
@@ -297,13 +312,13 @@ Data is read from `.cursor/logs/skills/`. Each JSON file is one skill run; the d
 
 ## Troubleshooting
 
-| Issue | Check |
-| ----- | ----- |
-| Agent doesn’t see conversation_id | Reload Cursor after editing hooks; verify `sessionStart` in `hooks.json` |
+| Issue                                    | Check                                                                                          |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Agent doesn’t see conversation_id        | Reload Cursor after editing hooks; verify `sessionStart` in `hooks.json`                       |
 | `skill-eval: no file found for skill_id` | Agent lost `skill_id`; ensure preamble says “preserve conversation_id and skill_id in context” |
-| Empty dashboard | No JSON files yet; run a phased skill and complete at least one phase |
-| Phase validation fails | Run `pnpm run validate`; fix non-Phase headings under `## Workflow` |
-| `jq: command not found` | Install jq: `brew install jq` or `apt install jq` |
+| Empty dashboard                          | No JSON files yet; run a phased skill and complete at least one phase                          |
+| Phase validation fails                   | Run `pnpm run validate`; fix non-Phase headings under `## Workflow`                            |
+| `jq: command not found`                  | Install jq: `brew install jq` or `apt install jq`                                              |
 
 ---
 

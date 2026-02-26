@@ -1,5 +1,5 @@
 /**
- * Check pipeline — Types, Lint, Format, Unit Tests, Custom Constraints.
+ * Check pipeline — Types, Lint, Dead Code, Format, Tests & Coverage, Custom Constraints.
  * Used by CI and for local verification before commit/push.
  *
  * Exported as runCheck() for use by the commands CLI.
@@ -12,7 +12,7 @@ const phases = [
   { name: 'Lint', command: 'npm run lint' },
   { name: 'Dead Code', command: 'npm run knip' },
   { name: 'Format', command: 'npm run format:check' },
-  { name: 'Unit Tests', command: 'npm run test' },
+  { name: 'Tests & Coverage', command: 'npm run coverage' },
   { name: 'Custom Constraints', command: 'npm run validate' },
 ];
 

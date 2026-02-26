@@ -20,7 +20,7 @@ pnpm run validate
 
 ## skill-eval
 
-CLI for meta-evaluation skill-adherence tracking. Design: `docs/design-decisions/meta-skill-evaluation/`.
+CLI for meta-evaluation skill-adherence tracking. Design: `specs/meta-skill-evaluation/`.
 
 **Usage:**
 
@@ -53,7 +53,7 @@ AI crews. See `scripts/crews/README.md`.
 
 ## preview
 
-Local dashboard for skill-eval, agent, and tool logs. Design: `docs/design-decisions/agent-tool-tracking/`.
+Local dashboard for skill-eval, agent, and tool logs. Design: `specs/agent-tool-tracking/`.
 
 ```bash
 pnpm run preview

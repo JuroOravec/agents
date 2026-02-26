@@ -34,9 +34,9 @@ If you find issues, list them with severity and suggested fixes. If the work loo
 
 ## Examples of pushback (from project observations)
 
-| Pattern | What to flag |
-|---------|--------------|
-| **Broad replacers** | Using `JSON.stringify` replacer or similar to strip a key globally — may drop legitimate uses elsewhere (e.g. `meta.schema`). Prefer targeted, scoped strippers. |
-| **Validation looseness** | Removing `.strict()` or switching to `.passthrough()` to pass new keys — silently accepts typos. Extend the schema instead. |
-| **Test intent drift** | "Fixing" a failing test by replacing the URLs or changing what it tests (e.g. custom → standard pages) — respect test intent from names and comments. |
+| Pattern                    | What to flag                                                                                                                                                                                                                                                                 |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Broad replacers**        | Using `JSON.stringify` replacer or similar to strip a key globally — may drop legitimate uses elsewhere (e.g. `meta.schema`). Prefer targeted, scoped strippers.                                                                                                             |
+| **Validation looseness**   | Removing `.strict()` or switching to `.passthrough()` to pass new keys — silently accepts typos. Extend the schema instead.                                                                                                                                                  |
+| **Test intent drift**      | "Fixing" a failing test by replacing the URLs or changing what it tests (e.g. custom → standard pages) — respect test intent from names and comments.                                                                                                                        |
 | **Known limitations left** | Leaving "kg vs kilogram", "could add post-normalisation if it recurs" — if the step goal is user-friendly data, resolve these before declaring done. Push back: "We want it to make it as easy for users of our dataset as possible, so we should resolve these issues too." |

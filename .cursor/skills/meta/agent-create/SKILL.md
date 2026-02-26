@@ -59,6 +59,7 @@ Create todo tasks for each phase before proceeding.
 - **Intent signals** — "User asks to prioritize", "User says they're lost"
 
 Put these in:
+
 - The **skill** (`SKILL.md` → "When to use")
 - The **agent** (`agents/{name}.md` → "Invocation" or "When to invoke")
 
@@ -68,6 +69,7 @@ Example:
 ## When to use
 
 Trigger this skill when:
+
 - The user says "capture this", "add to backlog", "I have an idea", or similar.
 - The user says "I'm lost", "what should I work on?", "prioritize", "what's next?".
 - The user says "triage my backlog", "process my inbox", "sort my TODOs".
@@ -84,13 +86,13 @@ If the agent produces or maintains a file:
 
 ### Phase 4: Split agent vs skill
 
-| File | Purpose |
-| ---- | ------- |
-| **`agents/{name}.md`** | Persona, role, key behaviors (do/don't table), invocation. Short and identity-focused. |
+| File                              | Purpose                                                                                                                 |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **`agents/{name}.md`**            | Persona, role, key behaviors (do/don't table), invocation. Short and identity-focused.                                  |
 | **`skills/role/{name}/SKILL.md`** | Workflow phases, file paths, verification, out of scope. Procedural and detailed. Agent role skills use `role-` prefix. |
-| **`skills/role/{name}/*.md`** | Templates, reference docs (e.g. `backlog-template.md`). |
+| **`skills/role/{name}/*.md`**     | Templates, reference docs (e.g. `backlog-template.md`).                                                                 |
 
-The agent defines *who* and *when*. The skill defines *how* (step-by-step).
+The agent defines _who_ and _when_. The skill defines _how_ (step-by-step).
 
 ### Phase 5: Create files
 
@@ -102,14 +104,14 @@ The agent defines *who* and *when*. The skill defines *how* (step-by-step).
 
 Update these places so the agent is discoverable and wired in:
 
-| Location | Update |
-| -------- | ------ |
-| `.cursor/agents/README.md` | Add entry: name, purpose, invocation, artifact. |
-| `.cursor/skills/README.md` | Add to catalog table (act- section). |
-| `.cursor/skills/README.md` | Add to Common commands table — user-triggerable phrases for this agent/skill. |
-| `.cursor/skills/README.md` | Add to diagram if the agent connects to other skills (e.g. pm → act-repo-issue-create). |
-| `.cursor/skills/README.md` | Add area under `act-` if introducing a new area (e.g. `pm`). |
-| `.cursor/rules/always-apply-skills.md` | Only if the agent should *always* run — rare for most agents. |
+| Location                               | Update                                                                                  |
+| -------------------------------------- | --------------------------------------------------------------------------------------- |
+| `.cursor/agents/README.md`             | Add entry: name, purpose, invocation, artifact.                                         |
+| `.cursor/skills/README.md`             | Add to catalog table (act- section).                                                    |
+| `.cursor/skills/README.md`             | Add to Common commands table — user-triggerable phrases for this agent/skill.           |
+| `.cursor/skills/README.md`             | Add to diagram if the agent connects to other skills (e.g. pm → act-repo-issue-create). |
+| `.cursor/skills/README.md`             | Add area under `act-` if introducing a new area (e.g. `pm`).                            |
+| `.cursor/rules/always-apply-skills.md` | Only if the agent should _always_ run — rare for most agents.                           |
 
 ## Verification
 

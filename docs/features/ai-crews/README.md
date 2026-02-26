@@ -21,7 +21,7 @@ This guide walks you through running **AI crews** in this project: what they are
 
 ## Why this matters
 
-Crews encode a specific workflow: *multiple personas review the same artifact and synthesize*. That’s different from a single chatbot. Each agent has a goal and background (e.g. “You are a paranoid security expert”). They don’t chat endlessly—they follow tasks, produce structured output, and the framework orchestrates the flow. You get a reviewed document and a list of questions that need human input, not a raw conversation.
+Crews encode a specific workflow: _multiple personas review the same artifact and synthesize_. That’s different from a single chatbot. Each agent has a goal and background (e.g. “You are a paranoid security expert”). They don’t chat endlessly—they follow tasks, produce structured output, and the framework orchestrates the flow. You get a reviewed document and a list of questions that need human input, not a raw conversation.
 
 ---
 
@@ -91,6 +91,7 @@ pnpm run crew-prd-review draft-prd.md refined-prd.md
 ```
 
 The crew will:
+
 1. Read `draft-prd.md`
 2. Have the Architect, PM, Security, and User Advocate review it
 3. Have the Tech Writer synthesize their feedback into a refined PRD
@@ -120,6 +121,7 @@ Wrote: refined-prd.md
 - **Outstanding questions** — Items the committee couldn’t resolve (budget, compliance, third-party limits, etc.). These need human decisions.
 
 If the run fails (e.g. `BLOCKED` or an error), check:
+
 - API key is set and valid
 - Model names match your provider (e.g. `anthropic/claude-sonnet-4` for OpenRouter)
 - For Cursor CLI: `cursor-agent status` and workspace trust (`--trust` is passed by default for headless runs)
@@ -130,14 +132,14 @@ If the run fails (e.g. `BLOCKED` or an error), check:
 
 Env variables override defaults:
 
-| Variable | Purpose |
-| -------- | ------- |
-| `CREW_MODEL_SMART` | Model for “smart” agents (e.g. `openai:gpt-5`, `anthropic:claude-sonnet-4`) |
-| `CREW_MODEL_FAST` | Model for “fast” agents |
-| `CREW_MODEL_SMART_API_KEY`, `CREW_MODEL_FAST_API_KEY` | Override API keys per tier |
-| `CREW_MODEL_SMART_BASE_URL`, `CREW_MODEL_FAST_BASE_URL` | Custom endpoint (OpenRouter, Modal, vLLM) |
-| `CREW_MAX_TOKENS` | Cap output tokens (useful for OpenRouter credits) |
-| `CREW_TIMEOUT_MS` | Timeout in ms for slow or cold-start endpoints |
+| Variable                                                | Purpose                                                                     |
+| ------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `CREW_MODEL_SMART`                                      | Model for “smart” agents (e.g. `openai:gpt-5`, `anthropic:claude-sonnet-4`) |
+| `CREW_MODEL_FAST`                                       | Model for “fast” agents                                                     |
+| `CREW_MODEL_SMART_API_KEY`, `CREW_MODEL_FAST_API_KEY`   | Override API keys per tier                                                  |
+| `CREW_MODEL_SMART_BASE_URL`, `CREW_MODEL_FAST_BASE_URL` | Custom endpoint (OpenRouter, Modal, vLLM)                                   |
+| `CREW_MAX_TOKENS`                                       | Cap output tokens (useful for OpenRouter credits)                           |
+| `CREW_TIMEOUT_MS`                                       | Timeout in ms for slow or cold-start endpoints                              |
 
 Example: cap tokens to stay within OpenRouter credits:
 

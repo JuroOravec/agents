@@ -31,7 +31,7 @@ Create todo tasks for each phase before proceeding.
 1. **Read the scope.** If the user references a GitHub issue, fetch it: `gh issue view <number>`.
 2. **Identify constraints.** What's given? (e.g. "start with Skill-adherence checks", "collect data over time", "visualize and analyze"). What's out of scope for now?
 3. **Clarify the outcome.** What does "done" look like? (e.g. "we can measure whether skills help", "we see adherence scores per session").
-4. **Check for existing solutions** — Before designing from scratch, search for libraries, tools, prior art, or internal design docs that could be reused. Web search, npm/GitHub, existing `docs/design-decisions/`. Note findings; prefer reuse over greenfield.
+4. **Check for existing solutions** — Before designing from scratch, search for libraries, tools, prior art, or internal design docs that could be reused. Web search, npm/GitHub, existing `specs/`. Note findings; prefer reuse over greenfield.
 
 ### Phase 2: Break into approach areas
 
@@ -48,7 +48,7 @@ For the chosen chunk (e.g. Skill-adherence checks):
 3. **How to analyze** — How do we turn raw data into metrics? (e.g. diff skill steps vs. transcript actions; score: completed / skipped / mishandled).
 4. **How to visualize** — Dashboards? CSV export? Trends over time?
 
-Produce a **design doc** at `{project}/docs/design-decisions/{topic}/README.md` with these sections. Create one directory per topic; `README.md` is the main design document; put supporting files (e.g. issues, follow-ups) in the same directory. Use the project the task relates to (e.g. agents repo → `agents/docs/design-decisions/`, crawlee-one → `crawlee-one/docs/design-decisions/`).
+Produce a **design doc** at `{project}/specs/{topic}/README.md` with these sections. Create one directory per topic; `README.md` is the main design document; put supporting files (e.g. issues, follow-ups) in the same directory. Use the project the task relates to (e.g. agents repo → `agents/specs/`, crawlee-one → `crawlee-one/specs/`).
 
 ### Phase 4: Present design and wait for user confirmation
 
@@ -71,7 +71,7 @@ Produce a **design doc** at `{project}/docs/design-decisions/{topic}/README.md` 
 
 ## Design doc template
 
-Use for `{project}/docs/design-decisions/{topic}-design.md`:
+Use for `{project}/specs/{topic}/README.md`:
 
 ```markdown
 # {Topic} — Design
@@ -114,7 +114,7 @@ Use for `{project}/docs/design-decisions/{topic}-design.md`:
 
 - [ ] Goal and constraints are clear
 - [ ] First chunk is the most straightforward; dependency order noted
-- [ ] Design doc produced at `{project}/docs/design-decisions/{topic}/`
+- [ ] Design doc produced at `{project}/specs/{topic}/`
 - [ ] User confirmed design before issues were created (no auto-proceeding)
 - [ ] GitHub issues created for each work item
 - [ ] PM handoff suggested

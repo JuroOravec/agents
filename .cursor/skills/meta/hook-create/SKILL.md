@@ -19,17 +19,17 @@ Trigger this skill when:
 
 This project has a working example: the **capture-prompts** hook logs each user message with last turn preview (from transcript) and context. Use it as a template.
 
-| File | Purpose |
-| --- | --- |
-| `.cursor/hooks.json` | Declares which commands run for each hook event |
+| File                               | Purpose                                                     |
+| ---------------------------------- | ----------------------------------------------------------- |
+| `.cursor/hooks.json`               | Declares which commands run for each hook event             |
 | `.cursor/hooks/capture-prompts.sh` | Script that receives JSON on stdin, logs to `.cursor/logs/` |
-| `.cursor/hooks/README.md` | Hooks documentation |
+| `.cursor/hooks/README.md`          | Hooks documentation                                         |
 
 See [capture-prompts.sh](../../hooks/capture-prompts.sh) and [hooks/README.md](../../hooks/README.md) for the full implementation.
 
 ### Hook events (Cursor 1.7+)
 
-- `sessionStart` — When a new Agent Chat session begins. Payload: `conversation_id`, `generation_id`, `workspace_roots`, etc. Can return `additional_context` to inject text into the agent's context. See [session-id-injection.md](../../../docs/design-decisions/meta-skill-evaluation/session-id-injection.md).
+- `sessionStart` — When a new Agent Chat session begins. Payload: `conversation_id`, `generation_id`, `workspace_roots`, etc. Can return `additional_context` to inject text into the agent's context. See [session-id-injection.md](../../../specs/meta-skill-evaluation/session-id-injection.md).
 - `beforeSubmitPrompt` — When user sends a message, before it reaches the model. Payload: `prompt`, `conversation_id`, `generation_id`, `attachments`, `workspace_roots`.
 - `beforeReadFile` — Before the agent reads a file. Can filter/redact content.
 - `beforeShellExecution` — Before running a shell command. Can allow/deny.

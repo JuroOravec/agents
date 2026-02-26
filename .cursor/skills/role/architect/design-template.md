@@ -16,8 +16,8 @@
 
 ### Data to collect
 
-| Item | Source | Format |
-| ---- | ------ | ------ |
+| Item         | Source           | Format            |
+| ------------ | ---------------- | ----------------- |
 | {Data point} | {Where it lives} | {JSON, CSV, etc.} |
 
 ### Collection mechanism

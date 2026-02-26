@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # session-init: Injects conversation_id into agent context at session start.
 # Agents use conversation_id when calling skill-eval start. Required for meta-evaluation
-# skill-adherence tracking (see docs/design-decisions/meta-skill-evaluation/).
+# skill-adherence tracking (see specs/meta-skill-evaluation/).
 #
 # Cursor sessionStart hook receives conversation_id; we inject it as additional_context
 # so the agent sees it and can pass it to scripts/skill-eval.sh start {conversation_id} {skill_name}.

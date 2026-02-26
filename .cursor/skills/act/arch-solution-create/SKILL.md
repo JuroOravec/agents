@@ -25,7 +25,7 @@ Trigger this skill when:
 - **Dev:** Code-level — e.g. "implement a feature and add a new table in the existing db".
 - **Arch:** Composition-level — e.g. "there is a task that will require new kind of data and new processes independent of existing ones"; "sales need a platform to aggregate intel on leads".
 
-This skill is arch-level: it shapes *what* gets built and *how* solutions relate, not the implementation.
+This skill is arch-level: it shapes _what_ gets built and _how_ solutions relate, not the implementation.
 
 ## Workflow
 
@@ -38,7 +38,7 @@ Create todo tasks for each phase before proceeding.
 ### Phase 1: Handoff and scope narrowing
 
 1. **Take over from expert.** Summarize the problem and list all proposed solutions (from transcript, issue, or prior message).
-2. **Check for existing solutions** — Before narrowing, search for libraries, tools, prior art, or internal design docs that could replace or simplify any proposed solution. Web search, npm/GitHub, existing `docs/design-decisions/`. Share findings with user; prefer reuse over greenfield.
+2. **Check for existing solutions** — Before narrowing, search for libraries, tools, prior art, or internal design docs that could replace or simplify any proposed solution. Web search, npm/GitHub, existing `specs/`. Share findings with user; prefer reuse over greenfield.
 3. **Present to user.** "Here are the solutions from the expert reply (and any existing solutions found). Which make sense for us?"
 4. **Discuss with user.** Iterate: Which solutions align with our goals? Which are out of scope, redundant, or infeasible?
 5. **Narrow the set.** Agree on which solutions to pursue (one or more). Document the rationale briefly.
@@ -52,7 +52,7 @@ Create todo tasks for each phase before proceeding.
    - Data, processes, and dependencies
    - How it fits with the rest of the system
    - Risks, trade-offs, alternatives considered
-   - Suggested placement: `{project}/docs/design-decisions/{topic}/` — create one directory per topic; `README.md` is the main design doc; put supporting docs (e.g. `issues.md`, per-solution files) in the same directory. Use the project the task relates to (e.g. agents → `agents/docs/design-decisions/`, crawlee-one → `crawlee-one/docs/design-decisions/`).
+   - Suggested placement: `{project}/specs/{topic}/` — create one directory per topic; `README.md` is the main design doc; put supporting docs (e.g. `issues.md`, per-solution files) in the same directory. Use the project the task relates to (e.g. agents → `agents/specs/`, crawlee-one → `crawlee-one/specs/`).
 2. **Iterate with user** on each doc until satisfied.
 3. **For any selected solution not yet deep-dived**, produce the same kind of doc.
 4. **Confirm with user** when all selected solutions have design docs.
@@ -73,7 +73,7 @@ Create todo tasks for each phase before proceeding.
 1. **Architect proposes** either:
    - **(a)** A prioritization of solutions (order, dependencies, quick wins vs. long-term), or
    - **(b)** A test harness / evaluation approach to figure out prioritization (e.g. benchmark, A/B, pilot).
-   - Note: The test harness may *be* one of the selected solutions (e.g. "synthetic regression tests" as meta-evaluation approach).
+   - Note: The test harness may _be_ one of the selected solutions (e.g. "synthetic regression tests" as meta-evaluation approach).
 2. **Iterate with user** until agreement and shared understanding.
 3. **Document** the agreed prioritization or harness in a short summary.
 
@@ -82,7 +82,7 @@ Create todo tasks for each phase before proceeding.
 ### Phase 5: Create work packages
 
 1. **Create GitHub issues** for each work package via `act-repo-issue-create`:
-   - Include the **full deep-dive design** in the issue body (or link to `{project}/docs/design-decisions/{topic}/` if already committed).
+   - Include the **full deep-dive design** in the issue body (or link to `{project}/specs/{topic}/` if already committed).
    - Add acceptance criteria, dependencies, and scope estimate (small/medium/large).
 2. **Create an umbrella issue** that:
    - Links all subtask issues
@@ -103,30 +103,36 @@ Create todo tasks for each phase before proceeding.
 
 ## Design doc template (per solution)
 
-Use for each deep-dive at `{project}/docs/design-decisions/{topic}/README.md` (main design doc; other supporting files like `issues.md` in the same `{topic}/` directory):
+Use for each deep-dive at `{project}/specs/{topic}/README.md` (main design doc; other supporting files like `issues.md` in the same `{topic}/` directory):
 
 ```markdown
 # {Solution name} — Design
 
 ## Goal
+
 {What this solution achieves and why it matters.}
 
 ## Scope
+
 - In scope: ...
 - Out of scope: ...
 
 ## Data / processes / dependencies
+
 - {What data, where it comes from, what processes touch it}
 - {Dependencies on other solutions or systems}
 
 ## How it fits
+
 {Relation to other selected solutions; integration points.}
 
 ## Risks and trade-offs
+
 - {Risk} — {mitigation}
 - {Trade-off} — {why we accept it}
 
 ## Alternatives considered
+
 - {Alt} — {why not chosen}
 ```
 

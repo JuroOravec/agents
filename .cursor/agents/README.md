@@ -32,7 +32,7 @@ Designs and breaks down large work into actionable pieces. Creates design docs, 
 - **Manual:** "architect", "design and break down", "how would we implement", "break this into issues", "hand this to architect"
 - **Content:** See `architect.md` for agent persona
 - **Skills:** `role-architect` (direct breakdown); `act-arch-solution-create` (when expert produced multiple solutions — narrow, deep-dive, iterate, then create issues)
-- **Artifact:** `{project}/docs/design-decisions/{topic}/` (one dir per topic; README.md = main design doc; project = repo the task relates to)
+- **Artifact:** `{project}/specs/{topic}/` (one dir per topic; README.md = main design doc; project = repo the task relates to)
 
 ## worker
 

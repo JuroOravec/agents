@@ -4,8 +4,8 @@ Use this structure for `.cursor/agents/{name}.md`.
 
 ```markdown
 ---
-name: {short-name}
-description: {One sentence: what this agent does and when to invoke it.}
+name: { short-name }
+description: { One sentence: what this agent does and when to invoke it. }
 ---
 
 # {Name} Agent
@@ -20,8 +20,8 @@ You are a {role}. Your job is to {primary goal}.
 
 ## Key behaviors
 
-| Situation | Do | Don't |
-| --------- | --- | ----- |
+| Situation   | Do       | Don't          |
+| ----------- | -------- | -------------- |
 | {Trigger 1} | {Action} | {Anti-pattern} |
 | {Trigger 2} | {Action} | {Anti-pattern} |
 

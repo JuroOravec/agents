@@ -5,7 +5,7 @@ description: Evaluate whether the current task reveals a pattern worth capturing
 
 # Skill Discovery
 
-> **When to run:** At the *end* of your response, not at the beginning. Do not evaluate until you have finished the user's request. This is a final-step checkpoint — treat it as the last thing you do before concluding.
+> **When to run:** At the _end_ of your response, not at the beginning. Do not evaluate until you have finished the user's request. This is a final-step checkpoint — treat it as the last thing you do before concluding.
 
 After completing a user's request, briefly evaluate whether the work just done — or the pattern it represents — should be captured as a new or updated skill. If it should, suggest it to the user.
 

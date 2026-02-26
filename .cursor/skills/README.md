@@ -55,7 +55,7 @@ Natural phrases that trigger skills. Say these in chat to invoke workflows.
 | **"release"**, "publish", "cut a release"                                               | `act-repo-release`                                                                          |
 | **"architect"**, "design and break down", "how would we implement", "break into issues" | `role-architect` — Design large work, create issues, hand off to PM                         |
 | "hand to architect", "narrow these solutions", "deep dive into these"                   | `act-arch-solution-create` — Multi-solution flow: narrow, deep-dive, iterate, create issues |
-| "create AI crew", "AI committee", "multi-agent workflow", "CrewAI-style"                 | `act-ai-crew-create` — Design and implement KaibanJS crew                                   |
+| "create AI crew", "AI committee", "multi-agent workflow", "CrewAI-style"                | `act-ai-crew-create` — Design and implement KaibanJS crew                                   |
 | "run AI crew", "run crew-prd-review", "execute crew"                                    | `act-ai-crew-run` — Pass inputs, invoke crew script                                         |
 | "set up project", "scaffold", "bootstrap"                                               | `project-setup`                                                                             |
 | "add Cursor hooks", "create hook", "beforeSubmitPrompt"                                 | `meta-hook-create`                                                                          |
@@ -108,13 +108,13 @@ unnecessary indirection.
 
 Current areas under `act-`:
 
-| Area       | Scope                                                                                                                 | Example                    |
-| ---------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| `dev`      | Writing code: features, bugs, refactors, tests, benchmarks                                                            | `act-dev--scraper-write`   |
-| `arch`     | Architecture and composition (1–2 layers above dev): new data kinds, processes, system boundaries; not implementation | `act-arch-solution-create` |
-| `repo`     | Git and GitHub operations: PRs, issues, releases                                                                      | `act-repo-pr-create`       |
-| `security` | Security concerns: vulnerability handling, audits                                                                     | `act-security-vuln`        |
-| `ai`       | AI/LLM-based workflows: crews, committees, multi-agent tasks                                                            | `act-ai-crew-create`, `act-ai-crew-run` |
+| Area       | Scope                                                                                                                 | Example                                 |
+| ---------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `dev`      | Writing code: features, bugs, refactors, tests, benchmarks                                                            | `act-dev--scraper-write`                |
+| `arch`     | Architecture and composition (1–2 layers above dev): new data kinds, processes, system boundaries; not implementation | `act-arch-solution-create`              |
+| `repo`     | Git and GitHub operations: PRs, issues, releases                                                                      | `act-repo-pr-create`                    |
+| `security` | Security concerns: vulnerability handling, audits                                                                     | `act-security-vuln`                     |
+| `ai`       | AI/LLM-based workflows: crews, committees, multi-agent tasks                                                          | `act-ai-crew-create`, `act-ai-crew-run` |
 
 Agent role skills (`role-`) don't use areas.
 
@@ -172,39 +172,39 @@ Reserved for managing the root repo. Do not use for skills that operate on impor
 
 #### `act-` -- Reactive / event-driven
 
-| Skill                             | Purpose                                                                                                            |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `act-dev`                         | **Orchestrator.** End-to-end development workflow (design through PR)                                              |
-| `act-dev-design`                  | Phase skill. Analyze request, explore code, draft implementation plan                                              |
-| `act-dev-coverage`                | Phase skill. Improve test coverage                                                                                 |
-| `act-dev-bench`                   | Phase skill. Write benchmark tests                                                                                 |
-| `act-dev-validate`                | Phase skill. Check cross-system constraint drift                                                                   |
-| `act-dev-docs`                    | Phase skill. Update docs and docstrings after code changes                                                         |
-| `act-dev-changelog`               | Phase skill. Add changelog entry                                                                                   |
-| `act-dev-review`                  | Phase skill. Invoke reviewer subagent after substantive work. Part of act-dev Phase 8b. |
-| `act-dev--scraper-write`          | Specialization of `act-dev`. Create or modify a scraper (scaffold, routes, extraction)                             |
-| `act-dev--scraper-discovery`      | Specialization of `act-dev`. Discover and design scraping (pages, data, layout variants). WIP                      |
-| `act-dev--scraper-data-integrity` | Specialization of `act-dev`. Validate data integrity of scraped datasets (audit, checks, tooling). WIP             |
-| `act-dev--dependency-manage`      | Specialization of `act-dev`. Add, update, or remove deps via pnpm catalog                                          |
-| `act-dev--dependency-migrate`     | Specialization of `act-dev`. Evaluate and apply dependency migrations                                              |
-| `act-dev--package-create`         | Specialization of `act-dev`. Create a new monorepo package                                                         |
-| `act-dev--package-migrate-in`     | Specialization of `act-dev`. Migrate an external package into the monorepo                                         |
-| `act-repo-pr-create`              | Create a GitHub pull request                                                                                       |
-| `act-repo-issue-create`           | Create a GitHub issue                                                                                              |
-| `act-repo-release`                | Prepare and publish a release                                                                                      |
-| `act-security-vuln`               | Handle a security vulnerability report                                                                             |
+| Skill                             | Purpose                                                                                                                                           |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `act-dev`                         | **Orchestrator.** End-to-end development workflow (design through PR)                                                                             |
+| `act-dev-design`                  | Phase skill. Analyze request, explore code, draft implementation plan                                                                             |
+| `act-dev-coverage`                | Phase skill. Improve test coverage                                                                                                                |
+| `act-dev-bench`                   | Phase skill. Write benchmark tests                                                                                                                |
+| `act-dev-validate`                | Phase skill. Check cross-system constraint drift                                                                                                  |
+| `act-dev-docs`                    | Phase skill. Update docs and docstrings after code changes                                                                                        |
+| `act-dev-changelog`               | Phase skill. Add changelog entry                                                                                                                  |
+| `act-dev-review`                  | Phase skill. Invoke reviewer subagent after substantive work. Part of act-dev Phase 8b.                                                           |
+| `act-dev--scraper-write`          | Specialization of `act-dev`. Create or modify a scraper (scaffold, routes, extraction)                                                            |
+| `act-dev--scraper-discovery`      | Specialization of `act-dev`. Discover and design scraping (pages, data, layout variants). WIP                                                     |
+| `act-dev--scraper-data-integrity` | Specialization of `act-dev`. Validate data integrity of scraped datasets (audit, checks, tooling). WIP                                            |
+| `act-dev--dependency-manage`      | Specialization of `act-dev`. Add, update, or remove deps via pnpm catalog                                                                         |
+| `act-dev--dependency-migrate`     | Specialization of `act-dev`. Evaluate and apply dependency migrations                                                                             |
+| `act-dev--package-create`         | Specialization of `act-dev`. Create a new monorepo package                                                                                        |
+| `act-dev--package-migrate-in`     | Specialization of `act-dev`. Migrate an external package into the monorepo                                                                        |
+| `act-repo-pr-create`              | Create a GitHub pull request                                                                                                                      |
+| `act-repo-issue-create`           | Create a GitHub issue                                                                                                                             |
+| `act-repo-release`                | Prepare and publish a release                                                                                                                     |
+| `act-security-vuln`               | Handle a security vulnerability report                                                                                                            |
 | `act-arch-solution-create`        | Architect-led: when expert produced multiple solutions — narrow with user, deep-dive, iterate, prioritize, create umbrella + work-package issues. |
-| `act-ai-crew-create`             | Create KaibanJS crew/committee: gather context, define strategy, agents, generate scripts/crews/{name}.ts using config.ts tiers. |
-| `act-ai-crew-run`               | Run existing AI crew: pass inputs (file, stdin, programmatic), handle output, env vars. |
+| `act-ai-crew-create`              | Create KaibanJS crew/committee: gather context, define strategy, agents, generate src/crews/{name}.ts using config.ts tiers.                  |
+| `act-ai-crew-run`                 | Run existing AI crew: pass inputs (file, stdin, programmatic), handle output, env vars.                                                           |
 
 #### `role-` — Agent personas (behaviors for agent definitions)
 
-| Skill                      | Purpose                                                                                                                                               |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `role-pm`                  | Project manager: capture ideas, triage backlog, "what's next?", context restore. First local, then GitHub.                                            |
-| `role-architect`           | Architect: design and break down large work into issues; hand off to PM for prioritization. Start with most straightforward chunk.                    |
-| `role-worker`              | Worker: execute from pool of GitHub issues; take one, implement via act-dev, close when done. Used for parallel execution after architect/PM handoff. |
-| `role-reviewer`            | Adversarial reviewer: prompt template and instructions. Used when the reviewer subagent is invoked.                                                   |
+| Skill             | Purpose                                                                                                                                               |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `role-pm`         | Project manager: capture ideas, triage backlog, "what's next?", context restore. First local, then GitHub.                                            |
+| `role-architect`  | Architect: design and break down large work into issues; hand off to PM for prioritization. Start with most straightforward chunk.                    |
+| `role-worker`     | Worker: execute from pool of GitHub issues; take one, implement via act-dev, close when done. Used for parallel execution after architect/PM handoff. |
+| `role-reviewer`   | Adversarial reviewer: prompt template and instructions. Used when the reviewer subagent is invoked.                                                   |
 
 #### `meta-` -- Skills about skills
 

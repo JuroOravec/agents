@@ -109,16 +109,16 @@ User prompts captured when the `beforeSubmitPrompt` hook runs (if capture-prompt
 
 ## Hook → log mapping
 
-| Hook              | Script                  | Log location                                      |
-| ----------------- | ----------------------- | ------------------------------------------------- |
-| `sessionStart`    | session-init.sh         | Injects conversation_id into context (no file)   |
-| `beforeSubmitPrompt` | capture-prompts.sh   | `.cursor/logs/prompts/prompts-YYYY-MM-DD.jsonl`   |
-| `postToolUse`     | log-tools.sh            | `.cursor/logs/tools/tools-YYYY-MM-DD.jsonl`      |
-| `postToolUseFailure` | log-tools.sh        | `.cursor/logs/tools/tools-YYYY-MM-DD.jsonl`      |
-| `subagentStop`    | log-agents.sh           | `.cursor/logs/agents/agents-YYYY-MM-DD.jsonl`     |
-| `afterAgentThought` | log-thoughts.sh       | `.cursor/logs/thoughts/thoughts-YYYY-MM-DD.jsonl` |
-| `afterAgentResponse` | log-chats.sh         | `.cursor/logs/chats/chats-YYYY-MM-DD.jsonl`      |
-| Skill-eval CLI    | skill-eval.sh            | `.cursor/logs/skills/` (JSON per run)            |
+| Hook                 | Script             | Log location                                      |
+| -------------------- | ------------------ | ------------------------------------------------- |
+| `sessionStart`       | session-init.sh    | Injects conversation_id into context (no file)    |
+| `beforeSubmitPrompt` | capture-prompts.sh | `.cursor/logs/prompts/prompts-YYYY-MM-DD.jsonl`   |
+| `postToolUse`        | log-tools.sh       | `.cursor/logs/tools/tools-YYYY-MM-DD.jsonl`       |
+| `postToolUseFailure` | log-tools.sh       | `.cursor/logs/tools/tools-YYYY-MM-DD.jsonl`       |
+| `subagentStop`       | log-agents.sh      | `.cursor/logs/agents/agents-YYYY-MM-DD.jsonl`     |
+| `afterAgentThought`  | log-thoughts.sh    | `.cursor/logs/thoughts/thoughts-YYYY-MM-DD.jsonl` |
+| `afterAgentResponse` | log-chats.sh       | `.cursor/logs/chats/chats-YYYY-MM-DD.jsonl`       |
+| Skill-eval CLI       | skill-eval.sh      | `.cursor/logs/skills/` (JSON per run)             |
 
 ---
 
