@@ -1,3 +1,6 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import eslint from '@eslint/js';
 import { defineConfig } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier';
@@ -5,9 +8,18 @@ import eslintPluginPrettier from 'eslint-plugin-prettier';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import tseslint from 'typescript-eslint';
 
+const agentsRoot = path.dirname(fileURLToPath(import.meta.url));
+
 export default defineConfig(
   {
     ignores: ['**/dist/**', '**/node_modules/**'],
+  },
+  {
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: agentsRoot,
+      },
+    },
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
