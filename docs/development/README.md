@@ -89,6 +89,10 @@ Data is read from `.cursor/logs/skills/`. Use `-p 3000` to change the port.
 
 **Design:** [docs/design-decisions/meta-skill-evaluation/](../design-decisions/meta-evaluation/) (phase format enforcement is a prerequisite for skill-eval tracking).
 
+### Dead code and unused exports (Knip)
+
+`pnpm run knip` (and the check pipeline) runs [Knip](https://knip.dev/) to find unused exports, dead files, and unused dependencies. Types are excluded by default. See [docs/development/knip.md](./knip.md) for how it works and how to make exceptions (`@public`, custom tags, re-exports).
+
 ## Adding and removing projects
 
 See [docs/project-setup.md](../project-setup.md) for:

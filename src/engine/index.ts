@@ -10,6 +10,7 @@ import { spawn } from 'node:child_process';
 const phases = [
   { name: 'Types', command: 'npx tsc --noEmit' },
   { name: 'Lint', command: 'npm run lint' },
+  { name: 'Dead Code', command: 'npm run knip' },
   { name: 'Format', command: 'npm run format:check' },
   { name: 'Unit Tests', command: 'npm run test' },
   { name: 'Custom Constraints', command: 'npm run validate' },

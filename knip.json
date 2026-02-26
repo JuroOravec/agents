@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/index.ts",
+    "src/commands/cli.ts",
+    "src/mastra/index.ts",
+    "src/mastra/patterns/index.ts",
+    "scripts/crew-worker-cli.ts",
+    "scripts/crew-prd-review.ts",
+    "scripts/commands/*.ts",
+    "src/engine/validate/*.ts"
+  ],
+  "project": ["src/**/*.ts", "scripts/**/*.ts", "specs/**/*.ts"],
+  "ignoreDependencies": ["@vitest/coverage-v8"],
+  "tags": ["-lintignore"]
+}
