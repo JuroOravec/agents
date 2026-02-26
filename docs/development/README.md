@@ -35,11 +35,14 @@ agents/                    ← root repo
 
 ## Root commands
 
-The root `package.json` is minimal. One validation script runs at root; all other development commands live inside nested projects.
+The root `package.json` provides the check pipeline and validation scripts:
 
 ```bash
-pnpm run validate   # Validate skill phase format (see below)
-pnpm run preview    # Skill-eval dashboard (heatmap + line chart) at http://localhost:3040
+pnpm run check       # Full check pipeline (types, lint, knip, format, tests, coverage, validate)
+pnpm run check:agent # Same as check, JSON output for agent consumption
+pnpm run coverage    # Run tests with coverage; fails if thresholds not met
+pnpm run validate    # Validate skill phase format (see below)
+pnpm run preview     # Skill-eval dashboard (heatmap + line chart) at http://localhost:3040
 cd crawlee-one && pnpm build
 cd crawlee-one && pnpm test
 ```
@@ -92,6 +95,10 @@ Data is read from `.cursor/logs/skills/`. Use `-p 3000` to change the port.
 ### Dead code and unused exports (Knip)
 
 `pnpm run knip` (and the check pipeline) runs [Knip](https://knip.dev/) to find unused exports, dead files, and unused dependencies. Types are excluded by default. See [docs/development/knip.md](./knip.md) for how it works and how to make exceptions (`@public`, custom tags, re-exports).
+
+### Test coverage
+
+`pnpm run coverage` runs tests with the V8 coverage provider and fails if thresholds (lines, statements, branches, functions) are not met. This is Phase 5 of the check pipeline. See [docs/development/coverage.md](./coverage.md) for thresholds, scope, and how to improve coverage.
 
 ## Adding and removing projects
 

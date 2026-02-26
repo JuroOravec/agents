@@ -6,6 +6,23 @@ export default defineConfig({
     include: ['src/**/*.test.ts', 'specs/**/*.test.ts'],
     coverage: {
       provider: 'v8',
+      include: ['src/**/*.ts', 'scripts/**/*.ts'],
+      exclude: [
+        '**/*.test.ts',
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/coverage/**',
+        'crawlee-one/**',
+        '**/__generated__/**',
+      ],
+      reporter: ['text', 'lcov'],
+      // TODO - require 98% test coverage
+      thresholds: {
+        lines: 40,
+        functions: 40,
+        branches: 35,
+        statements: 40,
+      },
     },
   },
 });
