@@ -5,8 +5,13 @@
  */
 
 import type { PhaseInfo } from '../engine/validate/skill-phases.js';
-import type { ChatWaterfallEntry, LogEntry, SkillEvalRun, SortSpec } from './storage.js';
-import { buildSortParam } from './storage.js';
+import {
+  buildSortParam,
+  type ChatWaterfallEntry,
+  type LogEntry,
+  type SkillEvalRun,
+  type SortSpec,
+} from './storage.js';
 
 function escapeHtml(s: string): string {
   return s
@@ -371,21 +376,39 @@ function colorForRate(rate: number): string {
   return `rgb(${r},${g},${b})`;
 }
 
-export function pageSkills(
-  heatmapData: HeatmapData,
-  skillsPerDayData: SkillsPerDayPoint[],
-  skillsPerDayByTypeData: Map<string, ToolChartPoint[]>,
-  skillSuccessRateChartData: Map<string, ToolChartPoint[]>,
-  skillTimeShareChartData: ToolChartPoint[],
-  entries: LogEntry[],
-  totalCount: number,
-  page: number,
-  pageSize: number,
-  sortSpec: SortSpec[],
-  filterValue: string,
-  filterError: string | null,
-  runsCount: number,
-): string {
+/** Options for pageSkills */
+export interface PageSkillsOpts {
+  heatmapData: HeatmapData;
+  skillsPerDayData: SkillsPerDayPoint[];
+  skillsPerDayByTypeData: Map<string, ToolChartPoint[]>;
+  skillSuccessRateChartData: Map<string, ToolChartPoint[]>;
+  skillTimeShareChartData: ToolChartPoint[];
+  entries: LogEntry[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  sortSpec: SortSpec[];
+  filterValue: string;
+  filterError: string | null;
+  runsCount: number;
+}
+
+export function pageSkills(opts: PageSkillsOpts): string {
+  const {
+    heatmapData,
+    skillsPerDayData,
+    skillsPerDayByTypeData,
+    skillSuccessRateChartData,
+    skillTimeShareChartData,
+    entries,
+    totalCount,
+    page,
+    pageSize,
+    sortSpec,
+    filterValue,
+    filterError,
+    runsCount,
+  } = opts;
   const heatmapRows = heatmapData.skills
     .map(
       (skill, si) =>
@@ -545,10 +568,10 @@ ${emptyMsg}
 ${chartsHtml}
 ${heatmapHtml}`;
 
-  return pageLogTable(
-    'Skills',
-    '/skills',
-    SKILL_COLUMNS,
+  return pageLogTable({
+    title: 'Skills',
+    basePath: '/skills',
+    columns: SKILL_COLUMNS,
     entries,
     totalCount,
     page,
@@ -557,9 +580,9 @@ ${heatmapHtml}`;
     filterValue,
     filterError,
     emptyMsg,
-    "obj.skill === 'act-dev'  // JS expression, obj = log entry",
+    filterPlaceholder: "obj.skill === 'act-dev'  // JS expression, obj = log entry",
     contentAboveTable,
-  );
+  });
 }
 
 export function pageError(message: string): string {
@@ -665,7 +688,8 @@ function formatCellValue(v: unknown): string {
   return String(v);
 }
 
-function buildLogQuery(page: number, sortParam: string, filterValue: string): string {
+function buildLogQuery(opts: { page: number; sortParam: string; filterValue: string }): string {
+  const { page, sortParam, filterValue } = opts;
   const params = new URLSearchParams();
   if (page > 1) params.set('page', String(page));
   if (sortParam) params.set('sort', sortParam);
@@ -996,27 +1020,44 @@ export interface LeadingColumn {
   label?: string;
 }
 
+/** Options for pageLogTable */
+interface PageLogTableOpts {
+  title: string;
+  basePath: string;
+  columns: string[];
+  entries: LogEntry[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  sortSpec: SortSpec[];
+  filterValue: string;
+  filterError: string | null;
+  emptyMsg: string;
+  filterPlaceholder: string;
+  contentAboveTable?: string;
+  leadingColumn?: LeadingColumn;
+}
+
 /**
  * Build a log table page (agents or tools). Reuses crawlee-one table pattern.
- * @param contentAboveTable - Optional HTML to render between filter form and table (e.g. chart)
- * @param leadingColumn - Optional column at the left with links (e.g. detail page)
  */
-function pageLogTable(
-  title: string,
-  basePath: string,
-  columns: string[],
-  entries: LogEntry[],
-  totalCount: number,
-  page: number,
-  pageSize: number,
-  sortSpec: SortSpec[],
-  filterValue: string,
-  filterError: string | null,
-  emptyMsg: string,
-  filterPlaceholder: string,
-  contentAboveTable = '',
-  leadingColumn?: LeadingColumn,
-): string {
+function pageLogTable(opts: PageLogTableOpts): string {
+  const {
+    title,
+    basePath,
+    columns,
+    entries,
+    totalCount,
+    page,
+    pageSize,
+    sortSpec,
+    filterValue,
+    filterError,
+    emptyMsg,
+    filterPlaceholder,
+    contentAboveTable = '',
+    leadingColumn,
+  } = opts;
   const currentSortParam = buildSortParam(sortSpec);
 
   const sortByPath = new Map(sortSpec.map((s, i) => [s.path, { dir: s.dir, order: i }]));
@@ -1055,7 +1096,7 @@ function pageLogTable(
       sortClass = ' sort-desc';
     }
     const nextParam = buildSortParam(nextSort);
-    const href = `${basePath}${buildLogQuery(1, nextParam, filterValue)}`;
+    const href = `${basePath}${buildLogQuery({ page: 1, sortParam: nextParam, filterValue })}`;
     thead += `<th class="sort-header${sortClass}"><a href="${escapeHtml(href)}" style="text-decoration:none;color:inherit">${escapeHtml(col)}<span class="sort-icons"><span class="arrow-up">↑</span><span class="arrow-down">↓</span></span></a></th>`;
   }
   thead += '</tr>';
@@ -1063,11 +1104,11 @@ function pageLogTable(
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   let pagination = '<div class="pagination">';
   if (page > 1) {
-    pagination += `<a href="${escapeHtml(basePath)}${buildLogQuery(page - 1, currentSortParam, filterValue)}">Previous</a> `;
+    pagination += `<a href="${escapeHtml(basePath)}${buildLogQuery({ page: page - 1, sortParam: currentSortParam, filterValue })}">Previous</a> `;
   }
   pagination += `Page ${page} of ${totalPages} (${totalCount} total)`;
   if (page < totalPages) {
-    pagination += ` <a href="${escapeHtml(basePath)}${buildLogQuery(page + 1, currentSortParam, filterValue)}">Next</a>`;
+    pagination += ` <a href="${escapeHtml(basePath)}${buildLogQuery({ page: page + 1, sortParam: currentSortParam, filterValue })}">Next</a>`;
   }
   pagination += '</div>';
 
@@ -1097,18 +1138,33 @@ ${pagination}
 ${layoutEnd}`;
 }
 
-export function pageAgents(
-  entries: LogEntry[],
-  totalCount: number,
-  page: number,
-  pageSize: number,
-  sortSpec: SortSpec[],
-  filterValue: string,
-  filterError: string | null,
-  agentChartData: Map<string, ToolChartPoint[]>,
-  agentsPerDayData: AgentsPerDayPoint[],
-  agentsPerDayByTypeData: Map<string, ToolChartPoint[]>,
-): string {
+/** Options for pageAgents */
+export interface PageAgentsOpts {
+  entries: LogEntry[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  sortSpec: SortSpec[];
+  filterValue: string;
+  filterError: string | null;
+  agentChartData: Map<string, ToolChartPoint[]>;
+  agentsPerDayData: AgentsPerDayPoint[];
+  agentsPerDayByTypeData: Map<string, ToolChartPoint[]>;
+}
+
+export function pageAgents(opts: PageAgentsOpts): string {
+  const {
+    entries,
+    totalCount,
+    page,
+    pageSize,
+    sortSpec,
+    filterValue,
+    filterError,
+    agentChartData,
+    agentsPerDayData,
+    agentsPerDayByTypeData,
+  } = opts;
   let chartHtml = '';
 
   if (agentsPerDayData.length > 0 || agentsPerDayByTypeData.size > 0) {
@@ -1194,10 +1250,10 @@ export function pageAgents(
 `;
   }
 
-  return pageLogTable(
-    'Agents',
-    '/agents',
-    AGENT_COLUMNS,
+  return pageLogTable({
+    title: 'Agents',
+    basePath: '/agents',
+    columns: AGENT_COLUMNS,
     entries,
     totalCount,
     page,
@@ -1205,22 +1261,35 @@ export function pageAgents(
     sortSpec,
     filterValue,
     filterError,
-    '<p>No agent logs found. Subagent runs are logged when subagentStop hook fires.</p>',
-    "obj.subagent_type === 'architect'  // JS expression, obj = log entry",
-    chartHtml,
-  );
+    emptyMsg: '<p>No agent logs found. Subagent runs are logged when subagentStop hook fires.</p>',
+    filterPlaceholder: "obj.subagent_type === 'architect'  // JS expression, obj = log entry",
+    contentAboveTable: chartHtml,
+  });
 }
 
-export function pagePrompts(
-  entries: LogEntry[],
-  totalCount: number,
-  page: number,
-  pageSize: number,
-  sortSpec: SortSpec[],
-  filterValue: string,
-  filterError: string | null,
-  promptsChartData: PromptsPerDayPoint[],
-): string {
+/** Options for pagePrompts */
+export interface PagePromptsOpts {
+  entries: LogEntry[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  sortSpec: SortSpec[];
+  filterValue: string;
+  filterError: string | null;
+  promptsChartData: PromptsPerDayPoint[];
+}
+
+export function pagePrompts(opts: PagePromptsOpts): string {
+  const {
+    entries,
+    totalCount,
+    page,
+    pageSize,
+    sortSpec,
+    filterValue,
+    filterError,
+    promptsChartData,
+  } = opts;
   let chartHtml = '';
   if (promptsChartData.length > 0) {
     const maxY = Math.max(0, ...promptsChartData.map((p) => p.y));
@@ -1259,10 +1328,10 @@ export function pagePrompts(
 `;
   }
 
-  return pageLogTable(
-    'Prompts',
-    '/prompts',
-    PROMPT_COLUMNS,
+  return pageLogTable({
+    title: 'Prompts',
+    basePath: '/prompts',
+    columns: PROMPT_COLUMNS,
     entries,
     totalCount,
     page,
@@ -1270,22 +1339,36 @@ export function pagePrompts(
     sortSpec,
     filterValue,
     filterError,
-    '<p>No prompt logs found. Prompts are logged when beforeSubmitPrompt hook fires (capture-prompts.sh).</p>',
-    "obj.conversation_id === 'uuid'  // JS expression, obj = log entry",
-    chartHtml,
-  );
+    emptyMsg:
+      '<p>No prompt logs found. Prompts are logged when beforeSubmitPrompt hook fires (capture-prompts.sh).</p>',
+    filterPlaceholder: "obj.conversation_id === 'uuid'  // JS expression, obj = log entry",
+    contentAboveTable: chartHtml,
+  });
 }
 
-export function pageChats(
-  entries: LogEntry[],
-  totalCount: number,
-  page: number,
-  pageSize: number,
-  sortSpec: SortSpec[],
-  filterValue: string,
-  filterError: string | null,
-  chatsChartData: ChatsPerDayPoint[],
-): string {
+/** Options for pageChats */
+export interface PageChatsOpts {
+  entries: LogEntry[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  sortSpec: SortSpec[];
+  filterValue: string;
+  filterError: string | null;
+  chatsChartData: ChatsPerDayPoint[];
+}
+
+export function pageChats(opts: PageChatsOpts): string {
+  const {
+    entries,
+    totalCount,
+    page,
+    pageSize,
+    sortSpec,
+    filterValue,
+    filterError,
+    chatsChartData,
+  } = opts;
   let chartHtml = '';
   if (chatsChartData.length > 0) {
     const maxY = Math.max(0, ...chatsChartData.map((p) => p.y));
@@ -1324,10 +1407,10 @@ export function pageChats(
 `;
   }
 
-  return pageLogTable(
-    'Chats',
-    '/chats',
-    CHAT_COLUMNS,
+  return pageLogTable({
+    title: 'Chats',
+    basePath: '/chats',
+    columns: CHAT_COLUMNS,
     entries,
     totalCount,
     page,
@@ -1335,15 +1418,16 @@ export function pageChats(
     sortSpec,
     filterValue,
     filterError,
-    '<p>No chat logs found. Chats are logged when afterAgentResponse hook fires (log-chats.sh).</p>',
-    "obj.conversation_id === 'uuid'  // JS expression, obj = log entry",
-    chartHtml,
-    {
+    emptyMsg:
+      '<p>No chat logs found. Chats are logged when afterAgentResponse hook fires (log-chats.sh).</p>',
+    filterPlaceholder: "obj.conversation_id === 'uuid'  // JS expression, obj = log entry",
+    contentAboveTable: chartHtml,
+    leadingColumn: {
       header: '',
       href: (e) => `/chats/${encodeURIComponent(e.id)}`,
       label: 'View',
     },
-  );
+  });
 }
 
 const WATERFALL_COLORS: Record<string, string> = {
@@ -1536,18 +1620,33 @@ ${waterfallHtml}
 ${layoutEnd}`;
 }
 
-export function pageTools(
-  entries: LogEntry[],
-  totalCount: number,
-  page: number,
-  pageSize: number,
-  sortSpec: SortSpec[],
-  filterValue: string,
-  filterError: string | null,
-  toolChartData: Map<string, ToolChartPoint[]>,
-  toolsPerDayData: ToolsPerDayPoint[],
-  toolsPerDayByTypeData: Map<string, ToolChartPoint[]>,
-): string {
+/** Options for pageTools */
+export interface PageToolsOpts {
+  entries: LogEntry[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  sortSpec: SortSpec[];
+  filterValue: string;
+  filterError: string | null;
+  toolChartData: Map<string, ToolChartPoint[]>;
+  toolsPerDayData: ToolsPerDayPoint[];
+  toolsPerDayByTypeData: Map<string, ToolChartPoint[]>;
+}
+
+export function pageTools(opts: PageToolsOpts): string {
+  const {
+    entries,
+    totalCount,
+    page,
+    pageSize,
+    sortSpec,
+    filterValue,
+    filterError,
+    toolChartData,
+    toolsPerDayData,
+    toolsPerDayByTypeData,
+  } = opts;
   let chartHtml = '';
 
   if (toolsPerDayData.length > 0 || toolsPerDayByTypeData.size > 0) {
@@ -1633,10 +1732,10 @@ export function pageTools(
 `;
   }
 
-  return pageLogTable(
-    'Tools',
-    '/tools',
-    TOOL_COLUMNS,
+  return pageLogTable({
+    title: 'Tools',
+    basePath: '/tools',
+    columns: TOOL_COLUMNS,
     entries,
     totalCount,
     page,
@@ -1644,8 +1743,9 @@ export function pageTools(
     sortSpec,
     filterValue,
     filterError,
-    '<p>No tool logs found. Tool invocations are logged when postToolUse/postToolUseFailure hooks fire.</p>',
-    "obj.tool_name === 'Shell'  // JS expression, obj = log entry",
-    chartHtml,
-  );
+    emptyMsg:
+      '<p>No tool logs found. Tool invocations are logged when postToolUse/postToolUseFailure hooks fire.</p>',
+    filterPlaceholder: "obj.tool_name === 'Shell'  // JS expression, obj = log entry",
+    contentAboveTable: chartHtml,
+  });
 }

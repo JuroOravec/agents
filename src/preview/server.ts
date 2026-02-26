@@ -94,13 +94,13 @@ function createPreviewServer(repoRoot: string): express.Application {
     try {
       const allEntries = await loadAgentLogs(agentsLogDir);
       const offset = (page - 1) * PAGE_SIZE;
-      const { entries, totalCount } = getLogEntriesPageWithSort(
+      const { entries, totalCount } = getLogEntriesPageWithSort({
         allEntries,
         offset,
-        PAGE_SIZE,
-        sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_AGENTS_TOOLS),
+        limit: PAGE_SIZE,
+        sortSpec: sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_AGENTS_TOOLS),
         filterFn,
-      );
+      });
 
       const agentChartData = computeAgentSuccessRateChartData(allEntries);
       const agentsPerDayData = computeAgentsPerDayChartData(allEntries);
@@ -108,18 +108,18 @@ function createPreviewServer(repoRoot: string): express.Application {
 
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(
-        pageAgents(
+        pageAgents({
           entries,
           totalCount,
           page,
-          PAGE_SIZE,
-          sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_AGENTS_TOOLS),
-          filterScript,
+          pageSize: PAGE_SIZE,
+          sortSpec: sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_AGENTS_TOOLS),
+          filterValue: filterScript,
           filterError,
           agentChartData,
           agentsPerDayData,
           agentsPerDayByTypeData,
-        ),
+        }),
       );
     } catch (err) {
       res.status(500).send(pageError(err instanceof Error ? err.message : String(err)));
@@ -149,13 +149,13 @@ function createPreviewServer(repoRoot: string): express.Application {
     try {
       const allEntries = await loadToolLogs(toolsLogDir);
       const offset = (page - 1) * PAGE_SIZE;
-      const { entries, totalCount } = getLogEntriesPageWithSort(
+      const { entries, totalCount } = getLogEntriesPageWithSort({
         allEntries,
         offset,
-        PAGE_SIZE,
-        sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_AGENTS_TOOLS),
+        limit: PAGE_SIZE,
+        sortSpec: sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_AGENTS_TOOLS),
         filterFn,
-      );
+      });
 
       const toolChartData = computeToolSuccessRateChartData(allEntries);
       const toolsPerDayData = computeToolsPerDayChartData(allEntries);
@@ -163,18 +163,18 @@ function createPreviewServer(repoRoot: string): express.Application {
 
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(
-        pageTools(
+        pageTools({
           entries,
           totalCount,
           page,
-          PAGE_SIZE,
-          sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_AGENTS_TOOLS),
-          filterScript,
+          pageSize: PAGE_SIZE,
+          sortSpec: sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_AGENTS_TOOLS),
+          filterValue: filterScript,
           filterError,
           toolChartData,
           toolsPerDayData,
           toolsPerDayByTypeData,
-        ),
+        }),
       );
     } catch (err) {
       res.status(500).send(pageError(err instanceof Error ? err.message : String(err)));
@@ -204,28 +204,28 @@ function createPreviewServer(repoRoot: string): express.Application {
     try {
       const allEntries = await loadPromptLogs(promptsLogDir);
       const offset = (page - 1) * PAGE_SIZE;
-      const { entries, totalCount } = getLogEntriesPageWithSort(
+      const { entries, totalCount } = getLogEntriesPageWithSort({
         allEntries,
         offset,
-        PAGE_SIZE,
-        sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_PROMPTS),
+        limit: PAGE_SIZE,
+        sortSpec: sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_PROMPTS),
         filterFn,
-      );
+      });
 
       const promptsChartData = computePromptsPerDayChartData(allEntries);
 
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(
-        pagePrompts(
+        pagePrompts({
           entries,
           totalCount,
           page,
-          PAGE_SIZE,
-          sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_PROMPTS),
-          filterScript,
+          pageSize: PAGE_SIZE,
+          sortSpec: sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_PROMPTS),
+          filterValue: filterScript,
           filterError,
           promptsChartData,
-        ),
+        }),
       );
     } catch (err) {
       res.status(500).send(pageError(err instanceof Error ? err.message : String(err)));
@@ -251,7 +251,13 @@ function createPreviewServer(repoRoot: string): express.Application {
         res.status(404).send(pageError(`Chat not found: ${id}`));
         return;
       }
-      const waterfallEntries = getChatWaterfallEntries(entry, thoughts, tools, agents, skills);
+      const waterfallEntries = getChatWaterfallEntries({
+        chat: entry,
+        thoughts,
+        tools,
+        agents,
+        skills,
+      });
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(pageChatDetail(entry, waterfallEntries));
     } catch (err) {
@@ -282,28 +288,28 @@ function createPreviewServer(repoRoot: string): express.Application {
     try {
       const allEntries = await loadChatLogs(chatsLogDir, promptsLogDir);
       const offset = (page - 1) * PAGE_SIZE;
-      const { entries, totalCount } = getLogEntriesPageWithSort(
+      const { entries, totalCount } = getLogEntriesPageWithSort({
         allEntries,
         offset,
-        PAGE_SIZE,
-        sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_AGENTS_TOOLS),
+        limit: PAGE_SIZE,
+        sortSpec: sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_AGENTS_TOOLS),
         filterFn,
-      );
+      });
 
       const chatsChartData = computeChatsPerDayChartData(allEntries);
 
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(
-        pageChats(
+        pageChats({
           entries,
           totalCount,
           page,
-          PAGE_SIZE,
-          sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_AGENTS_TOOLS),
-          filterScript,
+          pageSize: PAGE_SIZE,
+          sortSpec: sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_AGENTS_TOOLS),
+          filterValue: filterScript,
           filterError,
           chatsChartData,
-        ),
+        }),
       );
     } catch (err) {
       res.status(500).send(pageError(err instanceof Error ? err.message : String(err)));
@@ -339,13 +345,13 @@ function createPreviewServer(repoRoot: string): express.Application {
 
       const allEntries = skillRunsToLogEntries(runs);
       const offset = (page - 1) * PAGE_SIZE;
-      const { entries, totalCount } = getLogEntriesPageWithSort(
+      const { entries, totalCount } = getLogEntriesPageWithSort({
         allEntries,
         offset,
-        PAGE_SIZE,
-        sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_SKILLS),
+        limit: PAGE_SIZE,
+        sortSpec: sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_SKILLS),
         filterFn,
-      );
+      });
 
       const heatmapData = computeHeatmapData(runs, skillPhasesMap);
       const skillsPerDayData = computeSkillsPerDayChartData(runs);
@@ -355,7 +361,7 @@ function createPreviewServer(repoRoot: string): express.Application {
 
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(
-        pageSkills(
+        pageSkills({
           heatmapData,
           skillsPerDayData,
           skillsPerDayByTypeData,
@@ -364,12 +370,12 @@ function createPreviewServer(repoRoot: string): express.Application {
           entries,
           totalCount,
           page,
-          PAGE_SIZE,
-          sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_SKILLS),
-          filterScript,
+          pageSize: PAGE_SIZE,
+          sortSpec: sortSpec.length > 0 ? sortSpec : parseSortParam(DEFAULT_SORT_SKILLS),
+          filterValue: filterScript,
           filterError,
-          runs.length,
-        ),
+          runsCount: runs.length,
+        }),
       );
     } catch (err) {
       res.status(500).send(pageError(err instanceof Error ? err.message : String(err)));

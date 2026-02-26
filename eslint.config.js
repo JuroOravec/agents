@@ -27,6 +27,8 @@ export default defineConfig(
       },
     },
     rules: {
+      'max-params': ['error', 2],
+      'no-duplicate-imports': 'error',
       '@typescript-eslint/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports' }],
       '@typescript-eslint/no-unused-vars': [
         'error',

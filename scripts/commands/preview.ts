@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 
-import { startPreviewServer } from '../../src/preview/server.js';
 import type { CommandDef } from '../../src/commands/types.js';
+import { startPreviewServer } from '../../src/preview/server.js';
 
 const command: CommandDef = {
   name: 'preview',
@@ -16,8 +16,7 @@ Options:
     help: { type: 'boolean', short: 'h' },
   },
   handler: async (parsed) => {
-    const port =
-      typeof parsed.values.port === 'string' ? parseInt(parsed.values.port, 10) : 3040;
+    const port = typeof parsed.values.port === 'string' ? parseInt(parsed.values.port, 10) : 3040;
     const repoRoot = resolve(process.cwd());
     await startPreviewServer({ port, repoRoot });
   },

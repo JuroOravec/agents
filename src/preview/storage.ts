@@ -61,16 +61,22 @@ export interface LogEntriesPageResult {
   totalCount: number;
 }
 
+/** Options for getLogEntriesPageWithSort */
+export interface GetLogEntriesPageWithSortOpts {
+  allEntries: LogEntry[];
+  offset: number;
+  limit: number;
+  sortSpec: SortSpec[];
+  filterFn?: LogFilterFn;
+}
+
 /**
  * Filter, sort, and paginate log entries.
  */
 export function getLogEntriesPageWithSort(
-  allEntries: LogEntry[],
-  offset: number,
-  limit: number,
-  sortSpec: SortSpec[],
-  filterFn?: LogFilterFn,
+  opts: GetLogEntriesPageWithSortOpts,
 ): LogEntriesPageResult {
+  const { allEntries, offset, limit, sortSpec, filterFn } = opts;
   let entries = filterFn ? allEntries.filter(filterFn) : [...allEntries];
   const totalCount = entries.length;
 
@@ -446,18 +452,22 @@ export interface ChatWaterfallEntry {
   metadata: Record<string, string | number | boolean | undefined>;
 }
 
+/** Options for getChatWaterfallEntries */
+export interface GetChatWaterfallEntriesOpts {
+  chat: LogEntry;
+  thoughts: LogEntry[];
+  tools: LogEntry[];
+  agents: LogEntry[];
+  skills: SkillEvalRun[];
+}
+
 /**
  * Build waterfall entries for a chat: thoughts, tools, agents, skills that fall
  * within the chat's time window and match conversation_id.
  * Sorted by started_at ascending (earlier at top).
  */
-export function getChatWaterfallEntries(
-  chat: LogEntry,
-  thoughts: LogEntry[],
-  tools: LogEntry[],
-  agents: LogEntry[],
-  skills: SkillEvalRun[],
-): ChatWaterfallEntry[] {
+export function getChatWaterfallEntries(opts: GetChatWaterfallEntriesOpts): ChatWaterfallEntry[] {
+  const { chat, thoughts, tools, agents, skills } = opts;
   const chatData = chat.data as Record<string, unknown>;
   const convId = (chatData.conversation_id as string) ?? '';
   const chatStart = (chatData.started_at as string) ?? '';

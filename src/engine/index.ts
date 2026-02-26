@@ -15,7 +15,12 @@ const phases = [
   { name: 'Custom Constraints', command: 'npm run validate' },
 ];
 
-async function runPhase(name: string, command: string, captureOutput: boolean): Promise<string> {
+async function runPhase(opts: {
+  name: string;
+  command: string;
+  captureOutput: boolean;
+}): Promise<string> {
+  const { name, command, captureOutput } = opts;
   return new Promise((resolve, reject) => {
     const [cmd, ...cmdArgs] = command.split(' ');
 
@@ -64,7 +69,7 @@ export async function runCheck(opts: { reporter?: string }): Promise<void> {
       if (!isAgentReporter) {
         console.log(`\n--- Running ${phaseName} ---`);
       }
-      await runPhase(phaseName, phase.command, isAgentReporter);
+      await runPhase({ name: phaseName, command: phase.command, captureOutput: isAgentReporter });
     } catch (error) {
       const err = error as { code: number; output: string; name: string; command: string };
       if (isAgentReporter) {

@@ -1,5 +1,5 @@
-import { runCheck } from '../../src/engine/index.js';
 import type { CommandDef } from '../../src/commands/types.js';
+import { runCheck } from '../../src/engine/index.js';
 
 const command: CommandDef = {
   name: 'check',

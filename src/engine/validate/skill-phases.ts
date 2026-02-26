@@ -9,7 +9,6 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { join } from 'node:path';
 
 const SKILLS_DIR = '.cursor/skills';
 
@@ -120,17 +119,19 @@ function extractPhasesFromWorkflow(workflowContent: string): PhaseInfo[] {
  * Recursively finds all SKILL.md files under skillsDir.
  * Returns { relativePath, absolutePath } pairs.
  */
-async function findSkillFiles(
-  dir: string,
-  baseDir: string,
-  acc: { relativePath: string; absolutePath: string }[] = [],
-): Promise<{ relativePath: string; absolutePath: string }[]> {
+async function findSkillFiles(opts: {
+  dir: string;
+  baseDir: string;
+  acc?: { relativePath: string; absolutePath: string }[];
+}): Promise<{ relativePath: string; absolutePath: string }[]> {
+  const { dir, baseDir, acc: rawAcc } = opts;
+  const acc = rawAcc ?? [];
   const entries = await fs.readdir(dir, { withFileTypes: true });
   for (const e of entries) {
-    const fullPath = join(dir, e.name);
+    const fullPath = path.join(dir, e.name);
     const relativePath = path.relative(baseDir, fullPath);
     if (e.isDirectory() && !e.name.startsWith('.')) {
-      await findSkillFiles(fullPath, baseDir, acc);
+      await findSkillFiles({ dir: fullPath, baseDir, acc });
     } else if (e.isFile() && e.name === 'SKILL.md') {
       acc.push({ relativePath: path.dirname(relativePath), absolutePath: fullPath });
     }
@@ -146,7 +147,7 @@ async function findSkillFiles(
 export async function getSkillPhasesMap(
   skillsDir: string = SKILLS_DIR,
 ): Promise<Map<string, PhaseInfo[]>> {
-  const skillFiles = await findSkillFiles(skillsDir, skillsDir);
+  const skillFiles = await findSkillFiles({ dir: skillsDir, baseDir: skillsDir });
   const result = new Map<string, PhaseInfo[]>();
 
   for (const { relativePath, absolutePath } of skillFiles.sort((a, b) =>
@@ -177,7 +178,7 @@ export async function getSkillPhasesMap(
  * Throws on any violation so the runner exits with code 1.
  */
 export default async function validateSkillPhases(): Promise<void> {
-  const skillFiles = await findSkillFiles(SKILLS_DIR, SKILLS_DIR);
+  const skillFiles = await findSkillFiles({ dir: SKILLS_DIR, baseDir: SKILLS_DIR });
   const failures: { skillName: string; violations: string[] }[] = [];
 
   for (const { relativePath, absolutePath } of skillFiles.sort((a, b) =>
