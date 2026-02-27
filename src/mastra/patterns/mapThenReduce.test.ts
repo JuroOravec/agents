@@ -13,7 +13,7 @@ const InputSchema = z.object({ articles: z.array(z.string()) });
 const OutputSchema = z.object({ summaries: z.array(z.string()) });
 
 vi.mock('@mastra/core/agent', () => ({
-  Agent: vi.fn().mockImplementation((opts?: { id?: string }) => ({
+  Agent: vi.fn().mockImplementation((_opts?: { id?: string }) => ({
     generate: vi.fn().mockImplementation((messages: { role: string; content: string }[]) => {
       const content = messages[0]?.content ?? '';
       const itemMatch = content.match(/"([^"]+)"/);
@@ -67,7 +67,7 @@ describe('createMapThenReduceWorkflow', () => {
       id: 'aggregate',
       inputSchema: z.array(z.any()),
       outputSchema: OutputSchema,
-      execute: async ({ inputData }) => ({ summaries: [] }),
+      execute: async ({ inputData: _inputData }) => ({ summaries: [] }),
     });
 
     const workflow = createMapThenReduceWorkflow({

@@ -122,29 +122,27 @@ export function createFanOutSelectiveWorkflow<
       const res = await synthesizer.generate([{ role: 'user', content: prompt }], {
         structuredOutput: { schema: outputSchema },
       });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Mastra structuredOutput; schema validated at runtime
       return res.object;
     },
   });
 
-  return (
-    createWorkflow({
-      id: workflowId,
-      inputSchema: inputSchema as z.ZodTypeAny,
-      outputSchema: outputSchema as z.ZodTypeAny,
+  return createWorkflow({
+    id: workflowId,
+    inputSchema: inputSchema as z.ZodTypeAny,
+    outputSchema: outputSchema as z.ZodTypeAny,
+  })
+    .parallel(expertSteps)
+    .map(async ({ inputData, getInitData }) => {
+      const init = getInitData<Record<string, unknown>>();
+      const artifact = String(init[artifactKey] ?? '');
+      const expertIds = getExpertIds(init);
+      const parallelOut = inputData as Record<string, { critique: string }>;
+      const outputs = expertIds.map((id) => ({ id, critique: parallelOut[id]?.critique ?? '' }));
+      const filtered = filterAndRank(outputs);
+      const critiques = filtered.map((o) => `## ${o.id}\n${o.critique}`).join('\n\n---\n\n');
+      return { [artifactKey]: artifact, critiques };
     })
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mastra .parallel() tuple type
-      .parallel(expertSteps as any)
-      .map(async ({ inputData, getInitData }) => {
-        const init = getInitData<Record<string, unknown>>();
-        const artifact = String(init[artifactKey] ?? '');
-        const expertIds = getExpertIds(init);
-        const parallelOut = inputData as Record<string, { critique: string }>;
-        const outputs = expertIds.map((id) => ({ id, critique: parallelOut[id]?.critique ?? '' }));
-        const filtered = filterAndRank(outputs);
-        const critiques = filtered.map((o) => `## ${o.id}\n${o.critique}`).join('\n\n---\n\n');
-        return { [artifactKey]: artifact, critiques };
-      })
-      .then(synthesizerStep)
-      .commit()
-  );
+    .then(synthesizerStep)
+    .commit();
 }

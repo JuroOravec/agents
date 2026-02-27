@@ -83,6 +83,7 @@ export function createRouterWorkflow<TInput extends z.ZodTypeAny, TOutput extend
         const res = await b.agent.generate([{ role: 'user', content: prompt }], {
           structuredOutput: { schema: outputSchema },
         });
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Mastra structuredOutput; schema validated at runtime
         return res.object;
       },
     }),
@@ -99,19 +100,10 @@ export function createRouterWorkflow<TInput extends z.ZodTypeAny, TOutput extend
       const res = await b.agent.generate([{ role: 'user', content: prompt }], {
         structuredOutput: { schema: outputSchema },
       });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Mastra structuredOutput; schema validated at runtime
       return res.object;
     },
   });
-
-  const conds = branches.map(
-    (b) =>
-      [
-        async ({ inputData }: { inputData: { selectedId: string } }) =>
-          inputData.selectedId === b.id,
-        branchSteps.find((s) => s.id === b.id)!,
-      ] as const,
-  );
-  conds.push([async () => true, fallbackStep] as const);
 
   const initStep = createStep({
     id: 'init',
@@ -123,16 +115,27 @@ export function createRouterWorkflow<TInput extends z.ZodTypeAny, TOutput extend
     },
   });
 
-  return (
-    createWorkflow({
-      id: workflowId,
-      inputSchema: inputSchema as z.ZodTypeAny,
-      outputSchema: outputSchema as z.ZodTypeAny,
-    })
-      .then(initStep)
-      .then(routerStep)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mastra .branch() tuple type
-      .branch(conds as any)
-      .commit()
-  );
+  let workflow = createWorkflow({
+    id: workflowId,
+    inputSchema: inputSchema as z.ZodTypeAny,
+    outputSchema: outputSchema as z.ZodTypeAny,
+  })
+    .then(initStep)
+    .then(routerStep);
+
+  // Individual router branches
+  for (const branch of branches) {
+    workflow = workflow.branch([
+      [
+        async ({ inputData }: { inputData: { selectedId: string } }) =>
+          inputData.selectedId === branch.id,
+        branchSteps.find((s) => s.id === branch.id)!,
+      ] as const,
+    ]);
+  }
+
+  // Fallback branch
+  workflow = workflow.branch([[async () => true, fallbackStep] as const]);
+
+  return workflow.commit();
 }

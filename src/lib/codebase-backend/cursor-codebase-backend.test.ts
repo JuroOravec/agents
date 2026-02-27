@@ -11,7 +11,7 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import * as cursorProvider from '../../crews/utils/cursor-provider.js';
+import * as cursorProvider from '../../llm-providers/cursor/cursor-provider.js';
 import {
   CURSOR_EVENT_PREFIX,
   CURSOR_TOOL_LABELS,
@@ -20,7 +20,7 @@ import {
   makeCursorEventHandler,
 } from './cursor-codebase-backend.js';
 
-vi.mock('../../crews/utils/cursor-provider.js', () => ({
+vi.mock('../../llm-providers/cursor/cursor-provider.js', () => ({
   cursorCLI: vi.fn(),
 }));
 

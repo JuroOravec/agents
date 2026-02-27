@@ -13,7 +13,7 @@ import {
   cursorCLI,
   type CursorStreamEvent,
   type CursorToolCallEvent,
-} from '../../crews/utils/cursor-provider.js';
+} from '../../llm-providers/cursor/cursor-provider.js';
 import type { CodebaseBackend, CodebaseBackendCallbacks } from './codebase-backend.js';
 
 /** @deprecated Use CodebaseBackendCallbacks from codebase-backend.ts directly. */
@@ -197,10 +197,10 @@ async function runCursorModel(
 }
 
 /** Extracts plain text from a Vercel AI SDK content array or string. */
-function extractText(content: unknown): string {
+function extractText<T extends { type: 'text'; text: string }>(content: T[]): string {
   if (Array.isArray(content)) {
     return content
-      .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
+      .filter((p) => p.type === 'text')
       .map((p) => p.text)
       .join('\n');
   }

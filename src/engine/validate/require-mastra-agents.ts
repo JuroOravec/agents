@@ -9,10 +9,11 @@
  *    Mastra instance (mastra/index.ts).
  */
 
-import { Agent } from '@mastra/core/agent';
 import { readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
+
+import { Agent } from '@mastra/core/agent';
 
 import { mastra } from '../../mastra/index.js';
 
@@ -62,12 +63,13 @@ async function discoverExports<T>(
   return results;
 }
 
-function assertAllPresent<T>(
-  discovered: T[],
-  registered: T[] | Record<string, T>,
-  kind: string,
-  failures: string[],
-): void {
+function assertAllPresent<T>(opts: {
+  discovered: T[];
+  registered: T[] | Record<string, T>;
+  kind: string;
+  failures: string[];
+}): void {
+  const { discovered, registered, kind, failures } = opts;
   const regList = Array.isArray(registered) ? registered : Object.values(registered);
   for (const item of discovered) {
     if (!regList.includes(item)) {
@@ -134,13 +136,28 @@ export default async function requireMastraAgents(): Promise<void> {
   const registeredTools = mastra.listTools();
   const registeredWorkflows = mastra.listWorkflows();
 
-  assertAllPresent(allAgents, registeredAgents, 'Agent', failures);
+  assertAllPresent({
+    discovered: allAgents,
+    registered: registeredAgents,
+    kind: 'Agent',
+    failures,
+  });
   if (registeredTools) {
-    assertAllPresent(allTools, registeredTools, 'Tool', failures);
+    assertAllPresent({
+      discovered: allTools,
+      registered: registeredTools,
+      kind: 'Tool',
+      failures,
+    });
   } else if (allTools.length > 0) {
     failures.push('Tool: Mastra instance has no tools registered');
   }
-  assertAllPresent(allWorkflows, registeredWorkflows, 'Workflow', failures);
+  assertAllPresent({
+    discovered: allWorkflows,
+    registered: registeredWorkflows,
+    kind: 'Workflow',
+    failures,
+  });
 
   if (failures.length > 0) {
     throw new Error('Mastra validation failed:\n' + failures.map((f) => `  - ${f}`).join('\n'));

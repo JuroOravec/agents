@@ -41,7 +41,7 @@
  * See docs/features/ai-crews/patterns.md#do-while
  */
 
-import { createStep, createWorkflow, type AnyWorkflow } from '@mastra/core/workflows';
+import { type AnyWorkflow, createStep, createWorkflow } from '@mastra/core/workflows';
 import { z } from 'zod';
 
 export interface DoWhileOptions<TInput extends z.ZodTypeAny, TOutput extends z.ZodTypeAny> {
@@ -67,7 +67,7 @@ export interface DoWhileOptions<TInput extends z.ZodTypeAny, TOutput extends z.Z
 }
 
 const LoopStateSchema = z.object({
-  inputData: z.any(),
+  inputData: z.unknown(),
   outputs: z.array(z.any()),
   index: z.number(),
 });

@@ -95,6 +95,7 @@ export function createCompeteTournamentBracketWorkflow<
     execute: async ({ inputData }) => {
       const winners = inputData as z.infer<typeof WinnerSchema>[];
       const winnerIds = winners.map((w) => w.winner);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Mastra outputSchema as ZodTypeAny for workflow API
       return { winners: winnerIds, roundResults: winners } as z.infer<typeof outputSchema>;
     },
   });

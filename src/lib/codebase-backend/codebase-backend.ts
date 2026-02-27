@@ -1,5 +1,3 @@
-import 'dotenv/config';
-
 /**
  * CodebaseBackend — pluggable interface for the code-reading/writing capability
  * used by the Reviewer (read-only) and Worker (read + write) agents.
@@ -18,10 +16,15 @@ import 'dotenv/config';
  * @see {@link file://./specs/agents/worker/README.md Design Doc}
  */
 
-// ─── Public interface ──────────────────────────────────────────────────────
+import 'dotenv/config';
 
-import type { CursorStreamEvent } from '../../crews/utils/cursor-provider.js';
 import type { DrainableChunk } from '../../crews/utils/drain-stream.js';
+import type { CursorStreamEvent } from '../../llm-providers/cursor/cursor-provider.js';
+import { coderModel } from '../../models.js';
+import { CursorCodebaseBackend } from './cursor-codebase-backend.js';
+import { NativeCodebaseBackend } from './native-codebase-backend.js';
+
+// ─── Public interface ──────────────────────────────────────────────────────
 
 /**
  * Pluggable interface for the component that reads and/or writes code.
@@ -75,10 +78,6 @@ export interface CodebaseBackendCallbacks {
 
 // ─── Factory ───────────────────────────────────────────────────────────────
 
-import { coderLlm } from '../../crews/config.js';
-import { CursorCodebaseBackend } from './cursor-codebase-backend.js';
-import { NativeCodebaseBackend } from './native-codebase-backend.js';
-
 function isCursorCoder(): boolean {
   const raw = process.env.CREW_MODEL_CODER?.trim();
   return raw === 'cursor:composer-1-5' || raw === 'cursor/composer-1-5';
@@ -103,5 +102,5 @@ export function createCodebaseBackend(
     return new CursorCodebaseBackend({ worktreePath, callbacks });
   }
 
-  return new NativeCodebaseBackend({ worktreePath, llm: coderLlm, callbacks });
+  return new NativeCodebaseBackend({ worktreePath, llm: coderModel, callbacks });
 }

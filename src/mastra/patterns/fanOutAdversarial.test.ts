@@ -7,8 +7,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
 import {
-  ADVOCATE_ROLE,
   ADVERSARY_ROLE,
+  ADVOCATE_ROLE,
   createFanOutAdversarialWorkflow,
 } from './fanOutAdversarial.js';
 

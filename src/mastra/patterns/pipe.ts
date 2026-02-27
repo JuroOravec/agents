@@ -111,6 +111,7 @@ export function createPipeWorkflow<TInput extends z.ZodTypeAny, TOutput extends 
         ],
         { structuredOutput: { schema: outputSchema } },
       );
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Mastra structuredOutput; schema validated at runtime
       return res.object;
     },
   });

@@ -5,17 +5,17 @@
  */
 
 export {
-  createCodebaseBackend,
   type CodebaseBackend,
   type CodebaseBackendCallbacks,
+  createCodebaseBackend,
 } from './codebase-backend.js';
 export {
-  CursorCodebaseBackend,
   CURSOR_EVENT_PREFIX,
   CURSOR_TOOL_LABELS,
+  CursorCodebaseBackend,
+  type CursorCodebaseBackendOpts,
   formatCursorEvent,
   makeCursorEventHandler,
-  type CursorCodebaseBackendOpts,
 } from './cursor-codebase-backend.js';
 export {
   NativeCodebaseBackend,

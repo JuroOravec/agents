@@ -130,6 +130,7 @@ export function createEvaluatorOptimizerWorkflow<
     execute: async ({ inputData }) => {
       const state = inputData as z.infer<typeof LoopStateSchema>;
       const out = { result: state.draft, iterations: state.iteration };
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Mastra outputSchema parse; ZodTypeAny for workflow API
       return (outputSchema as z.ZodTypeAny).parse(out) as z.infer<typeof outputSchema>;
     },
   });

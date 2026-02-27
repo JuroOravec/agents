@@ -157,28 +157,26 @@ export function createFanOutAdversarialWorkflow<
       const res = await synthesizer.generate([{ role: 'user', content: prompt }], {
         structuredOutput: { schema: outputSchema },
       });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Mastra structuredOutput; schema validated at runtime
       return res.object;
     },
   });
 
-  return (
-    createWorkflow({
-      id: workflowId,
-      inputSchema: inputSchema as z.ZodTypeAny,
-      outputSchema: outputSchema as z.ZodTypeAny,
+  return createWorkflow({
+    id: workflowId,
+    inputSchema: inputSchema as z.ZodTypeAny,
+    outputSchema: outputSchema as z.ZodTypeAny,
+  })
+    .parallel(allSteps)
+    .map(async ({ inputData, getInitData }) => {
+      const init = getInitData<Record<string, string>>();
+      const parallelOut = inputData as Record<string, { critique: string }>;
+      const blocks = allIds.map((id) => `## ${id}\n${parallelOut[id]?.critique ?? ''}`);
+      return {
+        [artifactKey]: init[artifactKey] ?? '',
+        critiques: blocks.join('\n\n---\n\n'),
+      };
     })
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mastra .parallel() tuple type
-      .parallel(allSteps as any)
-      .map(async ({ inputData, getInitData }) => {
-        const init = getInitData<Record<string, string>>();
-        const parallelOut = inputData as Record<string, { critique: string }>;
-        const blocks = allIds.map((id) => `## ${id}\n${parallelOut[id]?.critique ?? ''}`);
-        return {
-          [artifactKey]: init[artifactKey] ?? '',
-          critiques: blocks.join('\n\n---\n\n'),
-        };
-      })
-      .then(synthesizerStep)
-      .commit()
-  );
+    .then(synthesizerStep)
+    .commit();
 }

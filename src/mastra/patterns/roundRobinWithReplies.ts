@@ -250,6 +250,7 @@ export function createRoundRobinWithRepliesWorkflow<
       const res = await synthesizer.generate([{ role: 'user', content: prompt }], {
         structuredOutput: { schema: outputSchema },
       });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Mastra structuredOutput; schema validated at runtime
       return res.object;
     },
   });

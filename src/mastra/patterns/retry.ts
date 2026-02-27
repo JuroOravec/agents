@@ -32,8 +32,7 @@
  * See docs/features/ai-crews/patterns.md#9-retry
  */
 
-import type { AnyWorkflow } from '@mastra/core/workflows';
-import { createStep, createWorkflow } from '@mastra/core/workflows';
+import { type AnyWorkflow, createStep, createWorkflow } from '@mastra/core/workflows';
 import { z } from 'zod';
 
 export interface RetryOptions<TInput extends z.ZodTypeAny, TOutput extends z.ZodTypeAny> {

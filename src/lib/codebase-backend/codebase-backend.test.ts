@@ -27,7 +27,7 @@ vi.mock('./native-codebase-backend.js', () => ({
   })),
 }));
 
-// Import AFTER mocks are established — test the lib factory directly
+// eslint-disable-next-line import/first -- Import AFTER mocks are established
 import { createCodebaseBackend } from './codebase-backend.js';
 
 describe('createCodebaseBackend', () => {

@@ -282,7 +282,7 @@ export function computeSkillTimeShareChartData(
       const overlapStart = Math.max(startMs, dayStart);
       const overlapEnd = Math.min(endMs, dayEnd);
       if (overlapStart <= overlapEnd) {
-        const byConv = chatPeriodsByDate.get(d) ?? new Map();
+        const byConv = chatPeriodsByDate.get(d) ?? new Map<string, Interval[]>();
         const list = byConv.get(convId) ?? [];
         list.push({ startMs: overlapStart, endMs: overlapEnd });
         byConv.set(convId, list);
@@ -310,7 +310,7 @@ export function computeSkillTimeShareChartData(
       const overlapStart = Math.max(startMs, dayStart);
       const overlapEnd = Math.min(endMs, dayEnd);
       if (overlapStart <= overlapEnd) {
-        const byConv = skillPeriodsByDate.get(d) ?? new Map();
+        const byConv = skillPeriodsByDate.get(d) ?? new Map<string, Interval[]>();
         const list = byConv.get(convId) ?? [];
         list.push({ startMs: overlapStart, endMs: overlapEnd });
         byConv.set(convId, list);
@@ -340,8 +340,8 @@ export function computeSkillTimeShareChartData(
 
   const points: ToolChartPoint[] = [];
   for (const date of Array.from(allDates).sort()) {
-    const chatByConv = chatPeriodsByDate.get(date) ?? new Map();
-    const skillByConv = skillPeriodsByDate.get(date) ?? new Map();
+    const chatByConv = chatPeriodsByDate.get(date) ?? new Map<string, Interval[]>();
+    const skillByConv = skillPeriodsByDate.get(date) ?? new Map<string, Interval[]>();
     let totalWorkMs = 0;
     let totalSkillMs = 0;
     for (const [convId, chatIntervals] of chatByConv) {

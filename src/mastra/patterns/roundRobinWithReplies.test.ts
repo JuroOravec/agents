@@ -3,11 +3,10 @@
  */
 
 import { Agent } from '@mastra/core/agent';
-import { extractMentions } from './roundRobinWithReplies.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
-import { createRoundRobinWithRepliesWorkflow } from './roundRobinWithReplies.js';
+import { createRoundRobinWithRepliesWorkflow, extractMentions } from './roundRobinWithReplies.js';
 
 const InputSchema = z.object({ proposal: z.string() });
 const OutputSchema = z.object({ verdict: z.string() });

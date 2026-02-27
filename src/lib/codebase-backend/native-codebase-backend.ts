@@ -21,8 +21,8 @@
 
 import { Agent } from '@mastra/core/agent';
 
-import type { CodebaseBackend, CodebaseBackendCallbacks } from './codebase-backend.js';
 import { type DrainableChunk, drainFullStream } from '../../crews/utils/drain-stream.js';
+import type { CodebaseBackend, CodebaseBackendCallbacks } from './codebase-backend.js';
 import {
   createListDirTool,
   createReadFileTool,
@@ -31,10 +31,12 @@ import {
   createWriteFileTool,
 } from './native-tools.js';
 
+type Model = ConstructorParameters<typeof Agent>[0]['model'];
+
 /** Options for NativeCodebaseBackend. */
 export interface NativeCodebaseBackendOpts {
   worktreePath: string;
-  llm: Parameters<typeof Agent>[0]['model'];
+  llm: Model;
   callbacks?: CodebaseBackendCallbacks;
 }
 
@@ -52,7 +54,7 @@ export interface NativeCodebaseBackendOpts {
  */
 export class NativeCodebaseBackend implements CodebaseBackend {
   private readonly worktreePath: string;
-  private readonly llm: Parameters<typeof Agent>[0]['model'];
+  private readonly llm: Model;
   private readonly callbacks: CodebaseBackendCallbacks;
 
   constructor(opts: NativeCodebaseBackendOpts) {

@@ -5,8 +5,8 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
-import { createHumanInTheLoopGateWorkflow } from './humanInTheLoopGate.js';
 import { createMockStep } from './__tests__/utils.js';
+import { createHumanInTheLoopGateWorkflow } from './humanInTheLoopGate.js';
 
 const InputSchema = z.object({ draft: z.string() });
 const OutputSchema = z.object({ final: z.string() });

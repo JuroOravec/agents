@@ -107,6 +107,7 @@ export function createFanOutWorkflow<TInput extends z.ZodTypeAny, TOutput extend
       const res = await synthesizer.generate([{ role: 'user', content: prompt }], {
         structuredOutput: { schema: outputSchema },
       });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Mastra structuredOutput; schema validated at runtime
       return res.object;
     },
   });
@@ -116,8 +117,7 @@ export function createFanOutWorkflow<TInput extends z.ZodTypeAny, TOutput extend
     inputSchema: inputSchema as z.ZodTypeAny,
     outputSchema: outputSchema as z.ZodTypeAny,
   })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .parallel(reviewSteps as any)
+    .parallel(reviewSteps)
     .map(async ({ inputData, getInitData }) => {
       const init = getInitData<Record<string, string>>();
       const artifact = init[artifactKey] ?? '';

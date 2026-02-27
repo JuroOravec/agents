@@ -109,35 +109,33 @@ export function createFanOutWeightedPanelWorkflow<
       const res = await synthesizer.generate([{ role: 'user', content: prompt }], {
         structuredOutput: { schema: outputSchema },
       });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Mastra structuredOutput; schema validated at runtime
       return res.object;
     },
   });
 
   const weightsNote = reviewers.map((r) => `${r.id}: weight ${r.weight ?? 1}`).join('; ');
 
-  return (
-    createWorkflow({
-      id: workflowId,
-      inputSchema: inputSchema as z.ZodTypeAny,
-      outputSchema: outputSchema as z.ZodTypeAny,
+  return createWorkflow({
+    id: workflowId,
+    inputSchema: inputSchema as z.ZodTypeAny,
+    outputSchema: outputSchema as z.ZodTypeAny,
+  })
+    .parallel(reviewSteps)
+    .map(async ({ inputData, getInitData }) => {
+      const init = getInitData<Record<string, string>>();
+      const parallelOut = inputData as Record<string, { critique: string }>;
+      const blocks = reviewers.map((r) => {
+        const w = r.weight ?? 1;
+        const label = w !== 1 ? `## ${r.id} (weight: ${w})\n` : `## ${r.id}\n`;
+        return label + (parallelOut[r.id]?.critique ?? '');
+      });
+      return {
+        [artifactKey]: init[artifactKey] ?? '',
+        critiques: blocks.join('\n\n---\n\n'),
+        weightsNote,
+      };
     })
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mastra .parallel() tuple type
-      .parallel(reviewSteps as any)
-      .map(async ({ inputData, getInitData }) => {
-        const init = getInitData<Record<string, string>>();
-        const parallelOut = inputData as Record<string, { critique: string }>;
-        const blocks = reviewers.map((r) => {
-          const w = r.weight ?? 1;
-          const label = w !== 1 ? `## ${r.id} (weight: ${w})\n` : `## ${r.id}\n`;
-          return label + (parallelOut[r.id]?.critique ?? '');
-        });
-        return {
-          [artifactKey]: init[artifactKey] ?? '',
-          critiques: blocks.join('\n\n---\n\n'),
-          weightsNote,
-        };
-      })
-      .then(synthesizerStep)
-      .commit()
-  );
+    .then(synthesizerStep)
+    .commit();
 }

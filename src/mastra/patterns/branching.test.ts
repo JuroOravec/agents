@@ -6,8 +6,8 @@ import { createStep } from '@mastra/core/workflows';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
-import { createBranchingWorkflow } from './branching.js';
 import { createMockStep } from './__tests__/utils.js';
+import { createBranchingWorkflow } from './branching.js';
 
 const InputSchema = z.object({ type: z.string() });
 const OutputSchema = z.object({ answer: z.string() });

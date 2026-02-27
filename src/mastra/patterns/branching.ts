@@ -56,17 +56,16 @@ export function createBranchingWorkflow<TInput extends z.ZodTypeAny, TOutput ext
     throw new Error('Branching requires at least one branch');
   }
 
-  const branchEntries = branches.map((b) => [b.condition, b.step] as const);
-
   let workflow = createWorkflow({
     id: workflowId,
     inputSchema: inputSchema as z.ZodTypeAny,
     outputSchema: outputSchema as z.ZodTypeAny,
-  })
-    .then(conditionStep)
-    // Mastra .branch() expects complex tuple types; branchEntries matches at runtime
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mastra .branch() tuple type
-    .branch(branchEntries as any);
+  }).then(conditionStep);
+
+  // Define the branches
+  for (const branch of branches) {
+    workflow = workflow.branch([[branch.condition, branch.step]]);
+  }
 
   if (mergeStep) {
     workflow = workflow.then(mergeStep);

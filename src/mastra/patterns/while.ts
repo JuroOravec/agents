@@ -38,8 +38,7 @@
  * See docs/features/ai-crews/patterns.md#while
  */
 
-import type { AnyWorkflow } from '@mastra/core/workflows';
-import { createStep, createWorkflow } from '@mastra/core/workflows';
+import { type AnyWorkflow, createStep, createWorkflow } from '@mastra/core/workflows';
 import { z } from 'zod';
 
 export interface WhileOptions<TInput extends z.ZodTypeAny, TOutput extends z.ZodTypeAny> {

@@ -183,9 +183,11 @@ export function createRoundRobinWorkflow<TInput extends z.ZodTypeAny, TOutput ex
         const res = await synthesizer.generate([{ role: 'user', content: prompt }], {
           structuredOutput: { schema: outputSchema },
         });
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Mastra structuredOutput; schema validated at runtime
         return res.object;
       },
     });
+
     return workflow.then(synthStep).commit();
   }
 
@@ -198,5 +200,6 @@ export function createRoundRobinWorkflow<TInput extends z.ZodTypeAny, TOutput ex
       return { thread };
     },
   });
+
   return workflow.then(passthrough).commit();
 }

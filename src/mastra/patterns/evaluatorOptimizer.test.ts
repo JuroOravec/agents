@@ -73,7 +73,7 @@ describe('createEvaluatorOptimizerWorkflow', () => {
   it('retries until approved when evaluator initially rejects', async () => {
     let evalCallCount = 0;
 
-    vi.mocked(Agent).mockImplementation((opts?: { id?: string }) => {
+    vi.mocked(Agent).mockImplementation((_opts?: { id?: string }) => {
       const generate = vi
         .fn()
         .mockImplementation(
