@@ -8,8 +8,7 @@
 
 import { readdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { pathToFileURL } from 'node:url';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { runCommand } from './runner.js';
 import type { CommandDef } from './types.js';
@@ -72,4 +71,4 @@ Run 'tsx src/commands/cli.ts <command> --help' for command-specific options.`);
   }
 }
 
-main();
+void main();

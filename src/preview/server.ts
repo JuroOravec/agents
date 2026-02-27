@@ -394,7 +394,7 @@ export interface PreviewServerOptions {
  * Start the preview server.
  * Serves the skill-eval dashboard at /skills.
  */
-export async function startPreviewServer(
+export function startPreviewServer(
   options: PreviewServerOptions = {},
 ): Promise<{ port: number; url: string }> {
   const repoRoot = options.repoRoot ?? process.cwd();
