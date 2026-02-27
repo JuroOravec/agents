@@ -1,12 +1,12 @@
 /**
- * Express server for the skill-eval dashboard.
+ * Fastify server for the skill-eval dashboard.
  *
  * Pages: Skills (heatmap + line chart), Agents (subagent runs), Tools (tool invocations), Prompts (user prompts).
  */
 
 import path from 'node:path';
 
-import express from 'express';
+import Fastify, { type FastifyInstance } from 'fastify';
 
 import { getSkillPhasesMap } from '../engine/validate/skill-phases.js';
 import { createFilterFn, validateFilterScript } from './filter.js';
@@ -57,8 +57,29 @@ const DEFAULT_SORT_AGENTS_TOOLS = '-finished_at';
 const DEFAULT_SORT_PROMPTS = '-ts';
 const DEFAULT_SORT_SKILLS = '-created_at';
 
-function createPreviewServer(repoRoot: string): express.Application {
-  const app = express();
+/** JSON Schema for list routes (agents, tools, prompts, chats, skills). */
+const listQuerySchema = {
+  type: 'object',
+  properties: {
+    page: { type: 'string' },
+    sort: { type: 'string' },
+    filter: { type: 'string' },
+  },
+  additionalProperties: false,
+} as const;
+
+/** JSON Schema for /chats/:id route. */
+const chatIdParamsSchema = {
+  type: 'object',
+  properties: {
+    id: { type: 'string', minLength: 1 },
+  },
+  required: ['id'],
+  additionalProperties: false,
+} as const;
+
+export function createPreviewServer(repoRoot: string): FastifyInstance {
+  const fastify = Fastify({ logger: false });
   const logDir = path.join(repoRoot, LOG_DIR);
   const agentsLogDir = path.join(repoRoot, AGENTS_LOG_DIR);
   const chatsLogDir = path.join(repoRoot, CHATS_LOG_DIR);
@@ -67,14 +88,16 @@ function createPreviewServer(repoRoot: string): express.Application {
   const promptsLogDir = path.join(repoRoot, PROMPTS_LOG_DIR);
   const skillsDir = path.join(repoRoot, SKILLS_DIR);
 
-  app.get('/', (_req, res) => {
-    res.redirect(302, '/skills');
+  fastify.get('/', (_request, reply) => {
+    return reply.redirect('/skills', 302);
   });
 
-  app.get('/agents', async (req, res) => {
-    const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
-    const sortParam = (req.query.sort as string) || DEFAULT_SORT_AGENTS_TOOLS;
-    const filterParam = (req.query.filter as string) || '';
+  fastify.get<{
+    Querystring: { page?: string; sort?: string; filter?: string };
+  }>('/agents', { schema: { querystring: listQuerySchema } }, async (request, reply) => {
+    const page = Math.max(1, parseInt(request.query.page ?? '', 10) || 1);
+    const sortParam = request.query.sort ?? DEFAULT_SORT_AGENTS_TOOLS;
+    const filterParam = request.query.filter ?? '';
     const filterScript = typeof filterParam === 'string' ? filterParam.trim() : '';
     const sortSpec = parseSortParam(sortParam);
 
@@ -106,8 +129,7 @@ function createPreviewServer(repoRoot: string): express.Application {
       const agentsPerDayData = computeAgentsPerDayChartData(allEntries);
       const agentsPerDayByTypeData = computeAgentsPerDayByTypeChartData(allEntries);
 
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(
+      return reply.type('text/html; charset=utf-8').send(
         pageAgents({
           entries,
           totalCount,
@@ -122,14 +144,19 @@ function createPreviewServer(repoRoot: string): express.Application {
         }),
       );
     } catch (err) {
-      res.status(500).send(pageError(err instanceof Error ? err.message : String(err)));
+      return reply
+        .status(500)
+        .type('text/html; charset=utf-8')
+        .send(pageError(err instanceof Error ? err.message : String(err)));
     }
   });
 
-  app.get('/tools', async (req, res) => {
-    const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
-    const sortParam = (req.query.sort as string) || DEFAULT_SORT_AGENTS_TOOLS;
-    const filterParam = (req.query.filter as string) || '';
+  fastify.get<{
+    Querystring: { page?: string; sort?: string; filter?: string };
+  }>('/tools', { schema: { querystring: listQuerySchema } }, async (request, reply) => {
+    const page = Math.max(1, parseInt(request.query.page ?? '', 10) || 1);
+    const sortParam = request.query.sort ?? DEFAULT_SORT_AGENTS_TOOLS;
+    const filterParam = request.query.filter ?? '';
     const filterScript = typeof filterParam === 'string' ? filterParam.trim() : '';
     const sortSpec = parseSortParam(sortParam);
 
@@ -161,8 +188,7 @@ function createPreviewServer(repoRoot: string): express.Application {
       const toolsPerDayData = computeToolsPerDayChartData(allEntries);
       const toolsPerDayByTypeData = computeToolsPerDayByTypeChartData(allEntries);
 
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(
+      return reply.type('text/html; charset=utf-8').send(
         pageTools({
           entries,
           totalCount,
@@ -177,14 +203,19 @@ function createPreviewServer(repoRoot: string): express.Application {
         }),
       );
     } catch (err) {
-      res.status(500).send(pageError(err instanceof Error ? err.message : String(err)));
+      return reply
+        .status(500)
+        .type('text/html; charset=utf-8')
+        .send(pageError(err instanceof Error ? err.message : String(err)));
     }
   });
 
-  app.get('/prompts', async (req, res) => {
-    const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
-    const sortParam = (req.query.sort as string) || DEFAULT_SORT_PROMPTS;
-    const filterParam = (req.query.filter as string) || '';
+  fastify.get<{
+    Querystring: { page?: string; sort?: string; filter?: string };
+  }>('/prompts', { schema: { querystring: listQuerySchema } }, async (request, reply) => {
+    const page = Math.max(1, parseInt(request.query.page ?? '', 10) || 1);
+    const sortParam = request.query.sort ?? DEFAULT_SORT_PROMPTS;
+    const filterParam = request.query.filter ?? '';
     const filterScript = typeof filterParam === 'string' ? filterParam.trim() : '';
     const sortSpec = parseSortParam(sortParam);
 
@@ -214,8 +245,7 @@ function createPreviewServer(repoRoot: string): express.Application {
 
       const promptsChartData = computePromptsPerDayChartData(allEntries);
 
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(
+      return reply.type('text/html; charset=utf-8').send(
         pagePrompts({
           entries,
           totalCount,
@@ -228,16 +258,17 @@ function createPreviewServer(repoRoot: string): express.Application {
         }),
       );
     } catch (err) {
-      res.status(500).send(pageError(err instanceof Error ? err.message : String(err)));
+      return reply
+        .status(500)
+        .type('text/html; charset=utf-8')
+        .send(pageError(err instanceof Error ? err.message : String(err)));
     }
   });
 
-  app.get('/chats/:id', async (req, res) => {
-    const id = req.params.id;
-    if (!id) {
-      res.redirect(302, '/chats');
-      return;
-    }
+  fastify.get<{
+    Params: { id: string };
+  }>('/chats/:id', { schema: { params: chatIdParamsSchema } }, async (request, reply) => {
+    const { id } = request.params;
     try {
       const [allChats, thoughts, tools, agents, skills] = await Promise.all([
         loadChatLogs(chatsLogDir, promptsLogDir),
@@ -248,8 +279,10 @@ function createPreviewServer(repoRoot: string): express.Application {
       ]);
       const entry = allChats.find((e) => e.id === id);
       if (!entry) {
-        res.status(404).send(pageError(`Chat not found: ${id}`));
-        return;
+        return reply
+          .status(404)
+          .type('text/html; charset=utf-8')
+          .send(pageError(`Chat not found: ${id}`));
       }
       const waterfallEntries = getChatWaterfallEntries({
         chat: entry,
@@ -258,17 +291,21 @@ function createPreviewServer(repoRoot: string): express.Application {
         agents,
         skills,
       });
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(pageChatDetail(entry, waterfallEntries));
+      return reply.type('text/html; charset=utf-8').send(pageChatDetail(entry, waterfallEntries));
     } catch (err) {
-      res.status(500).send(pageError(err instanceof Error ? err.message : String(err)));
+      return reply
+        .status(500)
+        .type('text/html; charset=utf-8')
+        .send(pageError(err instanceof Error ? err.message : String(err)));
     }
   });
 
-  app.get('/chats', async (req, res) => {
-    const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
-    const sortParam = (req.query.sort as string) || DEFAULT_SORT_AGENTS_TOOLS;
-    const filterParam = (req.query.filter as string) || '';
+  fastify.get<{
+    Querystring: { page?: string; sort?: string; filter?: string };
+  }>('/chats', { schema: { querystring: listQuerySchema } }, async (request, reply) => {
+    const page = Math.max(1, parseInt(request.query.page ?? '', 10) || 1);
+    const sortParam = request.query.sort ?? DEFAULT_SORT_AGENTS_TOOLS;
+    const filterParam = request.query.filter ?? '';
     const filterScript = typeof filterParam === 'string' ? filterParam.trim() : '';
     const sortSpec = parseSortParam(sortParam);
 
@@ -298,8 +335,7 @@ function createPreviewServer(repoRoot: string): express.Application {
 
       const chatsChartData = computeChatsPerDayChartData(allEntries);
 
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(
+      return reply.type('text/html; charset=utf-8').send(
         pageChats({
           entries,
           totalCount,
@@ -312,14 +348,19 @@ function createPreviewServer(repoRoot: string): express.Application {
         }),
       );
     } catch (err) {
-      res.status(500).send(pageError(err instanceof Error ? err.message : String(err)));
+      return reply
+        .status(500)
+        .type('text/html; charset=utf-8')
+        .send(pageError(err instanceof Error ? err.message : String(err)));
     }
   });
 
-  app.get('/skills', async (req, res) => {
-    const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
-    const sortParam = (req.query.sort as string) || DEFAULT_SORT_SKILLS;
-    const filterParam = (req.query.filter as string) || '';
+  fastify.get<{
+    Querystring: { page?: string; sort?: string; filter?: string };
+  }>('/skills', { schema: { querystring: listQuerySchema } }, async (request, reply) => {
+    const page = Math.max(1, parseInt(request.query.page ?? '', 10) || 1);
+    const sortParam = request.query.sort ?? DEFAULT_SORT_SKILLS;
+    const filterParam = request.query.filter ?? '';
     const filterScript = typeof filterParam === 'string' ? filterParam.trim() : '';
     const sortSpec = parseSortParam(sortParam);
 
@@ -359,8 +400,7 @@ function createPreviewServer(repoRoot: string): express.Application {
       const skillSuccessRateChartData = computeSkillSuccessRateChartData(runs, skillPhasesMap);
       const skillTimeShareChartData = computeSkillTimeShareChartData(chats, runs);
 
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(
+      return reply.type('text/html; charset=utf-8').send(
         pageSkills({
           heatmapData,
           skillsPerDayData,
@@ -378,11 +418,14 @@ function createPreviewServer(repoRoot: string): express.Application {
         }),
       );
     } catch (err) {
-      res.status(500).send(pageError(err instanceof Error ? err.message : String(err)));
+      return reply
+        .status(500)
+        .type('text/html; charset=utf-8')
+        .send(pageError(err instanceof Error ? err.message : String(err)));
     }
   });
 
-  return app;
+  return fastify;
 }
 
 export interface PreviewServerOptions {
@@ -394,22 +437,18 @@ export interface PreviewServerOptions {
  * Start the preview server.
  * Serves the skill-eval dashboard at /skills.
  */
-export function startPreviewServer(
+export async function startPreviewServer(
   options: PreviewServerOptions = {},
 ): Promise<{ port: number; url: string }> {
   const repoRoot = options.repoRoot ?? process.cwd();
   const port = options.port ?? 3040;
 
-  const app = createPreviewServer(repoRoot);
+  const fastify = createPreviewServer(repoRoot);
 
-  return new Promise((resolve, reject) => {
-    const server = app.listen(port, () => {
-      const url = `http://localhost:${port}`;
-      console.log(
-        `Preview dashboard: ${url}/skills  ${url}/agents  ${url}/tools  ${url}/prompts  ${url}/chats`,
-      );
-      resolve({ port, url });
-    });
-    server.on('error', reject);
-  });
+  await fastify.listen({ port });
+  const url = `http://localhost:${port}`;
+  console.log(
+    `Preview dashboard: ${url}/skills  ${url}/agents  ${url}/tools  ${url}/prompts  ${url}/chats`,
+  );
+  return { port, url };
 }
