@@ -145,6 +145,7 @@ export default async function requireMastraAgents(): Promise<void> {
   if (registeredTools) {
     assertAllPresent({
       discovered: allTools,
+      // @ts-expect-error - registeredTools is a Record<string, Tool>
       registered: registeredTools,
       kind: 'Tool',
       failures,

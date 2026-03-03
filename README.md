@@ -89,8 +89,8 @@ Spec-driven development with OpenSpec, Shotgun, and black-box test generation. S
 Multi-agent committees (PRD Review Committee, etc.) run via Mastra. Use your API keys or Cursor CLI. See [docs/features/ai-crews/](docs/features/ai-crews/) for how to run crews.
 
 ```bash
-pnpm run crew-prd-review draft.md refined.md
-pnpm run crew-prd-review --demo output.md   # example input
+pnpm run demo-prd-review draft.md refined.md
+pnpm run demo-prd-review --demo output.md   # example input
 ```
 
 ### Skill health metrics

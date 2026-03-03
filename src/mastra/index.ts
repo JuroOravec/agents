@@ -10,7 +10,7 @@ import { Mastra } from '@mastra/core';
 import { reviewerAgent } from './agents/reviewer.js';
 import { workerAgent } from './agents/worker.js';
 import { editCodebaseTool, readCodebaseTool } from './tools/codebase.js';
-import { prdReviewWorkflow } from './workflows/prd-review.js';
+import { prdReviewWorkflow } from './workflows/demo-prd-review.js';
 
 export const mastra = new Mastra({
   agents: {

@@ -31,7 +31,9 @@
     "preview": "tsx src/commands/cli.ts preview",
     "validate": "tsx src/commands/cli.ts validate",
     "check": "tsx src/commands/cli.ts check",
-    "check:agent": "tsx src/commands/cli.ts check --reporter=agent"
+    "check:agent": "tsx src/commands/cli.ts check --reporter=agent",
+    "demo-worker": "tsx scripts/demo-worker.ts",
+    "demo-prd-review": "tsx scripts/demo-prd-review.ts"
   },
   "repository": {
     "type": "git",
