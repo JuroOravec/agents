@@ -36,15 +36,15 @@ CREW_MODEL_FAST=anthropic/claude-sonnet-4-6
 
 ### Environment Variables Reference
 
-| Variable                    | Required | Description                                                                 |
-| --------------------------- | -------- | --------------------------------------------------------------------------- |
-| `CREW_MODEL_SMART_BASE_URL` | Yes      | `https://openrouter.ai/api/v1`                                               |
-| `CREW_MODEL_FAST_BASE_URL`  | Yes      | `https://openrouter.ai/api/v1`                                              |
-| `CREW_MODEL_SMART_API_KEY`  | Yes      | Your OpenRouter API key                                                     |
-| `CREW_MODEL_FAST_API_KEY`   | Yes      | Your OpenRouter API key (can be same as smart)                               |
-| `CREW_MODEL_SMART`          | Optional | Model ID, e.g. `anthropic/claude-sonnet-4-6` or `openai/gpt-5`             |
-| `CREW_MODEL_FAST`           | Optional | Model ID, e.g. `anthropic/claude-sonnet-4-6` or `openai/gpt-5-mini`         |
-| `CREW_MAX_TOKENS`           | Optional | Cap output tokens (e.g. `2048`) to stay within budget; omit for default     |
+| Variable                    | Required | Description                                                             |
+| --------------------------- | -------- | ----------------------------------------------------------------------- |
+| `CREW_MODEL_SMART_BASE_URL` | Yes      | `https://openrouter.ai/api/v1`                                          |
+| `CREW_MODEL_FAST_BASE_URL`  | Yes      | `https://openrouter.ai/api/v1`                                          |
+| `CREW_MODEL_SMART_API_KEY`  | Yes      | Your OpenRouter API key                                                 |
+| `CREW_MODEL_FAST_API_KEY`   | Yes      | Your OpenRouter API key (can be same as smart)                          |
+| `CREW_MODEL_SMART`          | Optional | Model ID, e.g. `anthropic/claude-sonnet-4-6` or `openai/gpt-5`          |
+| `CREW_MODEL_FAST`           | Optional | Model ID, e.g. `anthropic/claude-sonnet-4-6` or `openai/gpt-5-mini`     |
+| `CREW_MAX_TOKENS`           | Optional | Cap output tokens (e.g. `2048`) to stay within budget; omit for default |
 
 ### Model Format
 
@@ -93,6 +93,6 @@ This caps the model's output tokens per turn, reducing cost. ~2048 tokens ≈ 1.
 
 ## See Also
 
-- [scripts/crews/README.md](../scripts/crews/README.md) — Crew commands and usage
-- [scripts/crews/config.ts](../scripts/crews/config.ts) — Model registry and env parsing
+- [scripts/crews/README.md](../src/crews/README.md) — Crew commands and usage
+- [src/models.ts](../src/models.ts) — Model registry and env parsing
 - [OpenRouter Models](https://openrouter.ai/models) — Full model list and pricing

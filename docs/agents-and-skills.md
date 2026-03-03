@@ -4,11 +4,11 @@ Agents and skills serve different purposes and work together. Understanding the 
 
 ## Summary
 
-| | Agent | Skill |
-|---|-------|-------|
-| **Purpose** | WHO — the persona/role | WHAT — the procedure |
-| **Trigger** | Role switch (e.g. slash command `/architect`) | Intent ("design", "break down", etc.) |
-| **Can run alone?** | No — an agent needs workflows to execute | Yes — the default agent can follow a skill when intent matches |
+|                    | Agent                                         | Skill                                                          |
+| ------------------ | --------------------------------------------- | -------------------------------------------------------------- |
+| **Purpose**        | WHO — the persona/role                        | WHAT — the procedure                                           |
+| **Trigger**        | Role switch (e.g. slash command `/architect`) | Intent ("design", "break down", etc.)                          |
+| **Can run alone?** | No — an agent needs workflows to execute      | Yes — the default agent can follow a skill when intent matches |
 
 ## Example: Architect
 
@@ -16,13 +16,13 @@ Agents and skills serve different purposes and work together. Understanding the 
 
 - Defines the architect persona: scope (arch vs dev), behavioral rules, which skills to use.
 - Invoked when you switch into the architect role.
-- Says *"you are an architect"* and how that architect behaves.
+- Says _"you are an architect"_ and how that architect behaves.
 
 **Architect skill** (`role-architect`):
 
 - Defines the phased workflow: understand goal → break into areas → design first chunk → create issues → hand off to PM.
 - Invoked when any agent detects architect-like intent ("design and break down", "how would we implement X").
-- Says *"here are the steps to follow."*
+- Says _"here are the steps to follow."_
 
 The agent references the skill: when you become the architect, that agent uses the architect skills. But the skill can also run without the agent—e.g. the default agent following `role-architect` when you ask for a design breakdown.
 

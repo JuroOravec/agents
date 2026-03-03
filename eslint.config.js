@@ -12,60 +12,59 @@ import tseslint from 'typescript-eslint';
 const agentsRoot = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(
+  // 3rd party configs
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
+  // Project config
   {
     ignores: ['**/dist/**', '**/node_modules/**', '**/coverage/**'],
-  },
-  {
     languageOptions: {
       parserOptions: {
         tsconfigRootDir: agentsRoot,
         projectService: true,
       },
     },
-  },
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended,
-  {
+    // Plugins enable formatting code when running `eslint --fix`
     plugins: {
       import: eslintPluginImport,
       'simple-import-sort': simpleImportSort,
+      prettier: eslintPluginPrettier,
     },
     rules: {
+      // prettier
+      'prettier/prettier': 'error',
+      // imports
       'import/first': 'error',
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
-    },
-  },
-  {
-    languageOptions: {
-      parserOptions: {
-        ecmaVersion: 'latest',
-      },
-    },
-    rules: {
-      'max-params': ['error', 2],
-      'no-duplicate-imports': 'error',
+      // typescript
       '@typescript-eslint/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports' }],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/no-unsafe-argument': 'error',
       '@typescript-eslint/no-unsafe-assignment': 'error',
       '@typescript-eslint/no-unsafe-member-access': 'error',
       '@typescript-eslint/no-unsafe-return': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+      // Other
+      'max-params': ['error', 2],
+      'no-duplicate-imports': 'error',
     },
   },
+  // Test files override rules
   {
-    plugins: {
-      prettier: eslintPluginPrettier,
-    },
+    files: ['**/*.test.ts', '**/*.spec.ts'],
     rules: {
-      'prettier/prettier': 'error',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      'max-params': 'off',
     },
   },
+  // 3rd party configs that MUST be last
   eslintConfigPrettier,
 );

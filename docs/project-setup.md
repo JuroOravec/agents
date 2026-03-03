@@ -80,9 +80,10 @@ When you have many nested projects, indexing and tooling (ESLint, Prettier, Curs
 **How it works:** Toggle project paths in `.gitignore` to exclude/include them. Your WIP stays local; no commit or push needed.
 
 **Which tools respect `.gitignore`?**
+
 - **Cursor** - uses `.gitignore` when no `.cursorignore` is specified. If you have a separate `.cursorignore`, manage it together with `.gitignore` for soft switching.
 - **Prettier** - respects `.gitignore` by default.
-- **ESLint** - does *not* respect `.gitignore` by default. To use it, add `includeIgnoreFile` from `@eslint/compat` to your root `eslint.config.js` to import `.gitignore` patterns.
+- **ESLint** - does _not_ respect `.gitignore` by default. To use it, add `includeIgnoreFile` from `@eslint/compat` to your root `eslint.config.js` to import `.gitignore` patterns.
 
 ### Example `.gitignore` (root)
 

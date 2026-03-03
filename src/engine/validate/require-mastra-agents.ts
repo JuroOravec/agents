@@ -56,8 +56,8 @@ async function discoverExports<T>(
 
   const results: { file: string; exports: T[] }[] = [];
   for (const file of files) {
-    const mod = await import(pathToFileURL(join(dir, file)).href);
-    const exports = Object.values(mod).filter(predicate);
+    const mod = (await import(pathToFileURL(join(dir, file)).href)) as Record<string, unknown>;
+    const exports = (Object.values(mod) as unknown[]).filter(predicate);
     results.push({ file, exports });
   }
   return results;

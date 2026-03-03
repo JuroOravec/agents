@@ -12,7 +12,6 @@ export default defineConfig({
         '**/node_modules/**',
         '**/dist/**',
         '**/coverage/**',
-        'crawlee-one/**',
         '**/__generated__/**',
       ],
       reporter: ['text', 'lcov'],

@@ -19,7 +19,7 @@ export default async function (): Promise<void> {
   for (const file of scripts) {
     const url = pathToFileURL(join(__dirname, file)).href;
     try {
-      const mod = await import(url);
+      const mod = (await import(url)) as { default?: unknown };
       if (typeof mod.default !== 'function') {
         errors.push(`${file}: default export must be a function (got ${typeof mod.default})`);
       }

@@ -140,8 +140,6 @@ describe('CursorCLILanguageModel', () => {
 
     const model = new CursorCLILanguageModel('test-model', { workspace: '/tmp' });
     const resultPromise = model.doGenerate({
-      inputFormat: 'prompt',
-      mode: { type: 'regular' },
       prompt: [{ role: 'user', content: [{ type: 'text', text: 'hi' }] }],
     });
 
@@ -166,8 +164,6 @@ describe('CursorCLILanguageModel', () => {
     });
 
     const p = model.doGenerate({
-      inputFormat: 'prompt',
-      mode: { type: 'regular' },
       prompt: [{ role: 'user', content: [{ type: 'text', text: 'hi' }] }],
     });
     emit();
@@ -191,8 +187,6 @@ describe('CursorCLILanguageModel', () => {
     });
 
     const p = model.doGenerate({
-      inputFormat: 'prompt',
-      mode: { type: 'regular' },
       prompt: [{ role: 'user', content: [{ type: 'text', text: 'hi' }] }],
     });
     emit();
@@ -209,8 +203,6 @@ describe('CursorCLILanguageModel', () => {
 
     const model = new CursorCLILanguageModel('test-model', { workspace: '/tmp' });
     const p = model.doGenerate({
-      inputFormat: 'prompt',
-      mode: { type: 'regular' },
       prompt: [{ role: 'user', content: [{ type: 'text', text: 'hi' }] }],
     });
     emit();
@@ -224,8 +216,6 @@ describe('CursorCLILanguageModel', () => {
 
     const model = new CursorCLILanguageModel('test-model', { workspace: '/tmp' });
     const p = model.doGenerate({
-      inputFormat: 'prompt',
-      mode: { type: 'regular' },
       prompt: [{ role: 'user', content: [{ type: 'text', text: 'hi' }] }],
     });
     emit();

@@ -34,11 +34,11 @@ async function runPhase(opts: {
 
     let output = '';
     if (captureOutput) {
-      child.stdout?.on('data', (data) => {
-        output += data.toString();
+      child.stdout?.on('data', (data: string | Buffer) => {
+        output += String(data);
       });
-      child.stderr?.on('data', (data) => {
-        output += data.toString();
+      child.stderr?.on('data', (data: string | Buffer) => {
+        output += String(data);
       });
     }
 

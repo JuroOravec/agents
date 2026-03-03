@@ -7,16 +7,14 @@
  */
 
 import { readdir } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
+import { getRepoRoot } from '../constants.js';
 import { runCommand } from './runner.js';
 import type { CommandDef } from './types.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const repoRoot = dirname(dirname(__dirname));
-const commandsDir = join(repoRoot, 'scripts', 'commands');
+const commandsDir = join(getRepoRoot(), 'scripts', 'commands');
 
 async function discoverCommands(): Promise<Map<string, CommandDef>> {
   const files = await readdir(commandsDir);
@@ -26,11 +24,11 @@ async function discoverCommands(): Promise<Map<string, CommandDef>> {
   for (const file of tsFiles) {
     const name = file.replace(/\.ts$/, '');
     const url = pathToFileURL(join(commandsDir, file)).href;
-    const mod = await import(url);
+    const mod = (await import(url)) as { default?: unknown };
     const def = mod.default;
-    if (!def || typeof def !== 'object' || typeof def.handler !== 'function') {
-      continue;
-    }
+    if (!def || typeof def !== 'object') continue;
+    const obj = def as Record<string, unknown>;
+    if (typeof obj.handler !== 'function') continue;
     commands.set(name, def as CommandDef);
   }
 
@@ -66,7 +64,32 @@ Run 'tsx src/commands/cli.ts <command> --help' for command-specific options.`);
   try {
     await runCommand(def, restArgs);
   } catch (err) {
-    console.error(err instanceof Error ? err.message : String(err));
+    const e = err instanceof Error ? err : new Error(String(err));
+    console.error(e.message);
+    // AI SDK AI_APICallError exposes statusCode and responseBody — surface them for debugging
+    const providerErr = (e.cause && typeof e.cause === 'object' ? e.cause : e) as {
+      statusCode?: number;
+      responseBody?: unknown;
+      message?: string;
+      stack?: string;
+    };
+    if (typeof providerErr.statusCode === 'number') {
+      console.error(`\nHTTP ${providerErr.statusCode}`);
+    }
+    if (providerErr.responseBody != null) {
+      const body =
+        typeof providerErr.responseBody === 'string'
+          ? providerErr.responseBody
+          : JSON.stringify(providerErr.responseBody, null, 2);
+      console.error('Response:', body.slice(0, 500) + (body.length > 500 ? '…' : ''));
+    }
+    if (e.cause && e.cause !== providerErr) {
+      const cause = e.cause instanceof Error ? e.cause : new Error(String(e.cause));
+      console.error('\nCause:', cause.message);
+      if (cause.stack) console.error(cause.stack);
+    } else if (e.stack) {
+      console.error('\n' + e.stack);
+    }
     process.exit(1);
   }
 }

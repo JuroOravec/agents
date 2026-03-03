@@ -4,13 +4,12 @@
  */
 
 import { readdir } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const repoRoot = join(dirname(__dirname), '..', '..');
-const commandsDir = join(repoRoot, 'scripts', 'commands');
+import { getRepoRoot } from '../../constants.js';
+
+const commandsDir = join(getRepoRoot(), 'scripts', 'commands');
 
 const REQUIRED_FIELDS = ['name', 'description', 'usage', 'options', 'handler'] as const;
 
@@ -50,7 +49,7 @@ export default async function (): Promise<void> {
   for (const file of tsFiles) {
     const url = pathToFileURL(join(commandsDir, file)).href;
     try {
-      const mod = await import(url);
+      const mod = (await import(url)) as { default?: unknown };
       const def = mod.default;
       errors.push(...checkCommandDef(def, file));
     } catch (err) {

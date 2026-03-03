@@ -1,8 +1,12 @@
 node_modules/
+.venv/
 dist/
 coverage/
 *.tsbuildinfo
 .pnpm-store/
+
+# Shotgun (codebase index and spec output)
+.shotgun/
 
 # Cursor
 .cursor/debug.log

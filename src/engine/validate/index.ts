@@ -31,11 +31,11 @@ export async function runValidation(): Promise<void> {
   for (const script of scripts) {
     console.log(`\n=== ${script} ===\n`);
     try {
-      const mod = await import(join(__dirname, script));
+      const mod = (await import(join(__dirname, script))) as { default?: unknown };
       if (typeof mod.default !== 'function') {
         throw new Error(`${script} does not export a default function`);
       }
-      await mod.default();
+      await (mod.default as () => Promise<void>)();
       console.log(`\nPASS: ${script}`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);

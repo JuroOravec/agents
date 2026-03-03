@@ -186,8 +186,6 @@ async function runCursorModel(
 ): Promise<string> {
   try {
     const result = await model.doGenerate({
-      inputFormat: 'prompt',
-      mode: { type: 'regular' },
       prompt: [{ role: 'user', content: [{ type: 'text', text: promptText }] }],
     });
     return extractText(result.content);
