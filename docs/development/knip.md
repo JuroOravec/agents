@@ -14,7 +14,7 @@ Knip analyzes the project to find dead code, unused exports, unused files, and u
 
 Knip builds a module graph from your **entry points** and traces what is actually used. Unlike ESLint (which analyzes files in isolation), Knip sees the whole project. Something exported from `foo.ts` is "unused" only if nothing in the graph imports it.
 
-Entry points are configured in `knip.json`: library entry (`src/index.ts`), CLI (`src/commands/cli.ts`), scripts (`scripts/crew-worker-cli.ts`, `scripts/crew-prd-review.ts`, `scripts/commands/*.ts`), Mastra patterns, and validation scripts.
+Entry points are configured in `knip.json`: library entry (`src/index.ts`), CLI (`src/commands/cli.ts`), scripts (`scripts/demo-worker.ts`, `scripts/demo-prd-review.ts`, `scripts/commands/*.ts`), Mastra patterns, and validation scripts.
 
 ## Excluded: types
 

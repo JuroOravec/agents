@@ -60,19 +60,19 @@ Browse models at [openrouter.ai/models](https://openrouter.ai/models).
 With `.env` configured, run the PRD review:
 
 ```bash
-pnpm run crew-prd-review --demo output.md
+pnpm run demo-prd-review --demo output.md
 ```
 
 Or with a real PRD file:
 
 ```bash
-pnpm run crew-prd-review path/to/prd.md path/to/output.md
+pnpm run demo-prd-review path/to/prd.md path/to/output.md
 ```
 
 You can override models via the command line (values still go through OpenRouter if base URLs are set):
 
 ```bash
-CREW_MODEL_SMART=openai/gpt-5 CREW_MODEL_FAST=openai/gpt-5-mini pnpm run crew-prd-review --demo output.md
+CREW_MODEL_SMART=openai/gpt-5 CREW_MODEL_FAST=openai/gpt-5-mini pnpm run demo-prd-review --demo output.md
 ```
 
 ## Billing and Credits

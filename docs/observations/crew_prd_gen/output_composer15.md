@@ -54,15 +54,15 @@ Create small wrapper scripts (e.g., `gh_issue_view`) that invoke only approved s
 
 The following wrappers are in scope for v1:
 
-| Wrapper Name | Invokes | Notes |
-|--------------|---------|-------|
+| Wrapper Name    | Invokes         | Notes              |
+| --------------- | --------------- | ------------------ |
 | `gh_issue_view` | `gh issue view` | View issue details |
-| `gh_issue_list` | `gh issue list` | List issues |
-| `gh_pr_view` | `gh pr view` | View PR details |
-| `gh_pr_list` | `gh pr list` | List PRs |
-| `gh_repo_view` | `gh repo view` | View repo info |
-| `gh_run_view` | `gh run view` | View workflow run |
-| `gh_run_list` | `gh run list` | List workflow runs |
+| `gh_issue_list` | `gh issue list` | List issues        |
+| `gh_pr_view`    | `gh pr view`    | View PR details    |
+| `gh_pr_list`    | `gh pr list`    | List PRs           |
+| `gh_repo_view`  | `gh repo view`  | View repo info     |
+| `gh_run_view`   | `gh run view`   | View workflow run  |
+| `gh_run_list`   | `gh run list`   | List workflow runs |
 
 Additional subcommands may be added via the maintenance process (see § Maintenance Model).
 

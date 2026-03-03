@@ -13,7 +13,7 @@ This guide walks you through running **AI crews** in this project: what they are
 ## What you’ll get
 
 - **PRD Review Committee** — Architect, PM, Security Analyst, End User Advocate, and Tech Writer review a product doc and output a refined version plus a list of outstanding questions.
-- **Single command** — `pnpm run crew-prd-review input.md output.md`; results appear in the output file.
+- **Single command** — `pnpm run demo-prd-review input.md output.md`; results appear in the output file.
 - **Model choice** — Use OpenAI, Anthropic, OpenRouter, or your local Cursor CLI (no API keys).
 - **Structured output** — Refined markdown plus JSON-safe data; no messy chat logs.
 
@@ -75,7 +75,7 @@ cursor-agent login
 Then run crews with:
 
 ```bash
-CREW_MODEL_SMART=cursor:composer-1-5 pnpm run crew-prd-review --demo output.md
+CREW_MODEL_SMART=cursor:composer-1-5 pnpm run demo-prd-review --demo output.md
 ```
 
 Your Cursor subscription is used; no separate API key.
@@ -87,7 +87,7 @@ Your Cursor subscription is used; no separate API key.
 With keys or Cursor set up, run the PRD Review Committee:
 
 ```bash
-pnpm run crew-prd-review draft-prd.md refined-prd.md
+pnpm run demo-prd-review draft-prd.md refined-prd.md
 ```
 
 The crew will:
@@ -100,7 +100,7 @@ The crew will:
 Don’t have a draft yet? Use the built-in demo PRD:
 
 ```bash
-pnpm run crew-prd-review --demo output.md
+pnpm run demo-prd-review --demo output.md
 ```
 
 That uses an example document so you can see the flow end-to-end.
@@ -144,7 +144,7 @@ Env variables override defaults:
 Example: cap tokens to stay within OpenRouter credits:
 
 ```bash
-CREW_MAX_TOKENS=2048 pnpm run crew-prd-review draft.md refined.md
+CREW_MAX_TOKENS=2048 pnpm run demo-prd-review draft.md refined.md
 ```
 
 ---
