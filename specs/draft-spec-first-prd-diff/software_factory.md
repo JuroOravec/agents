@@ -128,7 +128,7 @@ If you want to build this into your own architecture, here is the roadmap:
    - Let the agent loop against the Eval Runner until the test passes.
 4. **Merge to Main:** When the loop achieves a green build, the orchestrator automatically opens a Pull Request. You don't review the code line-by-line; you just review the test cases to ensure the AI didn't cheat the test.
 
-**What you were missing is the concept of a closed-loop environment where the "Ground Truth" (the compiler and the tests) acts as the ultimate judge, allowing the AI to blindly iterate through thousands of permutations of code until it converges on the mathematically proves it perfectly satisfies the human's constraints.**
+**What you were missing is the concept of a closed-loop environment where the "Ground Truth" (the compiler and the tests) acts as the ultimate judge, allowing the AI to blindly iterate through thousands of permutations of code until it converges on a solution that satisfies the human's constraints.**
 
 ---
 
