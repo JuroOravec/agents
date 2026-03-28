@@ -82,7 +82,7 @@ The skills are tuned for **JavaScript/TypeScript projects using a pnpm monorepo*
 
 ### AI-first development (Software Factory)
 
-Spec-driven development with OpenSpec, Shotgun, and black-box test generation. See [safe-ai-factory/](https://github.com/JuroOravec/safe-ai-factory/) for the full pipeline, commands, and design docs.
+Spec-driven development with OpenSpec, Shotgun, and black-box test generation. See [SaifCTL](https://github.com/JuroOravec/safe-ai-factory/) for the full pipeline, commands, and design docs.
 
 ### Running AI crews
 

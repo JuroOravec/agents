@@ -12,16 +12,26 @@ import tseslint from 'typescript-eslint';
 const agentsRoot = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(
+  // Ignores must be in a standalone config object for flat config to apply them
+  {
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**', '.venv/**'],
+  },
   // 3rd party configs
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   // Project config
   {
-    ignores: ['**/dist/**', '**/node_modules/**', '**/coverage/**'],
     languageOptions: {
       parserOptions: {
         tsconfigRootDir: agentsRoot,
-        projectService: true,
+        projectService: {
+          allowDefaultProject: [
+            'eslint.config.js',
+            'eslint.config.js',
+            'safe-ai-factory/vscode-ext/vitest.config.ts',
+            'vitest.config.ts',
+          ],
+        },
       },
     },
     // Plugins enable formatting code when running `eslint --fix`
